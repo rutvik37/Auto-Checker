@@ -86,9 +86,19 @@ public class SpellingValidator {
     }
 
     public Optional<String> checkCache(String word, String suggestion) {
-        // For this run, force all spelling validations to bypass previous cached
-        // results and use fresh validation logic.
-        return Optional.empty();
+        if (word == null || suggestion == null) {
+            return Optional.empty();
+        }
+        String w = word.trim().toLowerCase(Locale.ROOT);
+        String s = suggestion.trim().toLowerCase(Locale.ROOT);
+        try {
+            return validationCacheRepository.findByWordAndSuggestion(w, s)
+                    .map(ValidationCache::getDecision)
+                    .filter(decision -> "VALID".equals(decision) || "TYPO".equals(decision));
+        } catch (Exception e) {
+            logger.error("Failed to query validation cache for word '{}': {}", word, e.getMessage());
+            return Optional.empty();
+        }
     }
 
     public void validateCandidatesBatch(List<SpellingCandidate> candidates, Long scanId, PrintWriter logWriter) {
@@ -326,9 +336,12 @@ public class SpellingValidator {
     }
 
     public void saveToCache(String word, String suggestion, String decision, String reason) {
+        if (word == null || suggestion == null) {
+            return;
+        }
         try {
-            String w = word.toLowerCase();
-            String s = suggestion.toLowerCase();
+            String w = word.trim().toLowerCase(Locale.ROOT);
+            String s = suggestion.trim().toLowerCase(Locale.ROOT);
             Optional<ValidationCache> existing = validationCacheRepository.findByWordAndSuggestion(w, s);
             ValidationCache cacheEntry;
             if (existing.isPresent()) {

@@ -150,6 +150,12 @@ public class CrawlScanService {
         AuditReportCollector collector = new AuditReportCollector(scanId);
         scanAuditCollectors.put(scanId, collector);
 
+        int cacheCandidatesChecked = 0;
+        int cacheHits = 0;
+        int cacheMisses = 0;
+        int cacheHitRate = 0;
+        int groqCallsAvoided = 0;
+
         try {
             String baseUrlStr = scan.getUrl().trim();
             URI baseUri = new URI(baseUrlStr);
@@ -357,14 +363,32 @@ public class CrawlScanService {
             logInfo(scanId, "Checking local SQLite cache for " + uniqueCandidates.size() + " unique candidates...",
                     finalLogWriter);
             long cacheStart = System.nanoTime();
+            cacheCandidatesChecked = uniqueCandidates.size();
             for (SpellingValidator.SpellingCandidate candidate : uniqueCandidates.values()) {
                 Optional<String> cachedDecision = spellingValidator.checkCache(candidate.getWord(),
                         candidate.getSuggestion());
                 if (cachedDecision.isPresent()) {
                     candidate.setDecision(cachedDecision.get());
+                    cacheHits++;
                 }
             }
             long cacheEnd = System.nanoTime();
+            cacheMisses = cacheCandidatesChecked - cacheHits;
+            cacheHitRate = cacheCandidatesChecked > 0 ? (int) Math.round(((double) cacheHits / cacheCandidatesChecked) * 100) : 0;
+            groqCallsAvoided = cacheHits;
+
+            System.out.println("[CACHE] Candidates Checked = " + cacheCandidatesChecked);
+            System.out.println("[CACHE] Cache Hits = " + cacheHits);
+            System.out.println("[CACHE] Cache Misses = " + cacheMisses);
+            System.out.println("[CACHE] Hit Rate = " + cacheHitRate + "%");
+            System.out.println("[CACHE] Groq Calls Avoided = " + groqCallsAvoided);
+
+            logInfo(scanId, "[CACHE] Candidates Checked = " + cacheCandidatesChecked, finalLogWriter);
+            logInfo(scanId, "[CACHE] Cache Hits = " + cacheHits, finalLogWriter);
+            logInfo(scanId, "[CACHE] Cache Misses = " + cacheMisses, finalLogWriter);
+            logInfo(scanId, "[CACHE] Hit Rate = " + cacheHitRate + "%", finalLogWriter);
+            logInfo(scanId, "[CACHE] Groq Calls Avoided = " + groqCallsAvoided, finalLogWriter);
+
             long cacheTime = (cacheEnd - cacheStart) / 1_000_000;
             PerformanceTracker.add("cache_lookup", cacheTime);
             System.out.println("[PERF] Cache Lookup Time = " + cacheTime + " ms");
@@ -644,6 +668,26 @@ public class CrawlScanService {
             logInfo(scanId, "", finalLogWriter);
             logInfo(scanId, "[PERF] Total Scan Time = " + totalScanTime + " ms", finalLogWriter);
             logInfo(scanId, "=====================================================", finalLogWriter);
+
+            System.out.println("================ CACHE SUMMARY ================");
+            System.out.println();
+            System.out.println("[CACHE] Candidates Checked = " + cacheCandidatesChecked);
+            System.out.println("[CACHE] Cache Hits = " + cacheHits);
+            System.out.println("[CACHE] Cache Misses = " + cacheMisses);
+            System.out.println("[CACHE] Hit Rate = " + cacheHitRate + "%");
+            System.out.println("[CACHE] Groq Calls Avoided = " + groqCallsAvoided);
+            System.out.println();
+            System.out.println("================================================");
+
+            logInfo(scanId, "================ CACHE SUMMARY ================", finalLogWriter);
+            logInfo(scanId, "", finalLogWriter);
+            logInfo(scanId, "[CACHE] Candidates Checked = " + cacheCandidatesChecked, finalLogWriter);
+            logInfo(scanId, "[CACHE] Cache Hits = " + cacheHits, finalLogWriter);
+            logInfo(scanId, "[CACHE] Cache Misses = " + cacheMisses, finalLogWriter);
+            logInfo(scanId, "[CACHE] Hit Rate = " + cacheHitRate + "%", finalLogWriter);
+            logInfo(scanId, "[CACHE] Groq Calls Avoided = " + groqCallsAvoided, finalLogWriter);
+            logInfo(scanId, "", finalLogWriter);
+            logInfo(scanId, "================================================", finalLogWriter);
 
             scanCancellationTokens.remove(scanId);
 

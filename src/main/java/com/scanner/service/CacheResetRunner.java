@@ -39,8 +39,8 @@ public class CacheResetRunner implements ApplicationRunner {
         
         // 1. Clear Database Cache
         try {
-            dbEntriesCount = validationCacheRepository.count();
-            validationCacheRepository.deleteAll();
+            // Do not clear cache automatically
+            dbEntriesCount = 0;
             System.out.println("[CACHE] Cache type found: Local Database Cache");
             System.out.println("[CACHE] Cache location: validation_cache table in scanner.db");
             System.out.println("[CACHE] Number of entries removed: " + dbEntriesCount);
