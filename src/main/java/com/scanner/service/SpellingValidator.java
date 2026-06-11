@@ -135,6 +135,7 @@ public class SpellingValidator {
 
     private void callGroqForBatch(List<SpellingCandidate> batch, String apiKey, Long scanId, PrintWriter logWriter)
             throws Exception {
+        long prepStart = System.nanoTime();
         // Build payload
         List<Map<String, String>> promptList = new ArrayList<>();
         for (SpellingCandidate c : batch) {
@@ -217,9 +218,22 @@ public class SpellingValidator {
                 .POST(HttpRequest.BodyPublishers.ofString(requestBody))
                 .build();
 
+        long prepEnd = System.nanoTime();
+        long prepTime = (prepEnd - prepStart) / 1_000_000;
+        PerformanceTracker.add("groq_prep", prepTime);
+        System.out.println("[PERF] Groq Request Preparation Time = " + prepTime + " ms");
+        logInfo(scanId, "[PERF] Groq Request Preparation Time = " + prepTime + " ms", logWriter);
+
+        long apiStart = System.nanoTime();
         logInfo(scanId, "Sending " + batch.size() + " candidates to Groq...", logWriter);
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        long apiEnd = System.nanoTime();
+        long apiTime = (apiEnd - apiStart) / 1_000_000;
+        PerformanceTracker.add("groq_api", apiTime);
+        System.out.println("[PERF] Groq API Time = " + apiTime + " ms");
+        logInfo(scanId, "[PERF] Groq API Time = " + apiTime + " ms", logWriter);
 
+        long parseStart = System.nanoTime();
         if (response.statusCode() != 200) {
             throw new RuntimeException(
                     "Groq API returned HTTP status code " + response.statusCode() + ": " + response.body());
@@ -292,6 +306,11 @@ public class SpellingValidator {
         for (SpellingCandidate c : batch) {
             saveToCache(c.getWord(), c.getSuggestion(), c.getDecision(), c.getReason());
         }
+        long parseEnd = System.nanoTime();
+        long parseTime = (parseEnd - parseStart) / 1_000_000;
+        PerformanceTracker.add("groq_parse", parseTime);
+        System.out.println("[PERF] Groq Response Parsing Time = " + parseTime + " ms");
+        logInfo(scanId, "[PERF] Groq Response Parsing Time = " + parseTime + " ms", logWriter);
     }
 
     private String cleanJson(String response) {
@@ -320,7 +339,11 @@ public class SpellingValidator {
             } else {
                 cacheEntry = new ValidationCache(w, s, decision, reason);
             }
+            long dbStart = System.nanoTime();
             validationCacheRepository.save(cacheEntry);
+            long dbTime = (System.nanoTime() - dbStart) / 1_000_000;
+            PerformanceTracker.add("db_save", dbTime);
+            System.out.println("[PERF] Database Save Time = " + dbTime + " ms");
         } catch (Exception e) {
             logger.error("Failed to save validation cache entry for word '{}': {}", word, e.getMessage());
         }

@@ -55,11 +55,11 @@ public class CrawlScanService {
 
     @Autowired
     public CrawlScanService(ProjectRepository projectRepository,
-                            ScanRepository scanRepository,
-                            ScannedPageRepository scannedPageRepository,
-                            IssueRepository issueRepository,
-                            LiveLogService liveLogService,
-                            SpellingValidator spellingValidator) {
+            ScanRepository scanRepository,
+            ScannedPageRepository scannedPageRepository,
+            IssueRepository issueRepository,
+            LiveLogService liveLogService,
+            SpellingValidator spellingValidator) {
         this.projectRepository = projectRepository;
         this.scanRepository = scanRepository;
         this.scannedPageRepository = scannedPageRepository;
@@ -120,6 +120,7 @@ public class CrawlScanService {
     // -------------------------------------------------------------------------
     @Async
     public void startScanAsync(Long scanId) {
+        long totalScanStart = System.nanoTime();
         // Load scan record
         Scan scan = scanRepository.findById(scanId).orElse(null);
         if (scan == null) {
@@ -129,14 +130,18 @@ public class CrawlScanService {
 
         scan.setStatus("RUNNING");
         scan.setStartedAt(LocalDateTime.now());
+        long dbStart = System.nanoTime();
         scanRepository.save(scan);
+        long dbTime = (System.nanoTime() - dbStart) / 1_000_000;
+        PerformanceTracker.add("db_save", dbTime);
+        System.out.println("[PERF] Database Save Time = " + dbTime + " ms");
 
         final PrintWriter finalLogWriter = null;
 
         // Crawl counters
         AtomicInteger pagesScannedCount = new AtomicInteger(0);
-        AtomicLong    wordsCheckedCount  = new AtomicLong(0);
-        AtomicInteger totalIssuesCount   = new AtomicInteger(0);
+        AtomicLong wordsCheckedCount = new AtomicLong(0);
+        AtomicInteger totalIssuesCount = new AtomicInteger(0);
 
         // List of all findings found in the entire crawl
         List<RawFinding> rawFindings = new ArrayList<>();
@@ -147,19 +152,20 @@ public class CrawlScanService {
 
         try {
             String baseUrlStr = scan.getUrl().trim();
-            URI    baseUri    = new URI(baseUrlStr);
+            URI baseUri = new URI(baseUrlStr);
             String targetHost = baseUri.getHost();
 
             logInfo(scanId, "Starting scan for URL: " + baseUrlStr, finalLogWriter);
 
             // ---- robots.txt + sitemap ----
             Set<String> robotsDisallowedPrefixes = new HashSet<>();
-            Set<String> sitemapUrls              = new HashSet<>();
-            fetchAndParseRobotsTxt(baseUrlStr, targetHost, robotsDisallowedPrefixes, sitemapUrls, scanId, finalLogWriter);
+            Set<String> sitemapUrls = new HashSet<>();
+            fetchAndParseRobotsTxt(baseUrlStr, targetHost, robotsDisallowedPrefixes, sitemapUrls, scanId,
+                    finalLogWriter);
 
             // ---- Build initial crawl queue ----
             Queue<CrawlTask> crawlQueue = new LinkedList<>();
-            Set<String>      visitedUrls = new HashSet<>();
+            Set<String> visitedUrls = new HashSet<>();
 
             if (!sitemapUrls.isEmpty()) {
                 logInfo(scanId, "Found " + sitemapUrls.size() + " URLs in sitemap.xml – queuing.", finalLogWriter);
@@ -174,33 +180,40 @@ public class CrawlScanService {
             }
 
             scanCancellationTokens.put(scanId, false);
-
+            
             // ---- Launch LanguageTool ----
-            JLanguageTool  langTool = new JLanguageTool(new AmericanEnglish());
+            long ltInitStart = System.nanoTime();
+            JLanguageTool langTool = new JLanguageTool(new AmericanEnglish());
             langTool.getAllRules().stream()
                     .filter(r -> !r.isDictionaryBasedSpellingRule()
-                              && !r.getCategory().getId().toString().contains("TYPOS")
-                              && !r.getCategory().getId().toString().contains("SPELLING")
-                              && !r.getId().contains("MORFOLOGIK"))
+                            && !r.getCategory().getId().toString().contains("TYPOS")
+                            && !r.getCategory().getId().toString().contains("SPELLING")
+                            && !r.getId().contains("MORFOLOGIK"))
                     .forEach(r -> langTool.disableRule(r.getId()));
-
+            long ltInitTime = (System.nanoTime() - ltInitStart) / 1_000_000;
+            PerformanceTracker.add("languagetool_init", ltInitTime);
+            System.out.println("[PERF] LanguageTool Initialization = " + ltInitTime + " ms");
+            logInfo(scanId, "[PERF] LanguageTool Initialization = " + ltInitTime + " ms", finalLogWriter);
             logInfo(scanId, "LanguageTool spell-checker initialised.", finalLogWriter);
 
+            long crawlLoopStart = System.nanoTime();
             while (!crawlQueue.isEmpty()
                     && !scanCancellationTokens.getOrDefault(scanId, false)) {
 
                 // Respect max-pages limit
                 if (scan.getMaxPages() != null
                         && pagesScannedCount.get() >= scan.getMaxPages()) {
-                    logInfo(scanId, "Reached max page limit (" + scan.getMaxPages() + "). Stopping crawler.", finalLogWriter);
+                    logInfo(scanId, "Reached max page limit (" + scan.getMaxPages() + "). Stopping crawler.",
+                            finalLogWriter);
                     break;
                 }
 
                 CrawlTask task = crawlQueue.poll();
-                if (task == null) break;
+                if (task == null)
+                    break;
 
-                String currentUrl   = task.url;
-                int    currentDepth = task.depth;
+                String currentUrl = task.url;
+                int currentDepth = task.depth;
 
                 if (!visitedUrls.add(currentUrl)) {
                     continue; // already visited
@@ -209,17 +222,38 @@ public class CrawlScanService {
                 logInfo(scanId, "Scanning: " + currentUrl + " (depth=" + currentDepth + ")", finalLogWriter);
 
                 try {
-                    Document doc = Jsoup.connect(currentUrl)
+                    org.jsoup.Connection conn = Jsoup.connect(currentUrl)
                             .userAgent("Mozilla/5.0 AutoChecker/1.0")
-                            .timeout(15000)
-                            .get();
+                            .timeout(15000);
 
+                    long fetchStart = System.nanoTime();
+                    org.jsoup.Connection.Response response = conn.execute();
+                    long fetchEnd = System.nanoTime();
+                    long fetchTime = (fetchEnd - fetchStart) / 1_000_000;
+                    PerformanceTracker.add("page_download", fetchTime);
+                    System.out.println("[PERF] Page Download = " + fetchTime + " ms");
+                    logInfo(scanId, "[PERF] Page Download = " + fetchTime + " ms", finalLogWriter);
+
+                    long parseStart = System.nanoTime();
+                    Document doc = response.parse();
+                    long parseEnd = System.nanoTime();
+                    long parseTime = (parseEnd - parseStart) / 1_000_000;
+                    PerformanceTracker.add("html_parse", parseTime);
+                    System.out.println("[PERF] HTML Parsing = " + parseTime + " ms");
+                    logInfo(scanId, "[PERF] HTML Parsing = " + parseTime + " ms", finalLogWriter);
+
+                    long textExtractStart = System.nanoTime();
                     String title = doc.title();
                     doc.select("script, style, noscript, svg, iframe").remove();
 
                     String extractedText = extractVisibleText(doc);
                     extractedText = normalizeBrokenWords(extractedText);
-                    long   wordCount     = countWords(extractedText);
+                    long wordCount = countWords(extractedText);
+                    long textExtractTime = (System.nanoTime() - textExtractStart) / 1_000_000;
+                    PerformanceTracker.add("text_extract", textExtractTime);
+                    System.out.println("[PERF] Text Extraction = " + textExtractTime + " ms");
+                    logInfo(scanId, "[PERF] Text Extraction = " + textExtractTime + " ms", finalLogWriter);
+                    
                     wordsCheckedCount.addAndGet(wordCount);
 
                     savePage(scan, currentUrl, title, 200);
@@ -237,8 +271,10 @@ public class CrawlScanService {
                         for (Element link : links) {
                             String absUrl = link.absUrl("href");
                             int hashIdx = absUrl.indexOf('#');
-                            if (hashIdx != -1) absUrl = absUrl.substring(0, hashIdx);
-                            if (absUrl.endsWith("/")) absUrl = absUrl.substring(0, absUrl.length() - 1);
+                            if (hashIdx != -1)
+                                absUrl = absUrl.substring(0, hashIdx);
+                            if (absUrl.endsWith("/"))
+                                absUrl = absUrl.substring(0, absUrl.length() - 1);
 
                             if (isInternalAndAllowed(absUrl, targetHost, robotsDisallowedPrefixes)
                                     && !visitedUrls.contains(absUrl)) {
@@ -254,72 +290,114 @@ public class CrawlScanService {
                     broadcastProgress(scanId, pagesScannedCount, wordsCheckedCount, totalIssuesCount, currentUrl);
                 }
             }
+            long crawlLoopEnd = System.nanoTime();
+            long crawlLoopTime = (crawlLoopEnd - crawlLoopStart) / 1_000_000;
+            PerformanceTracker.add("total_crawl", crawlLoopTime);
+            System.out.println("[PERF] Total Crawl Time = " + crawlLoopTime + " ms");
+            logInfo(scanId, "[PERF] Total Crawl Time = " + crawlLoopTime + " ms", finalLogWriter);
 
             // ---- Deduplicate findings globally ----
-            logInfo(scanId, "Finished crawling. Total findings collected: " + rawFindings.size() + ". Deduplicating...", finalLogWriter);
-            
+            logInfo(scanId, "Finished crawling. Total findings collected: " + rawFindings.size() + ". Deduplicating...",
+                    finalLogWriter);
+
             int beforeCount = rawFindings.size();
             int afterNormCount = rawFindings.size();
-            
+
             Map<String, SpellingValidator.SpellingCandidate> uniqueCandidates = new LinkedHashMap<>();
             Map<String, SpellingValidator.SpellingCandidate> candidateMap = new LinkedHashMap<>();
-            
+
+            long normTimeAccum = 0;
+            long dedupTimeAccum = 0;
             for (RawFinding rf : rawFindings) {
-                if (rf.word == null) continue;
+                if (rf.word == null)
+                    continue;
+
+                long normStart = System.nanoTime();
                 String normalized = rf.word.trim().toLowerCase(Locale.ROOT);
+                String key = rf.word.toLowerCase() + "|" + rf.suggestions.toLowerCase();
+                normTimeAccum += (System.nanoTime() - normStart);
+
+                long dedupStart = System.nanoTime();
                 SpellingValidator.SpellingCandidate candidate = uniqueCandidates.get(normalized);
                 if (candidate == null) {
                     candidate = new SpellingValidator.SpellingCandidate(rf.word, rf.suggestions, rf.sentence);
                     uniqueCandidates.put(normalized, candidate);
                 }
-                
-                String key = rf.word.toLowerCase() + "|" + rf.suggestions.toLowerCase();
                 candidateMap.put(key, candidate);
+                dedupTimeAccum += (System.nanoTime() - dedupStart);
             }
-            
+            long normTimeMs = normTimeAccum / 1_000_000;
+            long dedupTimeMs = dedupTimeAccum / 1_000_000;
+            PerformanceTracker.add("candidate_norm", normTimeMs);
+            PerformanceTracker.add("candidate_dedup", dedupTimeMs);
+            System.out.println("[PERF] Candidate Normalization Time = " + normTimeMs + " ms");
+            System.out.println("[PERF] Candidate Deduplication Time = " + dedupTimeMs + " ms");
+            logInfo(scanId, "[PERF] Candidate Normalization Time = " + normTimeMs + " ms", finalLogWriter);
+            logInfo(scanId, "[PERF] Candidate Deduplication Time = " + dedupTimeMs + " ms", finalLogWriter);
+
             int afterDeduplicationCount = uniqueCandidates.size();
-            
+
             System.out.println("[GROQ] Candidates before normalization = " + beforeCount);
             System.out.println("[GROQ] Candidates after normalization = " + afterNormCount);
             System.out.println("[GROQ] Candidates after deduplication = " + afterDeduplicationCount);
-            
+
             List<String> finalWords = new ArrayList<>();
             for (SpellingValidator.SpellingCandidate c : uniqueCandidates.values()) {
                 finalWords.add(c.getWord());
             }
             System.out.println("[GROQ] Final candidate list: " + finalWords);
-            
+
             logInfo(scanId, "[GROQ] Candidates before normalization = " + beforeCount, finalLogWriter);
             logInfo(scanId, "[GROQ] Candidates after normalization = " + afterNormCount, finalLogWriter);
             logInfo(scanId, "[GROQ] Candidates after deduplication = " + afterDeduplicationCount, finalLogWriter);
             logInfo(scanId, "[GROQ] Final candidate list: " + finalWords, finalLogWriter);
 
+            long valStart = System.nanoTime();
             // ---- Local Cache Lookup ----
-            logInfo(scanId, "Checking local SQLite cache for " + uniqueCandidates.size() + " unique candidates...", finalLogWriter);
+            logInfo(scanId, "Checking local SQLite cache for " + uniqueCandidates.size() + " unique candidates...",
+                    finalLogWriter);
+            long cacheStart = System.nanoTime();
             for (SpellingValidator.SpellingCandidate candidate : uniqueCandidates.values()) {
-                Optional<String> cachedDecision = spellingValidator.checkCache(candidate.getWord(), candidate.getSuggestion());
+                Optional<String> cachedDecision = spellingValidator.checkCache(candidate.getWord(),
+                        candidate.getSuggestion());
                 if (cachedDecision.isPresent()) {
                     candidate.setDecision(cachedDecision.get());
                 }
             }
+            long cacheEnd = System.nanoTime();
+            long cacheTime = (cacheEnd - cacheStart) / 1_000_000;
+            PerformanceTracker.add("cache_lookup", cacheTime);
+            System.out.println("[PERF] Cache Lookup Time = " + cacheTime + " ms");
+            logInfo(scanId, "[PERF] Cache Lookup Time = " + cacheTime + " ms", finalLogWriter);
 
             // ---- Batch Groq Validation ----
             List<SpellingValidator.SpellingCandidate> unresolved = uniqueCandidates.values().stream()
-                .filter(c -> !"VALID".equals(c.getDecision()) && !"TYPO".equals(c.getDecision()))
-                .collect(Collectors.toList());
+                    .filter(c -> !"VALID".equals(c.getDecision()) && !"TYPO".equals(c.getDecision()))
+                    .collect(Collectors.toList());
 
             if (!unresolved.isEmpty()) {
-                logInfo(scanId, "Sending " + unresolved.size() + " unresolved candidates to Groq batch validator...", finalLogWriter);
+                logInfo(scanId, "Sending " + unresolved.size() + " unresolved candidates to Groq batch validator...",
+                        finalLogWriter);
                 spellingValidator.validateCandidatesBatch(unresolved, scanId, finalLogWriter);
             } else {
-                logInfo(scanId, "All candidates resolved via SQLite cache or space normalization. No Groq API calls needed.", finalLogWriter);
+                logInfo(scanId,
+                        "All candidates resolved via SQLite cache or space normalization. No Groq API calls needed.",
+                        finalLogWriter);
             }
+            long valEnd = System.nanoTime();
+            long valTime = (valEnd - valStart) / 1_000_000;
+            PerformanceTracker.add("total_validation", valTime);
+            System.out.println("[PERF] Total Validation Time = " + valTime + " ms");
+            logInfo(scanId, "[PERF] Total Validation Time = " + valTime + " ms", finalLogWriter);
 
             // ---- Populate Audit Report data ----
             for (SpellingValidator.SpellingCandidate candidate : candidateMap.values()) {
                 String decision = candidate.getDecision();
                 if ("VALID".equals(decision)) {
-                    collector.recordDynamicIgnore(candidate.getWord(), "Validated as VALID by " + (unresolved.contains(candidate) ? "Groq API" : "SQLite Cache/Space Normalization") + " (Reason: " + candidate.getReason() + ")");
+                    collector.recordDynamicIgnore(candidate.getWord(),
+                            "Validated as VALID by "
+                                    + (unresolved.contains(candidate) ? "Groq API" : "SQLite Cache/Space Normalization")
+                                    + " (Reason: " + candidate.getReason() + ")");
                 } else if ("TYPO".equals(decision)) {
                     collector.recordReported(candidate.getWord());
                 } else {
@@ -329,8 +407,11 @@ public class CrawlScanService {
 
             // ---- Generate Database Issues ----
             logInfo(scanId, "Generating database issues for validated typos...", finalLogWriter);
-            
-            // Fetch all existing issues for the scan to perform case-insensitive in-memory lookups
+
+            long issueGenStart = System.nanoTime();
+            long dbSaveTimeInGen = 0;
+            // Fetch all existing issues for the scan to perform case-insensitive in-memory
+            // lookups
             List<Issue> existingIssues = issueRepository.findByScanId(scan.getId());
             Map<String, Issue> normalizedIssueMap = new HashMap<>();
             for (Issue issue : existingIssues) {
@@ -345,7 +426,8 @@ public class CrawlScanService {
 
             // Count before dedup
             for (RawFinding rf : rawFindings) {
-                if (rf.word == null) continue;
+                if (rf.word == null)
+                    continue;
                 String key = rf.word.toLowerCase() + "|" + rf.suggestions.toLowerCase();
                 SpellingValidator.SpellingCandidate candidate = candidateMap.get(key);
                 if (candidate != null && "TYPO".equalsIgnoreCase(candidate.getDecision())) {
@@ -354,15 +436,16 @@ public class CrawlScanService {
             }
 
             for (RawFinding rf : rawFindings) {
-                if (rf.word == null) continue;
+                if (rf.word == null)
+                    continue;
                 String key = rf.word.toLowerCase() + "|" + rf.suggestions.toLowerCase();
                 SpellingValidator.SpellingCandidate candidate = candidateMap.get(key);
                 if (candidate != null && "TYPO".equalsIgnoreCase(candidate.getDecision())) {
-                    
+
                     String normalizedWord = rf.word.trim().toLowerCase(Locale.ROOT);
                     String normalizedPage = rf.pageUrl != null ? rf.pageUrl.trim().toLowerCase(Locale.ROOT) : "";
                     String normKey = normalizedWord + "|" + normalizedPage;
-                    
+
                     if (generatedIssueKeys.contains(normKey)) {
                         continue;
                     }
@@ -373,11 +456,17 @@ public class CrawlScanService {
                         Issue existing = normalizedIssueMap.get(normalizedWord);
                         if (existing != null) {
                             String currentUrls = existing.getPageUrl();
-                            if (currentUrls == null) currentUrls = "";
+                            if (currentUrls == null)
+                                currentUrls = "";
                             Set<String> urlSet = new LinkedHashSet<>(Arrays.asList(currentUrls.split(",\\s*")));
                             if (urlSet.add(rf.pageUrl)) {
                                 existing.setPageUrl(String.join(", ", urlSet));
+
+                                long dbSaveStart = System.nanoTime();
                                 issueRepository.save(existing);
+                                long dbSaveEnd = System.nanoTime();
+                                dbSaveTimeInGen += (dbSaveEnd - dbSaveStart);
+
                                 logInfo(scanId, "Typo \"" + rf.word + "\" also found on " + rf.pageUrl, finalLogWriter);
                             }
                         } else {
@@ -392,10 +481,14 @@ public class CrawlScanService {
                             issue.setTextSnippet("");
                             issue.setHtmlTag("Unknown");
                             issue.setDetectionSource("N/A");
-                            
+
+                            long dbSaveStart = System.nanoTime();
                             Issue savedIssue = issueRepository.save(issue);
+                            long dbSaveEnd = System.nanoTime();
+                            dbSaveTimeInGen += (dbSaveEnd - dbSaveStart);
+
                             normalizedIssueMap.put(normalizedWord, savedIssue);
-                            
+
                             totalIssuesCount.incrementAndGet();
                             logInfo(scanId, "Typo found: \"" + rf.word + "\" on " + rf.pageUrl, finalLogWriter);
                         }
@@ -404,10 +497,22 @@ public class CrawlScanService {
                     }
                 }
             }
+            long issueGenEnd = System.nanoTime();
+
+            long dbSaveMs = dbSaveTimeInGen / 1_000_000;
+            PerformanceTracker.add("db_save", dbSaveMs);
+            System.out.println("[PERF] Database Save Time = " + dbSaveMs + " ms");
+            logInfo(scanId, "[PERF] Database Save Time = " + dbSaveMs + " ms", finalLogWriter);
+
+            long totalIssueGenMs = (issueGenEnd - issueGenStart) / 1_000_000;
+            long issueGenMs = totalIssueGenMs - dbSaveMs;
+            PerformanceTracker.add("issue_gen", issueGenMs);
+            System.out.println("[PERF] Issue Generation Time = " + issueGenMs + " ms");
+            logInfo(scanId, "[PERF] Issue Generation Time = " + issueGenMs + " ms", finalLogWriter);
 
             System.out.println("[ISSUE] Issue generation before dedup = " + beforeDedup);
             System.out.println("[ISSUE] Issue generation after dedup = " + afterDedup);
-            
+
             logInfo(scanId, "[ISSUE] Issue generation before dedup = " + beforeDedup, finalLogWriter);
             logInfo(scanId, "[ISSUE] Issue generation after dedup = " + afterDedup, finalLogWriter);
 
@@ -440,7 +545,6 @@ public class CrawlScanService {
             // Broadcast final status update
             broadcastProgress(scanId, pagesScannedCount, wordsCheckedCount, totalIssuesCount, "Scan complete");
 
-
             // ---- Determine final status ----
             if (scanCancellationTokens.getOrDefault(scanId, false)) {
                 scan.setStatus("STOPPED");
@@ -460,14 +564,86 @@ public class CrawlScanService {
             scan.setPagesScanned(pagesScannedCount.get());
             scan.setWordsChecked(wordsCheckedCount.get());
             scan.setTotalIssues(totalIssuesCount.get());
+
+            long dbStartFinally = System.nanoTime();
             scanRepository.save(scan);
+            long dbTimeFinally = (System.nanoTime() - dbStartFinally) / 1_000_000;
+            PerformanceTracker.add("db_save", dbTimeFinally);
+            System.out.println("[PERF] Database Save Time = " + dbTimeFinally + " ms");
+            logInfo(scanId, "[PERF] Database Save Time = " + dbTimeFinally + " ms", finalLogWriter);
 
             // Generate dynamic entity validation audit report
+            long reportStart = System.nanoTime();
             AuditReportCollector scanCollector = scanAuditCollectors.remove(scanId);
             if (scanCollector != null) {
                 scanCollector.writeReport("AuditReports");
-                logInfo(scanId, "Generated Dynamic Entity Audit Report at: AuditReports/audit_report_scan_" + scanId + ".txt", finalLogWriter);
+                logInfo(scanId,
+                        "Generated Dynamic Entity Audit Report at: AuditReports/audit_report_scan_" + scanId + ".txt",
+                        finalLogWriter);
             }
+            long reportEnd = System.nanoTime();
+            long reportTime = (reportEnd - reportStart) / 1_000_000;
+            PerformanceTracker.add("report_gen", reportTime);
+            System.out.println("[PERF] Report Generation Time = " + reportTime + " ms");
+            logInfo(scanId, "[PERF] Report Generation Time = " + reportTime + " ms", finalLogWriter);
+
+            long totalPersistenceTime = PerformanceTracker.get("db_save") + PerformanceTracker.get("report_gen");
+            PerformanceTracker.add("total_persistence", totalPersistenceTime);
+            System.out.println("[PERF] Total Persistence Time = " + totalPersistenceTime + " ms");
+            logInfo(scanId, "[PERF] Total Persistence Time = " + totalPersistenceTime + " ms", finalLogWriter);
+
+            long totalScanEnd = System.nanoTime();
+            long totalScanTime = (totalScanEnd - totalScanStart) / 1_000_000;
+            PerformanceTracker.add("total_scan", totalScanTime);
+            logInfo(scanId, "[PERF] Total Scan Time = " + totalScanTime + " ms", finalLogWriter);
+            // Print summary
+            long pagesCrawled = pagesScannedCount.get();
+            Map<String, Long> summaryMap = new LinkedHashMap<>();
+            summaryMap.put("robots.txt Fetch", PerformanceTracker.get("robots_txt_fetch"));
+            summaryMap.put("Sitemap Fetch", PerformanceTracker.get("sitemap_fetch"));
+            summaryMap.put("Page Download", PerformanceTracker.get("page_download"));
+            summaryMap.put("HTML Parsing", PerformanceTracker.get("html_parse"));
+            summaryMap.put("Text Extraction", PerformanceTracker.get("text_extract"));
+            summaryMap.put("LanguageTool Initialization", PerformanceTracker.get("languagetool_init"));
+            summaryMap.put("LanguageTool Processing", PerformanceTracker.get("languagetool_processing"));
+            summaryMap.put("Candidate Extraction", PerformanceTracker.get("candidate_extract"));
+            summaryMap.put("Normalization", PerformanceTracker.get("candidate_norm"));
+            summaryMap.put("Deduplication", PerformanceTracker.get("candidate_dedup"));
+            summaryMap.put("Cache Lookup", PerformanceTracker.get("cache_lookup"));
+            summaryMap.put("Groq Request Preparation", PerformanceTracker.get("groq_prep"));
+            summaryMap.put("Groq API", PerformanceTracker.get("groq_api"));
+            summaryMap.put("Groq Response Parsing", PerformanceTracker.get("groq_parse"));
+            summaryMap.put("Issue Generation", PerformanceTracker.get("issue_gen"));
+            summaryMap.put("Database Save", PerformanceTracker.get("db_save"));
+            summaryMap.put("Report Generation", PerformanceTracker.get("report_gen"));
+ 
+            long sumOfComponents = 0;
+            for (long val : summaryMap.values()) {
+                sumOfComponents += val;
+            }
+            long unaccountedTime = totalScanTime - sumOfComponents;
+            summaryMap.put("Unaccounted Time", unaccountedTime);
+ 
+            List<Map.Entry<String, Long>> sortedMetrics = new ArrayList<>(summaryMap.entrySet());
+            sortedMetrics.sort((a, b) -> b.getValue().compareTo(a.getValue()));
+ 
+            System.out.println("================ PERFORMANCE SUMMARY ================");
+            System.out.println("[PERF] Pages Crawled = " + pagesCrawled);
+            for (Map.Entry<String, Long> entry : sortedMetrics) {
+                System.out.println("[PERF] " + entry.getKey() + " = " + entry.getValue() + " ms");
+            }
+            System.out.println("");
+            System.out.println("[PERF] Total Scan Time = " + totalScanTime + " ms");
+            System.out.println("=====================================================");
+ 
+            logInfo(scanId, "================ PERFORMANCE SUMMARY ================", finalLogWriter);
+            logInfo(scanId, "[PERF] Pages Crawled = " + pagesCrawled, finalLogWriter);
+            for (Map.Entry<String, Long> entry : sortedMetrics) {
+                logInfo(scanId, "[PERF] " + entry.getKey() + " = " + entry.getValue() + " ms", finalLogWriter);
+            }
+            logInfo(scanId, "", finalLogWriter);
+            logInfo(scanId, "[PERF] Total Scan Time = " + totalScanTime + " ms", finalLogWriter);
+            logInfo(scanId, "=====================================================", finalLogWriter);
 
             scanCancellationTokens.remove(scanId);
 
@@ -475,6 +651,7 @@ public class CrawlScanService {
                 finalLogWriter.close();
             }
             liveLogService.close(scanId);
+            PerformanceTracker.clear();
         }
     }
 
@@ -483,7 +660,11 @@ public class CrawlScanService {
     // -------------------------------------------------------------------------
     private void savePage(Scan scan, String url, String title, int statusCode) {
         try {
+            long dbStart = System.nanoTime();
             scannedPageRepository.save(new ScannedPage(scan, url, title, statusCode));
+            long dbTime = (System.nanoTime() - dbStart) / 1_000_000;
+            PerformanceTracker.add("db_save", dbTime);
+            System.out.println("[PERF] Database Save Time = " + dbTime + " ms");
         } catch (Exception e) {
             logger.error("Failed to save scanned page {}: {}", url, e.getMessage());
         }
@@ -493,13 +674,20 @@ public class CrawlScanService {
     // Spelling check + save issues
     // -------------------------------------------------------------------------
     private void runSpellingCheck(Document doc, JLanguageTool langTool,
-                                  String pageUrl, String pageTitle, String text,
-                                  List<RawFinding> rawFindings) {
-        if (text == null || text.trim().isEmpty()) return;
+            String pageUrl, String pageTitle, String text,
+            List<RawFinding> rawFindings) {
+        if (text == null || text.trim().isEmpty())
+            return;
 
         try {
+            long ltStart = System.nanoTime();
             List<RuleMatch> matches = langTool.check(text);
+            long ltEnd = System.nanoTime();
+            long ltTime = (ltEnd - ltStart) / 1_000_000;
+            PerformanceTracker.add("languagetool_processing", ltTime);
+            System.out.println("[PERF] LanguageTool Processing = " + ltTime + " ms");
 
+            long extractStart = System.nanoTime();
             for (RuleMatch match : matches) {
                 // Only spelling/typo categories
                 String catId = match.getRule().getCategory().getId().toString();
@@ -507,14 +695,17 @@ public class CrawlScanService {
                         || catId.contains("TYPOS")
                         || catId.contains("SPELLING")
                         || match.getRule().getId().contains("MORFOLOGIK");
-                if (!isSpelling) continue;
+                if (!isSpelling)
+                    continue;
 
                 int fromPos = match.getFromPos();
-                int toPos   = match.getToPos();
-                if (fromPos < 0 || toPos > text.length() || fromPos >= toPos) continue;
+                int toPos = match.getToPos();
+                if (fromPos < 0 || toPos > text.length() || fromPos >= toPos)
+                    continue;
 
                 String word = text.substring(fromPos, toPos).trim();
-                if (word.isEmpty()) continue;
+                if (word.isEmpty())
+                    continue;
 
                 // Skip pure numbers and very short tokens (length <= 1)
                 if (word.matches("\\d+") || word.length() <= 1) {
@@ -524,7 +715,8 @@ public class CrawlScanService {
                 String suggestions = match.getSuggestedReplacements().stream()
                         .limit(3)
                         .collect(Collectors.joining(", "));
-                String primarySuggestion = match.getSuggestedReplacements().isEmpty() ? "" : match.getSuggestedReplacements().get(0);
+                String primarySuggestion = match.getSuggestedReplacements().isEmpty() ? ""
+                        : match.getSuggestedReplacements().get(0);
 
                 // Space-Normalization Filter
                 if (isSpaceNormalizedEqual(word, primarySuggestion) || isSpaceNormalizedEqual(word, suggestions)) {
@@ -536,13 +728,18 @@ public class CrawlScanService {
 
                 rawFindings.add(new RawFinding(word, suggestions, sentence, pageUrl, pageTitle));
             }
+            long extractEnd = System.nanoTime();
+            long extractTime = (extractEnd - extractStart) / 1_000_000;
+            PerformanceTracker.add("candidate_extract", extractTime);
+            System.out.println("[PERF] Candidate Extraction Time = " + extractTime + " ms");
         } catch (Exception e) {
             logger.error("Spell-check error on {}: {}", pageUrl, e.getMessage());
         }
     }
 
     private static boolean isSpaceNormalizedEqual(String word, String suggestion) {
-        if (word == null || suggestion == null) return false;
+        if (word == null || suggestion == null)
+            return false;
         String w = word.replaceAll("\\s+", "").toLowerCase();
         String s = suggestion.replaceAll("\\s+", "").toLowerCase();
         return w.equals(s);
@@ -563,7 +760,8 @@ public class CrawlScanService {
                 startBoundary = i + 1;
                 break;
             }
-            if ((c == '.' || c == '?' || c == '!') && i + 1 < text.length() && Character.isWhitespace(text.charAt(i + 1))) {
+            if ((c == '.' || c == '?' || c == '!') && i + 1 < text.length()
+                    && Character.isWhitespace(text.charAt(i + 1))) {
                 startBoundary = i + 1;
                 break;
             }
@@ -576,7 +774,8 @@ public class CrawlScanService {
                 endBoundary = j;
                 break;
             }
-            if ((c == '.' || c == '?' || c == '!') && (j + 1 == text.length() || Character.isWhitespace(text.charAt(j + 1)))) {
+            if ((c == '.' || c == '?' || c == '!')
+                    && (j + 1 == text.length() || Character.isWhitespace(text.charAt(j + 1)))) {
                 endBoundary = j + 1;
                 break;
             }
@@ -592,15 +791,15 @@ public class CrawlScanService {
         if (hasStart || hasEnd) {
             int start = hasStart ? startBoundary : 0;
             int end = hasEnd ? endBoundary : text.length();
-            
+
             String prefix = text.substring(start, fromPos);
             String typo = text.substring(fromPos, toPos);
             String suffix = text.substring(toPos, end);
-            
+
             prefix = prefix.replace('\n', ' ').replace('\r', ' ').replaceAll("\\s+", " ").stripLeading();
             typo = typo.replace('\n', ' ').replace('\r', ' ').replaceAll("\\s+", " ");
             suffix = suffix.replace('\n', ' ').replace('\r', ' ').replaceAll("\\s+", " ").stripTrailing();
-            
+
             sentence = prefix + typo + suffix;
             wordIdx = prefix.length();
             wordEndIdx = wordIdx + typo.length();
@@ -608,15 +807,15 @@ public class CrawlScanService {
             // Fallback: 50 chars before, typo, 50 chars after
             int start = Math.max(0, fromPos - 50);
             int end = Math.min(text.length(), toPos + 50);
-            
+
             String prefix = text.substring(start, fromPos);
             String typo = text.substring(fromPos, toPos);
             String suffix = text.substring(toPos, end);
-            
+
             prefix = prefix.replace('\n', ' ').replace('\r', ' ').replaceAll("\\s+", " ").stripLeading();
             typo = typo.replace('\n', ' ').replace('\r', ' ').replaceAll("\\s+", " ");
             suffix = suffix.replace('\n', ' ').replace('\r', ' ').replaceAll("\\s+", " ").stripTrailing();
-            
+
             sentence = prefix + typo + suffix;
             wordIdx = prefix.length();
             wordEndIdx = wordIdx + typo.length();
@@ -634,11 +833,11 @@ public class CrawlScanService {
                 int startOffset = wordIdx - remaining / 2;
                 startOffset = Math.max(0, startOffset);
                 int endOffset = Math.min(sentence.length(), startOffset + 144);
-                
+
                 if (endOffset == sentence.length()) {
                     startOffset = Math.max(0, sentence.length() - 144);
                 }
-                
+
                 return "..." + sentence.substring(startOffset, endOffset).trim() + "...";
             }
         }
@@ -650,14 +849,14 @@ public class CrawlScanService {
     // Broadcast live progress to SSE clients
     // -------------------------------------------------------------------------
     private void broadcastProgress(Long scanId, AtomicInteger pages, AtomicLong words,
-                                    AtomicInteger issues, String currentUrl) {
+            AtomicInteger issues, String currentUrl) {
         Map<String, Object> progress = new HashMap<>();
-        progress.put("pagesScanned",   pages.get());
-        progress.put("wordsChecked",   words.get());
-        progress.put("totalIssues",    issues.get());
+        progress.put("pagesScanned", pages.get());
+        progress.put("wordsChecked", words.get());
+        progress.put("totalIssues", issues.get());
         progress.put("spellingIssues", issues.get());
-        progress.put("grammarIssues",  0);
-        progress.put("currentUrl",     currentUrl);
+        progress.put("grammarIssues", 0);
+        progress.put("currentUrl", currentUrl);
         liveLogService.sendProgress(scanId, progress);
     }
 
@@ -665,15 +864,16 @@ public class CrawlScanService {
     // robots.txt + sitemap helpers
     // -------------------------------------------------------------------------
     private void fetchAndParseRobotsTxt(String rootUrl, String host,
-                                         Set<String> disallowedPrefixes,
-                                         Set<String> sitemaps,
-                                         Long scanId, PrintWriter writer) {
+            Set<String> disallowedPrefixes,
+            Set<String> sitemaps,
+            Long scanId, PrintWriter writer) {
         try {
-            URI    uri        = new URI(rootUrl);
-            String robotsUrl  = uri.getScheme() + "://" + uri.getAuthority() + "/robots.txt";
+            URI uri = new URI(rootUrl);
+            String robotsUrl = uri.getScheme() + "://" + uri.getAuthority() + "/robots.txt";
             logInfo(scanId, "Fetching robots.txt: " + robotsUrl, writer);
-
+ 
             HttpClient client = buildHttpClient();
+            long robotsFetchStart = System.nanoTime();
             HttpResponse<String> resp = client.send(
                     HttpRequest.newBuilder()
                             .uri(URI.create(robotsUrl))
@@ -681,7 +881,11 @@ public class CrawlScanService {
                             .timeout(Duration.ofSeconds(8))
                             .GET().build(),
                     HttpResponse.BodyHandlers.ofString());
-
+            long robotsFetchTime = (System.nanoTime() - robotsFetchStart) / 1_000_000;
+            PerformanceTracker.add("robots_txt_fetch", robotsFetchTime);
+            System.out.println("[PERF] robots.txt Fetch = " + robotsFetchTime + " ms");
+            logInfo(scanId, "[PERF] robots.txt Fetch = " + robotsFetchTime + " ms", writer);
+ 
             if (resp.statusCode() == 200) {
                 boolean userAgentApplies = false;
                 for (String line : resp.body().split("\n")) {
@@ -691,10 +895,12 @@ public class CrawlScanService {
                         userAgentApplies = ua.equals("*") || ua.toLowerCase().contains("autochecker");
                     } else if (userAgentApplies && line.toLowerCase().startsWith("disallow:")) {
                         String path = line.substring(9).trim();
-                        if (!path.isEmpty()) disallowedPrefixes.add(path);
+                        if (!path.isEmpty())
+                            disallowedPrefixes.add(path);
                     } else if (line.toLowerCase().startsWith("sitemap:")) {
                         String sUrl = line.substring(8).trim();
-                        if (!sUrl.isEmpty()) sitemaps.add(sUrl);
+                        if (!sUrl.isEmpty())
+                            sitemaps.add(sUrl);
                     }
                 }
                 logInfo(scanId, "robots.txt parsed. Disallowed paths: " + disallowedPrefixes.size(), writer);
@@ -704,21 +910,22 @@ public class CrawlScanService {
         } catch (Exception e) {
             logInfo(scanId, "Could not fetch robots.txt: " + e.getMessage(), writer);
         }
-
         // Default sitemap
         if (sitemaps.isEmpty()) {
             try {
                 URI uri = new URI(rootUrl);
                 sitemaps.add(uri.getScheme() + "://" + uri.getAuthority() + "/sitemap.xml");
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
         }
-
+ 
         // Parse sitemaps
         Set<String> sitemapLinks = new HashSet<>();
         for (String sitemapUrl : sitemaps) {
             try {
                 logInfo(scanId, "Parsing sitemap: " + sitemapUrl, writer);
                 HttpClient client = buildHttpClient();
+                long sitemapFetchStart = System.nanoTime();
                 HttpResponse<String> resp = client.send(
                         HttpRequest.newBuilder()
                                 .uri(URI.create(sitemapUrl))
@@ -726,13 +933,18 @@ public class CrawlScanService {
                                 .timeout(Duration.ofSeconds(8))
                                 .GET().build(),
                         HttpResponse.BodyHandlers.ofString());
-
+                long sitemapFetchTime = (System.nanoTime() - sitemapFetchStart) / 1_000_000;
+                PerformanceTracker.add("sitemap_fetch", sitemapFetchTime);
+                System.out.println("[PERF] Sitemap Fetch = " + sitemapFetchTime + " ms");
+                logInfo(scanId, "[PERF] Sitemap Fetch = " + sitemapFetchTime + " ms", writer);
+ 
                 if (resp.statusCode() == 200) {
-                    Document doc  = Jsoup.parse(resp.body());
+                    Document doc = Jsoup.parse(resp.body());
                     Elements locs = doc.select("loc");
                     for (Element loc : locs) {
                         String locUrl = loc.text().trim();
-                        if (!locUrl.isEmpty()) sitemapLinks.add(locUrl);
+                        if (!locUrl.isEmpty())
+                            sitemapLinks.add(locUrl);
                     }
                     logInfo(scanId, "Sitemap yielded " + locs.size() + " URLs.", writer);
                 }
@@ -755,19 +967,25 @@ public class CrawlScanService {
     // URL filtering
     // -------------------------------------------------------------------------
     private boolean isInternalAndAllowed(String url, String targetHost, Set<String> disallowedPrefixes) {
-        if (url == null || url.isBlank()) return false;
-        if (!url.startsWith("http://") && !url.startsWith("https://")) return false;
+        if (url == null || url.isBlank())
+            return false;
+        if (!url.startsWith("http://") && !url.startsWith("https://"))
+            return false;
         try {
-            URI    uri  = new URI(url);
+            URI uri = new URI(url);
             String host = uri.getHost();
-            if (host == null || !host.equalsIgnoreCase(targetHost)) return false;
+            if (host == null || !host.equalsIgnoreCase(targetHost))
+                return false;
 
             String path = uri.getPath();
-            if (path == null) path = "/";
+            if (path == null)
+                path = "/";
 
             for (String prefix : disallowedPrefixes) {
-                if (prefix.equals("/")) return false;
-                if (path.startsWith(prefix)) return false;
+                if (prefix.equals("/"))
+                    return false;
+                if (path.startsWith(prefix))
+                    return false;
             }
             return true;
         } catch (Exception e) {
@@ -784,15 +1002,18 @@ public class CrawlScanService {
             extractTextRecursive(doc.body(), sb);
         }
         for (Element input : doc.select("input[placeholder], textarea[placeholder]")) {
-            if (isHidden(input)) continue;
+            if (isHidden(input))
+                continue;
             String ph = input.attr("placeholder").trim();
-            if (!ph.isEmpty()) sb.append(ph).append('\n');
+            if (!ph.isEmpty())
+                sb.append(ph).append('\n');
         }
         return sb.toString();
     }
 
     private void extractTextRecursive(Element element, StringBuilder sb) {
-        if (isHidden(element)) return;
+        if (isHidden(element))
+            return;
 
         boolean isBlock = element.isBlock() || element.tagName().equals("br");
 
@@ -819,11 +1040,13 @@ public class CrawlScanService {
     private boolean isHidden(Element el) {
         Element cur = el;
         while (cur != null) {
-            if (cur.hasClass("hidden") || cur.hasClass("d-none")) return true;
+            if (cur.hasClass("hidden") || cur.hasClass("d-none"))
+                return true;
             String style = cur.attr("style");
             if (style != null) {
                 String s = style.toLowerCase().replaceAll("\\s+", "");
-                if (s.contains("display:none") || s.contains("visibility:hidden")) return true;
+                if (s.contains("display:none") || s.contains("visibility:hidden"))
+                    return true;
             }
             cur = cur.parent();
         }
@@ -831,30 +1054,41 @@ public class CrawlScanService {
     }
 
     private long countWords(String text) {
-        if (text == null || text.isBlank()) return 0;
+        if (text == null || text.isBlank())
+            return 0;
         return text.split("\\s+").length;
     }
 
     private String normalizeBrokenWords(String text) {
-        if (text == null) return null;
+        if (text == null)
+            return null;
         String normalized = text;
-        
-        normalized = normalized.replaceAll("(?i)\\bt\\s+(hat|his|heir|he|hese|hem|hose|here|hen|hey|hink|hings|hing|hank|hanks)\\b", "t$1");
-        normalized = normalized.replaceAll("(?i)\\br\\s+(eliable|eliability|esponsibility|esponsible|equest|equests|esponse|esponses)\\b", "r$1");
-        normalized = normalized.replaceAll("(?i)\\bde\\s+(veloper|velopers|velopment|velopments|velop|velops|velping)\\b", "develop$1");
-        normalized = normalized.replaceAll("(?i)\\bper\\s+(formance|formances|form|forms|forming|formed)\\b", "perform$1");
-        normalized = normalized.replaceAll("(?i)\\bco\\s+(mpany|mpanies|mputer|mputers|de|des|ding|debase|debases)\\b", "co$1");
+
+        normalized = normalized.replaceAll(
+                "(?i)\\bt\\s+(hat|his|heir|he|hese|hem|hose|here|hen|hey|hink|hings|hing|hank|hanks)\\b", "t$1");
+        normalized = normalized.replaceAll(
+                "(?i)\\br\\s+(eliable|eliability|esponsibility|esponsible|equest|equests|esponse|esponses)\\b", "r$1");
+        normalized = normalized.replaceAll(
+                "(?i)\\bde\\s+(veloper|velopers|velopment|velopments|velop|velops|velping)\\b", "develop$1");
+        normalized = normalized.replaceAll("(?i)\\bper\\s+(formance|formances|form|forms|forming|formed)\\b",
+                "perform$1");
+        normalized = normalized.replaceAll("(?i)\\bco\\s+(mpany|mpanies|mputer|mputers|de|des|ding|debase|debases)\\b",
+                "co$1");
         normalized = normalized.replaceAll("(?i)\\bsoft\\s+(ware|wares)\\b", "software$1");
         normalized = normalized.replaceAll("(?i)\\bweb\\s+(site|sites|page|pages|master|masters)\\b", "web$1");
         normalized = normalized.replaceAll("(?i)\\bcode\\s+(base|bases)\\b", "codebase$1");
-        
+
         return normalized;
     }
 
     private static class CrawlTask {
         final String url;
-        final int    depth;
-        CrawlTask(String url, int depth) { this.url = url; this.depth = depth; }
+        final int depth;
+
+        CrawlTask(String url, int depth) {
+            this.url = url;
+            this.depth = depth;
+        }
     }
 
     public void clearInMemoryCaches() {
@@ -893,7 +1127,7 @@ public class CrawlScanService {
                 Path dirPath = Paths.get(directory);
                 Files.createDirectories(dirPath);
                 Path filePath = dirPath.resolve("audit_report_scan_" + scanId + ".txt");
-                
+
                 List<String> lines = new ArrayList<>();
                 lines.add("==================================================");
                 lines.add("AUDIT REPORT FOR SCAN SESSION #" + scanId);
@@ -915,14 +1149,14 @@ public class CrawlScanService {
                 lines.add("2. WORDS IGNORED BY DYNAMIC ENTITY LAYERS (" + ignoredByDynamic.size() + ")");
                 lines.add("==================================================");
                 ignoredByDynamic.entrySet().stream()
-                    .sorted(Map.Entry.comparingByKey())
-                    .forEach(entry -> lines.add(entry.getKey() + " -> " + entry.getValue()));
+                        .sorted(Map.Entry.comparingByKey())
+                        .forEach(entry -> lines.add(entry.getKey() + " -> " + entry.getValue()));
                 lines.add("");
                 lines.add("==================================================");
                 lines.add("3. WORDS REPORTED AS TYPOS (" + reported.size() + ")");
                 lines.add("==================================================");
                 reported.stream().sorted().forEach(lines::add);
-                
+
                 Files.write(filePath, lines);
             } catch (Exception e) {
                 System.err.println("Failed to write audit report: " + e.getMessage());

@@ -1,0 +1,41 @@
+==================================================
+AUDIT REPORT FOR SCAN SESSION #74
+Generated: 2026-06-11T16:07:38.892164800
+==================================================
+
+SUMMARY STATS:
+--------------------------------------------------
+Words Ignored by Static Dictionaries: 0
+Words Ignored by Dynamic Entity Layers: 9
+Words Reported as Spelling Mistakes: 10
+
+==================================================
+1. WORDS IGNORED BY STATIC DICTIONARIES (0)
+==================================================
+
+==================================================
+2. WORDS IGNORED BY DYNAMIC ENTITY LAYERS (9)
+==================================================
+Brijesh -> Validated as VALID by Groq API (Reason: appears to be a proper noun or person's name)
+DataSphereX -> Validated as VALID by Groq API (Reason: appears to be a proper noun or product name with mixed capitalization)
+Groq -> Validated as VALID by Groq API (Reason: may be a proper noun or unfamiliar term)
+JMeter -> Validated as VALID by Groq API (Reason: appears to be a proper noun or product name)
+Rutvik -> Validated as VALID by Groq API (Reason: appears to be a proper noun or person's name)
+TestNG -> Validated as VALID by Groq API (Reason: appears to be a proper noun or product name)
+UserFlowEngine -> Validated as VALID by Groq API (Reason: appears to be a proper noun or module/product name with mixed capitalization)
+XyloCore -> Validated as VALID by Groq API (Reason: appears to be a proper noun or product name with mixed capitalization)
+signin -> Validated as VALID by Groq API (Reason: may be a compound word or valid term with variable spacing)
+
+==================================================
+3. WORDS REPORTED AS TYPOS (10)
+==================================================
+acomodation
+applcation
+automtion
+dashbord
+definately
+frmaework
+goverment
+playwrigt
+recieve
+resposibility

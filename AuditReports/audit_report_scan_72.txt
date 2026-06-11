@@ -1,0 +1,41 @@
+==================================================
+AUDIT REPORT FOR SCAN SESSION #72
+Generated: 2026-06-11T15:58:33.085287700
+==================================================
+
+SUMMARY STATS:
+--------------------------------------------------
+Words Ignored by Static Dictionaries: 0
+Words Ignored by Dynamic Entity Layers: 9
+Words Reported as Spelling Mistakes: 10
+
+==================================================
+1. WORDS IGNORED BY STATIC DICTIONARIES (0)
+==================================================
+
+==================================================
+2. WORDS IGNORED BY DYNAMIC ENTITY LAYERS (9)
+==================================================
+Brijesh -> Validated as VALID by Groq API (Reason: It appears to be a proper noun or person name)
+DataSphereX -> Validated as VALID by Groq API (Reason: Treat it as valid since it appears to be a product or module name with mixed capitalization)
+Groq -> Validated as VALID by Groq API (Reason: It is uncertain whether this is a spelling mistake, and there is no clear correction)
+JMeter -> Validated as VALID by Groq API (Reason: Treat it as valid since it appears to be a product or module name with mixed capitalization)
+Rutvik -> Validated as VALID by Groq API (Reason: It appears to be a proper noun or person name)
+TestNG -> Validated as VALID by Groq API (Reason: Treat it as valid since it appears to be a product or module name with mixed capitalization)
+UserFlowEngine -> Validated as VALID by Groq API (Reason: Treat it as valid since it appears to be a product or module name with mixed capitalization)
+XyloCore -> Validated as VALID by Groq API (Reason: Treat it as valid since it appears to be a product or module name with mixed capitalization)
+signin -> Validated as VALID by Groq API (Reason: Ignore spacing variations when meaning remains unchanged)
+
+==================================================
+3. WORDS REPORTED AS TYPOS (10)
+==================================================
+acomodation
+applcation
+automtion
+dashbord
+definately
+frmaework
+goverment
+playwrigt
+recieve
+resposibility

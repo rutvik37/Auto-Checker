@@ -1,0 +1,41 @@
+==================================================
+AUDIT REPORT FOR SCAN SESSION #78
+Generated: 2026-06-11T16:12:24.276101500
+==================================================
+
+SUMMARY STATS:
+--------------------------------------------------
+Words Ignored by Static Dictionaries: 0
+Words Ignored by Dynamic Entity Layers: 9
+Words Reported as Spelling Mistakes: 10
+
+==================================================
+1. WORDS IGNORED BY STATIC DICTIONARIES (0)
+==================================================
+
+==================================================
+2. WORDS IGNORED BY DYNAMIC ENTITY LAYERS (9)
+==================================================
+Brijesh -> Validated as VALID by Groq API (Reason: Brijesh appears to be a proper noun, likely a person's name, so it is treated as valid.)
+DataSphereX -> Validated as VALID by Groq API (Reason: DataSphereX appears to be a product, framework, or database name with mixed capitalization, so it is treated as valid.)
+Groq -> Validated as VALID by Groq API (Reason: Although 'Groq' has spelling suggestions, without more context, it could be a proper noun or product name, so it is treated as valid.)
+JMeter -> Validated as VALID by Groq API (Reason: JMeter appears to be a proper noun, likely a tool or framework name, so it is treated as valid.)
+Rutvik -> Validated as VALID by Groq API (Reason: Rutvik appears to be a proper noun, likely a person's name, so it is treated as valid.)
+TestNG -> Validated as VALID by Groq API (Reason: TestNG appears to be a proper noun, likely a framework or tool name, so it is treated as valid.)
+UserFlowEngine -> Validated as VALID by Groq API (Reason: UserFlowEngine appears to be a module or feature name with characteristics of CamelCase or PascalCase, so it is treated as valid.)
+XyloCore -> Validated as VALID by Groq API (Reason: XyloCore appears to be a product or framework name with characteristics of CamelCase or PascalCase, so it is treated as valid unless there is overwhelming evidence of a spelling error.)
+signin -> Validated as VALID by Groq API (Reason: The word 'signin' can be considered valid as it is a common variation of 'sign in' with the words combined, especially in the context of software and user authentication.)
+
+==================================================
+3. WORDS REPORTED AS TYPOS (10)
+==================================================
+acomodation
+applcation
+automtion
+dashbord
+definately
+frmaework
+goverment
+playwrigt
+recieve
+resposibility

@@ -1,0 +1,41 @@
+==================================================
+AUDIT REPORT FOR SCAN SESSION #76
+Generated: 2026-06-11T16:09:46.894562400
+==================================================
+
+SUMMARY STATS:
+--------------------------------------------------
+Words Ignored by Static Dictionaries: 0
+Words Ignored by Dynamic Entity Layers: 9
+Words Reported as Spelling Mistakes: 10
+
+==================================================
+1. WORDS IGNORED BY STATIC DICTIONARIES (0)
+==================================================
+
+==================================================
+2. WORDS IGNORED BY DYNAMIC ENTITY LAYERS (9)
+==================================================
+Brijesh -> Validated as VALID by Groq API (Reason: appears to be a proper noun, possibly a person's name)
+DataSphereX -> Validated as VALID by Groq API (Reason: appears to be a proper noun, product or module name, following PascalCase naming convention)
+Groq -> Validated as VALID by Groq API (Reason: insufficient evidence to prove it is a spelling mistake, may be a proper noun or a brand name)
+JMeter -> Validated as VALID by Groq API (Reason: appears to be a proper noun, product or module name, following CamelCase naming convention)
+Rutvik -> Validated as VALID by Groq API (Reason: appears to be a proper noun, possibly a person's name)
+TestNG -> Validated as VALID by Groq API (Reason: appears to be a proper noun, product or module name, following PascalCase naming convention)
+UserFlowEngine -> Validated as VALID by Groq API (Reason: appears to be a proper noun, product or module name, following PascalCase naming convention)
+XyloCore -> Validated as VALID by Groq API (Reason: appears to be a proper noun, product or module name, following PascalCase naming convention)
+signin -> Validated as VALID by Groq API (Reason: can be a valid term, ignoring spacing variations, often appears in login contexts)
+
+==================================================
+3. WORDS REPORTED AS TYPOS (10)
+==================================================
+acomodation
+applcation
+automtion
+dashbord
+definately
+frmaework
+goverment
+playwrigt
+recieve
+resposibility

@@ -1,0 +1,41 @@
+==================================================
+AUDIT REPORT FOR SCAN SESSION #73
+Generated: 2026-06-11T15:59:57.363048500
+==================================================
+
+SUMMARY STATS:
+--------------------------------------------------
+Words Ignored by Static Dictionaries: 0
+Words Ignored by Dynamic Entity Layers: 9
+Words Reported as Spelling Mistakes: 10
+
+==================================================
+1. WORDS IGNORED BY STATIC DICTIONARIES (0)
+==================================================
+
+==================================================
+2. WORDS IGNORED BY DYNAMIC ENTITY LAYERS (9)
+==================================================
+Brijesh -> Validated as VALID by Groq API (Reason: Brijesh appears to be a person's name and does not show characteristics of a spelling mistake.)
+DataSphereX -> Validated as VALID by Groq API (Reason: DataSphereX appears to be a product or module name due to its mixed capitalization and 'X' suffix, and does not show characteristics of a spelling mistake.)
+Groq -> Validated as VALID by Groq API (Reason: Although 'Groq' is not a widely recognized term, without further context or evidence of a spelling error, it should be treated as a valid word, possibly a product, module, or feature name.)
+JMeter -> Validated as VALID by Groq API (Reason: JMeter appears to be a proper noun, likely a product or framework name, and does not show characteristics of a spelling mistake.)
+Rutvik -> Validated as VALID by Groq API (Reason: Rutvik appears to be a person's name and does not show characteristics of a spelling mistake.)
+TestNG -> Validated as VALID by Groq API (Reason: TestNG appears to be a proper noun, likely a product or framework name, and does not show characteristics of a spelling mistake.)
+UserFlowEngine -> Validated as VALID by Groq API (Reason: UserFlowEngine appears to be a module or feature name due to its PascalCase and does not show characteristics of a spelling mistake.)
+XyloCore -> Validated as VALID by Groq API (Reason: XyloCore appears to be a product or module name due to its mixed capitalization and does not show characteristics of a spelling mistake.)
+signin -> Validated as VALID by Groq API (Reason: The word 'signin' is a common variation of 'sign in' and is valid in the given context.)
+
+==================================================
+3. WORDS REPORTED AS TYPOS (10)
+==================================================
+acomodation
+applcation
+automtion
+dashbord
+definately
+frmaework
+goverment
+playwrigt
+recieve
+resposibility
