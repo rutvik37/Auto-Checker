@@ -125,21 +125,62 @@ public class SpellingValidator {
             return;
         }
 
-        // Send in batches of 50
         int batchSize = 50;
+        int[] requestsSent = new int[1];
+
         for (int i = 0; i < candidates.size(); i += batchSize) {
             List<SpellingCandidate> batch = candidates.subList(i, Math.min(i + batchSize, candidates.size()));
-            try {
-                callGroqForBatch(batch, apiKey, scanId, logWriter);
-            } catch (Exception e) {
-                logger.error("Error processing batch validation with Groq: {}", e.getMessage(), e);
-                logError(scanId, "Batch validation error: " + e.getMessage(), logWriter);
+            validateWithFallback(batch, apiKey, scanId, logWriter, requestsSent);
+        }
+
+        int totalCandidates = candidates.size();
+        int totalRequestsSent = requestsSent[0];
+        int loggedBatchSize = Math.min(batchSize, totalCandidates);
+        int candidatesPerRequest = totalRequestsSent > 0
+                ? (int) Math.round((double) totalCandidates / totalRequestsSent)
+                : 0;
+
+        System.out.println("[GROQ] Total Candidates = " + totalCandidates);
+        System.out.println("[GROQ] Batch Size = " + loggedBatchSize);
+        System.out.println("[GROQ] Total Requests Sent = " + totalRequestsSent);
+        System.out.println("[GROQ] Candidates Per Request = " + candidatesPerRequest);
+
+        logInfo(scanId, "[GROQ] Total Candidates = " + totalCandidates, logWriter);
+        logInfo(scanId, "[GROQ] Batch Size = " + loggedBatchSize, logWriter);
+        logInfo(scanId, "[GROQ] Total Requests Sent = " + totalRequestsSent, logWriter);
+        logInfo(scanId, "[GROQ] Candidates Per Request = " + candidatesPerRequest, logWriter);
+    }
+
+    private void validateWithFallback(List<SpellingCandidate> batch, String apiKey, Long scanId, PrintWriter logWriter,
+            int[] requestsSent) {
+        if (batch.isEmpty()) {
+            return;
+        }
+        try {
+            requestsSent[0]++;
+            callGroqForBatch(batch, apiKey, scanId, logWriter);
+        } catch (Exception e) {
+            logger.warn("Groq validation failed for batch of size {}: {}. Retrying with fallback...", batch.size(),
+                    e.getMessage());
+            logError(scanId, "Groq validation failed for batch of size " + batch.size() + ": " + e.getMessage()
+                    + ". Retrying with smaller batch...", logWriter);
+
+            if (batch.size() <= 1) {
+                // Cannot split further, mark remaining as PENDING
                 for (SpellingCandidate c : batch) {
                     c.setDecision("PENDING");
                     c.setReason("Groq call error: " + e.getMessage());
                     saveToCache(c.getWord(), c.getSuggestion(), "PENDING", "Groq call error: " + e.getMessage());
                 }
+                return;
             }
+
+            int half = Math.max(1, batch.size() / 2);
+            List<SpellingCandidate> batch1 = batch.subList(0, half);
+            List<SpellingCandidate> batch2 = batch.subList(half, batch.size());
+
+            validateWithFallback(batch1, apiKey, scanId, logWriter, requestsSent);
+            validateWithFallback(batch2, apiKey, scanId, logWriter, requestsSent);
         }
     }
 
