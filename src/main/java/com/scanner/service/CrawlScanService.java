@@ -53,6 +53,12 @@ public class CrawlScanService {
     @Value("${app.projects-dir:C:/Users/suppo/Auto-Checker/Projects}")
     private String projectsDir;
 
+    @Value("${crawler.parallel.enabled:true}")
+    private boolean parallelEnabled;
+
+    @Value("${crawler.parallel.workers:5}")
+    private int parallelWorkers;
+
     @Autowired
     public CrawlScanService(ProjectRepository projectRepository,
             ScanRepository scanRepository,
@@ -203,104 +209,369 @@ public class CrawlScanService {
             logInfo(scanId, "LanguageTool spell-checker initialised.", finalLogWriter);
 
             long crawlLoopStart = System.nanoTime();
-            while (!crawlQueue.isEmpty()
-                    && !scanCancellationTokens.getOrDefault(scanId, false)) {
+            AtomicInteger pagesQueued = new AtomicInteger(0);
+            AtomicInteger maxConcurrentWorkers = new AtomicInteger(0);
+            AtomicInteger currentRunningWorkers = new AtomicInteger(0);
 
-                // Respect max-pages limit
-                if (scan.getMaxPages() != null
-                        && pagesScannedCount.get() >= scan.getMaxPages()) {
-                    logInfo(scanId, "Reached max page limit (" + scan.getMaxPages() + "). Stopping crawler.",
-                            finalLogWriter);
-                    break;
-                }
+            if (parallelEnabled) {
+                int workersCount = parallelWorkers > 0 ? parallelWorkers : 5;
+                logInfo(scanId, "Starting parallel crawler with " + workersCount + " workers.", finalLogWriter);
 
-                CrawlTask task = crawlQueue.poll();
-                if (task == null)
-                    break;
+                // Initialize thread-safe collections
+                Queue<CrawlTask> concurrentQueue = new java.util.concurrent.ConcurrentLinkedQueue<>();
+                Set<String> concurrentVisited = java.util.concurrent.ConcurrentHashMap.newKeySet();
+                List<RawFinding> concurrentFindings = Collections.synchronizedList(new ArrayList<>());
 
-                String currentUrl = task.url;
-                int currentDepth = task.depth;
-
-                if (!visitedUrls.add(currentUrl)) {
-                    continue; // already visited
-                }
-
-                logInfo(scanId, "Scanning: " + currentUrl + " (depth=" + currentDepth + ")", finalLogWriter);
-
-                try {
-                    org.jsoup.Connection conn = Jsoup.connect(currentUrl)
-                            .userAgent("Mozilla/5.0 AutoChecker/1.0")
-                            .timeout(15000);
-
-                    long fetchStart = System.nanoTime();
-                    org.jsoup.Connection.Response response = conn.execute();
-                    long fetchEnd = System.nanoTime();
-                    long fetchTime = (fetchEnd - fetchStart) / 1_000_000;
-                    PerformanceTracker.add("page_download", fetchTime);
-                    System.out.println("[PERF] Page Download = " + fetchTime + " ms");
-                    logInfo(scanId, "[PERF] Page Download = " + fetchTime + " ms", finalLogWriter);
-
-                    long parseStart = System.nanoTime();
-                    Document doc = response.parse();
-                    long parseEnd = System.nanoTime();
-                    long parseTime = (parseEnd - parseStart) / 1_000_000;
-                    PerformanceTracker.add("html_parse", parseTime);
-                    System.out.println("[PERF] HTML Parsing = " + parseTime + " ms");
-                    logInfo(scanId, "[PERF] HTML Parsing = " + parseTime + " ms", finalLogWriter);
-
-                    long textExtractStart = System.nanoTime();
-                    String title = doc.title();
-                    doc.select("script, style, noscript, svg, iframe").remove();
-
-                    String extractedText = extractVisibleText(doc);
-                    extractedText = normalizeBrokenWords(extractedText);
-                    long wordCount = countWords(extractedText);
-                    long textExtractTime = (System.nanoTime() - textExtractStart) / 1_000_000;
-                    PerformanceTracker.add("text_extract", textExtractTime);
-                    System.out.println("[PERF] Text Extraction = " + textExtractTime + " ms");
-                    logInfo(scanId, "[PERF] Text Extraction = " + textExtractTime + " ms", finalLogWriter);
-                    
-                    wordsCheckedCount.addAndGet(wordCount);
-
-                    savePage(scan, currentUrl, title, 200);
-                    pagesScannedCount.incrementAndGet();
-
-                    // Collect spelling findings in raw list
-                    runSpellingCheck(doc, langTool, currentUrl, title, extractedText, rawFindings, scanId, finalLogWriter);
-
-                    // Broadcast live progress (issues count remains 0 until processed later)
-                    broadcastProgress(scanId, pagesScannedCount, wordsCheckedCount, totalIssuesCount, currentUrl);
-
-                    // ---- Discover internal links ----
-                    if (scan.getCrawlDepth() == null || currentDepth < scan.getCrawlDepth()) {
-                        Elements links = doc.select("a[href]");
-                        for (Element link : links) {
-                            String absUrl = link.absUrl("href");
-                            int hashIdx = absUrl.indexOf('#');
-                            if (hashIdx != -1)
-                                absUrl = absUrl.substring(0, hashIdx);
-                            if (absUrl.endsWith("/"))
-                                absUrl = absUrl.substring(0, absUrl.length() - 1);
-
-                            if (isInternalAndAllowed(absUrl, targetHost, robotsDisallowedPrefixes)
-                                    && !visitedUrls.contains(absUrl)) {
-                                crawlQueue.add(new CrawlTask(absUrl, currentDepth + 1));
+                // Seed sitemap or home page
+                if (!sitemapUrls.isEmpty()) {
+                    logInfo(scanId, "Found " + sitemapUrls.size() + " URLs in sitemap.xml – queuing.", finalLogWriter);
+                    for (String sUrl : sitemapUrls) {
+                        if (isInternalAndAllowed(sUrl, targetHost, robotsDisallowedPrefixes)) {
+                            if (concurrentVisited.add(sUrl)) {
+                                concurrentQueue.add(new CrawlTask(sUrl, 0));
+                                pagesQueued.incrementAndGet();
                             }
                         }
                     }
+                }
+                if (concurrentQueue.isEmpty()) {
+                    if (concurrentVisited.add(baseUrlStr)) {
+                        concurrentQueue.add(new CrawlTask(baseUrlStr, 0));
+                        pagesQueued.incrementAndGet();
+                    }
+                }
 
-                } catch (Exception pageEx) {
-                    logError(scanId, "Error processing " + currentUrl + ": " + pageEx.getMessage(), finalLogWriter);
-                    savePage(scan, currentUrl, "Error", 500);
-                    pagesScannedCount.incrementAndGet();
-                    broadcastProgress(scanId, pagesScannedCount, wordsCheckedCount, totalIssuesCount, currentUrl);
+                // Run workers in an ExecutorService
+                java.util.concurrent.ExecutorService executor = java.util.concurrent.Executors.newFixedThreadPool(workersCount);
+                AtomicInteger activeWorkers = new AtomicInteger(0);
+
+                // For parallel metrics
+                AtomicLong parallelPageDownloadTime = new AtomicLong(0);
+                AtomicLong parallelHtmlParseTime = new AtomicLong(0);
+                AtomicLong parallelTextExtractTime = new AtomicLong(0);
+                AtomicLong parallelLtProcessingTime = new AtomicLong(0);
+                AtomicLong parallelCandidateExtractTime = new AtomicLong(0);
+
+                for (int w = 0; w < workersCount; w++) {
+                    executor.submit(() -> {
+                        while (!scanCancellationTokens.getOrDefault(scanId, false)) {
+                            CrawlTask task = null;
+                            synchronized (concurrentQueue) {
+                                if (concurrentQueue.isEmpty() && activeWorkers.get() == 0) {
+                                    concurrentQueue.notifyAll();
+                                    break;
+                                }
+                                while (concurrentQueue.isEmpty()) {
+                                    if (activeWorkers.get() == 0) {
+                                        break;
+                                    }
+                                    try {
+                                        concurrentQueue.wait(100);
+                                    } catch (InterruptedException e) {
+                                        Thread.currentThread().interrupt();
+                                        break;
+                                    }
+                                    if (concurrentQueue.isEmpty() && activeWorkers.get() == 0) {
+                                        break;
+                                    }
+                                }
+                                task = concurrentQueue.poll();
+                            }
+
+                            if (task == null) {
+                                break;
+                            }
+
+                            activeWorkers.incrementAndGet();
+                            int running = currentRunningWorkers.incrementAndGet();
+                            int maxVal;
+                            do {
+                                maxVal = maxConcurrentWorkers.get();
+                                if (running <= maxVal) {
+                                    break;
+                                }
+                            } while (!maxConcurrentWorkers.compareAndSet(maxVal, running));
+
+                            try {
+                                if (scan.getMaxPages() != null && pagesScannedCount.get() >= scan.getMaxPages()) {
+                                    synchronized (concurrentQueue) {
+                                        concurrentQueue.clear();
+                                        concurrentQueue.notifyAll();
+                                    }
+                                    break;
+                                }
+
+                                String currentUrl = task.url;
+                                int currentDepth = task.depth;
+
+                                logInfo(scanId, "Scanning: " + currentUrl + " (depth=" + currentDepth + ")", finalLogWriter);
+
+                                try {
+                                    org.jsoup.Connection conn = Jsoup.connect(currentUrl)
+                                            .userAgent("Mozilla/5.0 AutoChecker/1.0")
+                                            .timeout(15000);
+
+                                    long fetchStart = System.nanoTime();
+                                    org.jsoup.Connection.Response response = conn.execute();
+                                    long fetchTime = (System.nanoTime() - fetchStart) / 1_000_000;
+                                    PerformanceTracker.add("page_download", fetchTime);
+                                    System.out.println("[PERF] Page Download = " + fetchTime + " ms");
+
+                                    long parseStart = System.nanoTime();
+                                    Document doc = response.parse();
+                                    long parseTime = (System.nanoTime() - parseStart) / 1_000_000;
+                                    PerformanceTracker.add("html_parse", parseTime);
+                                    System.out.println("[PERF] HTML Parsing = " + parseTime + " ms");
+
+                                    long textExtractStart = System.nanoTime();
+                                    String title = doc.title();
+                                    doc.select("script, style, noscript, svg, iframe").remove();
+
+                                    String extractedText = extractVisibleText(doc);
+                                    extractedText = normalizeBrokenWords(extractedText);
+                                    long wordCount = countWords(extractedText);
+                                    long textExtractTime = (System.nanoTime() - textExtractStart) / 1_000_000;
+                                    PerformanceTracker.add("text_extract", textExtractTime);
+                                    System.out.println("[PERF] Text Extraction = " + textExtractTime + " ms");
+
+                                    wordsCheckedCount.addAndGet(wordCount);
+
+                                    savePage(scan, currentUrl, title, 200);
+                                    pagesScannedCount.incrementAndGet();
+
+                                    // Synchronize spell checking on JLanguageTool
+                                    synchronized (langTool) {
+                                        runSpellingCheck(doc, langTool, currentUrl, title, extractedText, concurrentFindings, scanId, finalLogWriter);
+                                    }
+
+                                    broadcastProgress(scanId, pagesScannedCount, wordsCheckedCount, totalIssuesCount, currentUrl);
+
+                                    // Discover internal links
+                                    if (scan.getCrawlDepth() == null || currentDepth < scan.getCrawlDepth()) {
+                                        Elements links = doc.select("a[href]");
+                                        for (Element link : links) {
+                                            String absUrl = link.absUrl("href");
+                                            int hashIdx = absUrl.indexOf('#');
+                                            if (hashIdx != -1)
+                                                absUrl = absUrl.substring(0, hashIdx);
+                                            if (absUrl.endsWith("/"))
+                                                absUrl = absUrl.substring(0, absUrl.length() - 1);
+
+                                            if (isInternalAndAllowed(absUrl, targetHost, robotsDisallowedPrefixes)) {
+                                                synchronized (concurrentQueue) {
+                                                    if (concurrentVisited.add(absUrl)) {
+                                                        concurrentQueue.add(new CrawlTask(absUrl, currentDepth + 1));
+                                                        pagesQueued.incrementAndGet();
+                                                        concurrentQueue.notifyAll();
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                } catch (Exception pageEx) {
+                                    logError(scanId, "Error processing " + currentUrl + ": " + pageEx.getMessage(), finalLogWriter);
+                                    savePage(scan, currentUrl, "Error", 500);
+                                    pagesScannedCount.incrementAndGet();
+                                    broadcastProgress(scanId, pagesScannedCount, wordsCheckedCount, totalIssuesCount, currentUrl);
+                                }
+                            } finally {
+                                // Extract thread-local performance metrics
+                                long downloadTime = PerformanceTracker.get("page_download");
+                                long htmlParseTime = PerformanceTracker.get("html_parse");
+                                long textExtractTime = PerformanceTracker.get("text_extract");
+                                long ltProcessingTime = PerformanceTracker.get("languagetool_processing");
+                                long candidateExtractTime = PerformanceTracker.get("candidate_extract");
+
+                                parallelPageDownloadTime.addAndGet(downloadTime);
+                                parallelHtmlParseTime.addAndGet(htmlParseTime);
+                                parallelTextExtractTime.addAndGet(textExtractTime);
+                                parallelLtProcessingTime.addAndGet(ltProcessingTime);
+                                parallelCandidateExtractTime.addAndGet(candidateExtractTime);
+
+                                PerformanceTracker.clear();
+
+                                currentRunningWorkers.decrementAndGet();
+                                activeWorkers.decrementAndGet();
+                                synchronized (concurrentQueue) {
+                                    concurrentQueue.notifyAll();
+                                }
+                            }
+                        }
+                    });
+                }
+
+                executor.shutdown();
+                try {
+                    executor.awaitTermination(30, java.util.concurrent.TimeUnit.MINUTES);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+
+                // Copy findings back to rawFindings
+                rawFindings.addAll(concurrentFindings);
+
+                // Add accumulated performance metrics to the main thread's PerformanceTracker
+                PerformanceTracker.add("page_download", parallelPageDownloadTime.get());
+                PerformanceTracker.add("html_parse", parallelHtmlParseTime.get());
+                PerformanceTracker.add("text_extract", parallelTextExtractTime.get());
+                PerformanceTracker.add("languagetool_processing", parallelLtProcessingTime.get());
+                PerformanceTracker.add("candidate_extract", parallelCandidateExtractTime.get());
+
+            } else {
+                // Serial crawling logic (Original Code)
+                logInfo(scanId, "Starting serial crawler.", finalLogWriter);
+                
+                // Seed crawl queue
+                if (!sitemapUrls.isEmpty()) {
+                    logInfo(scanId, "Found " + sitemapUrls.size() + " URLs in sitemap.xml – queuing.", finalLogWriter);
+                    for (String sUrl : sitemapUrls) {
+                        if (isInternalAndAllowed(sUrl, targetHost, robotsDisallowedPrefixes)) {
+                            if (visitedUrls.add(sUrl)) {
+                                crawlQueue.add(new CrawlTask(sUrl, 0));
+                                pagesQueued.incrementAndGet();
+                            }
+                        }
+                    }
+                }
+                if (crawlQueue.isEmpty()) {
+                    if (visitedUrls.add(baseUrlStr)) {
+                        crawlQueue.add(new CrawlTask(baseUrlStr, 0));
+                        pagesQueued.incrementAndGet();
+                    }
+                }
+
+                maxConcurrentWorkers.set(1);
+                currentRunningWorkers.set(1);
+
+                while (!crawlQueue.isEmpty()
+                        && !scanCancellationTokens.getOrDefault(scanId, false)) {
+
+                    if (scan.getMaxPages() != null
+                            && pagesScannedCount.get() >= scan.getMaxPages()) {
+                        logInfo(scanId, "Reached max page limit (" + scan.getMaxPages() + "). Stopping crawler.",
+                                finalLogWriter);
+                        break;
+                    }
+
+                    CrawlTask task = crawlQueue.poll();
+                    if (task == null)
+                        break;
+
+                    String currentUrl = task.url;
+                    int currentDepth = task.depth;
+
+                    logInfo(scanId, "Scanning: " + currentUrl + " (depth=" + currentDepth + ")", finalLogWriter);
+
+                    try {
+                        org.jsoup.Connection conn = Jsoup.connect(currentUrl)
+                                .userAgent("Mozilla/5.0 AutoChecker/1.0")
+                                .timeout(15000);
+
+                        long fetchStart = System.nanoTime();
+                        org.jsoup.Connection.Response response = conn.execute();
+                        long fetchEnd = System.nanoTime();
+                        long fetchTime = (fetchEnd - fetchStart) / 1_000_000;
+                        PerformanceTracker.add("page_download", fetchTime);
+                        System.out.println("[PERF] Page Download = " + fetchTime + " ms");
+                        logInfo(scanId, "[PERF] Page Download = " + fetchTime + " ms", finalLogWriter);
+
+                        long parseStart = System.nanoTime();
+                        Document doc = response.parse();
+                        long parseEnd = System.nanoTime();
+                        long parseTime = (parseEnd - parseStart) / 1_000_000;
+                        PerformanceTracker.add("html_parse", parseTime);
+                        System.out.println("[PERF] HTML Parsing = " + parseTime + " ms");
+                        logInfo(scanId, "[PERF] HTML Parsing = " + parseTime + " ms", finalLogWriter);
+
+                        long textExtractStart = System.nanoTime();
+                        String title = doc.title();
+                        doc.select("script, style, noscript, svg, iframe").remove();
+
+                        String extractedText = extractVisibleText(doc);
+                        extractedText = normalizeBrokenWords(extractedText);
+                        long wordCount = countWords(extractedText);
+                        long textExtractTime = (System.nanoTime() - textExtractStart) / 1_000_000;
+                        PerformanceTracker.add("text_extract", textExtractTime);
+                        System.out.println("[PERF] Text Extraction = " + textExtractTime + " ms");
+                        logInfo(scanId, "[PERF] Text Extraction = " + textExtractTime + " ms", finalLogWriter);
+                        
+                        wordsCheckedCount.addAndGet(wordCount);
+
+                        savePage(scan, currentUrl, title, 200);
+                        pagesScannedCount.incrementAndGet();
+
+                        // Collect spelling findings
+                        runSpellingCheck(doc, langTool, currentUrl, title, extractedText, rawFindings, scanId, finalLogWriter);
+
+                        broadcastProgress(scanId, pagesScannedCount, wordsCheckedCount, totalIssuesCount, currentUrl);
+
+                        // Discover internal links
+                        if (scan.getCrawlDepth() == null || currentDepth < scan.getCrawlDepth()) {
+                            Elements links = doc.select("a[href]");
+                            for (Element link : links) {
+                                String absUrl = link.absUrl("href");
+                                int hashIdx = absUrl.indexOf('#');
+                                if (hashIdx != -1)
+                                    absUrl = absUrl.substring(0, hashIdx);
+                                if (absUrl.endsWith("/"))
+                                    absUrl = absUrl.substring(0, absUrl.length() - 1);
+
+                                if (isInternalAndAllowed(absUrl, targetHost, robotsDisallowedPrefixes)) {
+                                    if (visitedUrls.add(absUrl)) {
+                                        crawlQueue.add(new CrawlTask(absUrl, currentDepth + 1));
+                                        pagesQueued.incrementAndGet();
+                                    }
+                                }
+                            }
+                        }
+
+                    } catch (Exception pageEx) {
+                        logError(scanId, "Error processing " + currentUrl + ": " + pageEx.getMessage(), finalLogWriter);
+                        savePage(scan, currentUrl, "Error", 500);
+                        pagesScannedCount.incrementAndGet();
+                        broadcastProgress(scanId, pagesScannedCount, wordsCheckedCount, totalIssuesCount, currentUrl);
+                    }
                 }
             }
+
             long crawlLoopEnd = System.nanoTime();
             long crawlLoopTime = (crawlLoopEnd - crawlLoopStart) / 1_000_000;
             PerformanceTracker.add("total_crawl", crawlLoopTime);
             System.out.println("[PERF] Total Crawl Time = " + crawlLoopTime + " ms");
             logInfo(scanId, "[PERF] Total Crawl Time = " + crawlLoopTime + " ms", finalLogWriter);
+
+            // Log crawler metrics
+            int workersUsed = parallelEnabled ? (parallelWorkers > 0 ? parallelWorkers : 5) : 1;
+            int totalPagesQueued = pagesQueued.get();
+            int totalPagesProcessed = pagesScannedCount.get();
+            int maxWorkersObserved = maxConcurrentWorkers.get();
+
+            System.out.println("[CRAWLER] Parallel Workers = " + workersUsed);
+            System.out.println("[CRAWLER] Pages Queued = " + totalPagesQueued);
+            System.out.println("[CRAWLER] Pages Processed = " + totalPagesProcessed);
+            System.out.println("[CRAWLER] Max Concurrent Workers = " + maxWorkersObserved);
+
+            logInfo(scanId, "[CRAWLER] Parallel Workers = " + workersUsed, finalLogWriter);
+            logInfo(scanId, "[CRAWLER] Pages Queued = " + totalPagesQueued, finalLogWriter);
+            logInfo(scanId, "[CRAWLER] Pages Processed = " + totalPagesProcessed, finalLogWriter);
+            logInfo(scanId, "[CRAWLER] Max Concurrent Workers = " + maxWorkersObserved, finalLogWriter);
+
+            System.out.println("================ CRAWLER SUMMARY ================");
+            System.out.println();
+            System.out.println("[CRAWLER] Parallel Workers = " + workersUsed);
+            System.out.println("[CRAWLER] Pages Processed = " + totalPagesProcessed);
+            System.out.println("[CRAWLER] Total Crawl Time = " + crawlLoopTime + " ms");
+            System.out.println();
+            System.out.println("=================================================");
+
+            logInfo(scanId, "================ CRAWLER SUMMARY ================", finalLogWriter);
+            logInfo(scanId, "", finalLogWriter);
+            logInfo(scanId, "[CRAWLER] Parallel Workers = " + workersUsed, finalLogWriter);
+            logInfo(scanId, "[CRAWLER] Pages Processed = " + totalPagesProcessed, finalLogWriter);
+            logInfo(scanId, "[CRAWLER] Total Crawl Time = " + crawlLoopTime + " ms", finalLogWriter);
+            logInfo(scanId, "", finalLogWriter);
+            logInfo(scanId, "=================================================", finalLogWriter);
 
             // ---- Deduplicate findings globally ----
             logInfo(scanId, "Finished crawling. Total findings collected: " + rawFindings.size() + ". Deduplicating...",
