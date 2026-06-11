@@ -1,0 +1,200 @@
+==================================================
+AUDIT REPORT FOR SCAN SESSION #95
+Generated: 2026-06-11T17:29:50.775626200
+==================================================
+
+SUMMARY STATS:
+--------------------------------------------------
+Words Ignored by Static Dictionaries: 0
+Words Ignored by Dynamic Entity Layers: 158
+Words Reported as Spelling Mistakes: 20
+
+==================================================
+1. WORDS IGNORED BY STATIC DICTIONARIES (0)
+==================================================
+
+==================================================
+2. WORDS IGNORED BY DYNAMIC ENTITY LAYERS (158)
+==================================================
+AETMOS -> Validated as VALID by Groq API (Reason: It's a valid company or product name, although it may be unfamiliar.)
+ASPICE -> Validated as VALID by Groq API (Reason: It's a valid term for a software development process.)
+Agentic -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+Aldus -> Validated as VALID by Groq API (Reason: It is a proper noun, specifically a brand or company name.)
+Algolia -> Validated as VALID by Groq API (Reason: It's a valid company name and search-as-a-service platform.)
+AlloyDB -> Validated as VALID by Groq API (Reason: AlloyDB appears to be a proper noun, specifically a product or service name, which is valid in this context.)
+Ap -> Validated as VALID by Groq API (Reason: It's a valid abbreviation for 'application'.)
+Apigee -> Validated as VALID by Groq API (Reason: Apigee is identified as a proper noun, specifically a product or service name, making it valid in this context.)
+Armbrister -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+Autoscaler -> Validated as VALID by Groq API (Reason: Autoscaler appears to be a proper noun or a term related to cloud services, making it valid in this context.)
+Budget‑Friendly -> Validated as VALID by Groq API (Reason: It's a valid term, and the hyphen is correctly used.)
+CMEK -> Validated as VALID by Groq API (Reason: CMEK appears to be an acronym, possibly for Customer Managed Encryption Key, which is valid in the context of cloud security.)
+CabOn -> Validated as VALID by Groq API (Reason: It contains characteristics of a product or module identifier, such as mixed capitalization.)
+CabsOn -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+Chandrashekar -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+Cognishen -> Validated as VALID by Groq API (Reason: It's a valid company name.)
+Colab -> Validated as VALID by Groq API (Reason: It is a proper noun, specifically a brand or product name.)
+Contentful -> Validated as VALID by Groq API (Reason: It is a proper noun, specifically a brand or product name.)
+DApp -> Validated as VALID by Groq API (Reason: DApp is recognized as an acronym, specifically for Decentralized Application, making it valid in this context.)
+DApps -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+Dataplex -> Validated as VALID by Groq API (Reason: Dataplex is recognized as a proper noun, specifically a product or service name, making it valid in this context.)
+Decentralised -> Validated as VALID by Groq API (Reason: It's a valid word, commonly used in British English.)
+Derema -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+DevSecOps -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+EmberJs -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+Entra -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+ExpressJS -> Validated as VALID by Groq API (Reason: ExpressJS is recognized as a proper noun, specifically a framework or library name, making it valid in this context.)
+FHIR -> Validated as VALID by Groq API (Reason: It's a valid term for Fast Healthcare Interoperability Resources.)
+Farrer -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+Footages -> Validated as VALID by Groq API (Reason: It is a valid noun form, and the sentence context supports its use.)
+Fratney -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+Funly -> Validated as VALID by Groq API (Reason: It's a valid company or product name, although it may be unfamiliar.)
+Garyson -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+Hayabuchi -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+IAM-based -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+Ingenico -> Validated as VALID by Groq API (Reason: It's a valid company name.)
+Ipsum -> Validated as VALID by Groq API (Reason: It is a proper noun, specifically a well-known term in the printing industry.)
+Istio -> Validated as VALID by Groq API (Reason: Istio is recognized as a proper noun, specifically a product or service name, which is valid in this context.)
+Jatin -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+KEDA-driven -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+Kew -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+Letraset -> Validated as VALID by Groq API (Reason: It is a proper noun, specifically a brand or product name.)
+Lonc -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+Lorem -> Validated as VALID by Groq API (Reason: It is a proper noun, specifically a well-known term in the printing industry.)
+MEVN -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+MIGs -> Validated as VALID by Groq API (Reason: MIGs appears to be an acronym or proper noun in the context of GKE and Cloud, making it valid.)
+MLaaS -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+Matraman -> Validated as VALID by Groq API (Reason: Without more context, it is uncertain whether this is a typo or a proper noun.)
+Modernisation -> Validated as VALID by Groq API (Reason: Modernisation is a valid spelling variant, particularly in British English, and does not constitute a spelling mistake.)
+Moffett -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+Monaca -> Validated as VALID by Groq API (Reason: Monaca appears to be a proper noun, possibly a product or framework name, which is valid in this context.)
+Mongo -> Validated as VALID by Groq API (Reason: It is a proper noun, specifically a brand or product name.)
+Murtaza -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+Musikaa -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+NavtiveScript -> Validated as VALID by Groq API (Reason: It's a valid term, although it may be a typo and the correct term is 'NativeScript'.)
+Nearline -> Validated as VALID by Groq API (Reason: Nearline appears to be a proper noun or a term related to cloud storage services, making it valid in this context.)
+NestJS -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+Non‑Disclosure -> Validated as VALID by Groq API (Reason: It's a valid term, and the hyphen is correctly used.)
+Nuxt -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+NuxtJS -> Validated as VALID by Groq API (Reason: It's a valid framework name for building server-side rendered Vue.js applications.)
+OTAs -> Validated as VALID by Groq API (Reason: It's a valid term for Online Travel Agencies.)
+Omni-channel -> Validated as VALID by Groq API (Reason: It is a valid term, and the hyphenation is acceptable in this context.)
+On‑Time -> Validated as VALID by Groq API (Reason: It's a valid term, and the hyphen is correctly used.)
+Opencart -> Validated as VALID by Groq API (Reason: Opencart is recognized as a proper noun, specifically a product or service name, making it valid in this context.)
+Optimisation -> Validated as VALID by Groq API (Reason: Optimisation is a valid spelling variant, especially in British English, and is considered valid in this context.)
+PHIPA -> Validated as VALID by Groq API (Reason: It's a valid term for Personal Health Information Protection Act.)
+PageMaker -> Validated as VALID by Groq API (Reason: It is a proper noun, specifically a product or software name.)
+Panchal -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+Partyz -> Validated as VALID by Groq API (Reason: It's a valid company or product name, although it may be unfamiliar.)
+PyTest -> Validated as VALID by Groq API (Reason: It's a valid testing framework for Python.)
+RPOs -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+Rekognition -> Validated as VALID by Groq API (Reason: Rekognition is identified as a proper noun, specifically a service name, and is considered valid despite potential spelling variations.)
+Rlogca -> Validated as VALID by Groq API (Reason: It's a valid company or product name, although it may be unfamiliar.)
+Rlogical -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+SEO‑Friendly -> Validated as VALID by Groq API (Reason: It's a valid term, and the hyphen is correctly used.)
+SLOs -> Validated as VALID by Groq API (Reason: SLOs seems to be an abbreviation or acronym, likely for Service Level Objectives, making it valid in this context.)
+SMO -> Validated as VALID by Groq API (Reason: It's a valid term for Social Media Optimization.)
+Sadia -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+Satkar -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+Selektaa -> Validated as VALID by Groq API (Reason: It's a valid company or product name, although it may be unfamiliar.)
+Strapi -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+Strategie -> Validated as VALID by Groq API (Reason: It's a valid word, commonly used in non-English languages.)
+TPVREST -> Validated as VALID by Groq API (Reason: It's a valid term or acronym, although its meaning is unclear without context.)
+Tanishq -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+Telerik -> Validated as VALID by Groq API (Reason: It's a valid company name and provider of software development tools.)
+Textract -> Validated as VALID by Groq API (Reason: Textract seems to be a proper noun, possibly a product or service name, which in this context is valid.)
+TicketPickUp -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+Transcoder -> Validated as VALID by Groq API (Reason: Transcoder seems to be a proper noun or a term related to media processing, making it valid in this context.)
+Tsuzuki-ku -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+Ui-Ux -> Validated as VALID by Groq API (Reason: Ui-Ux appears to refer to User Interface and User Experience, which are valid terms in the context of design and development.)
+Umbraco -> Validated as VALID by Groq API (Reason: Umbraco appears to be a proper noun, specifically a product or service name, making it valid in this context.)
+VUIs -> Validated as VALID by Groq API (Reason: It is an abbreviation or identifier, which is likely a technical term.)
+Vasant -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+Verifone -> Validated as VALID by Groq API (Reason: It's a valid company name.)
+Vuex -> Validated as VALID by Groq API (Reason: It's a valid library name for state management in Vue.js.)
+Vuforia -> Validated as VALID by Groq API (Reason: Vuforia is recognized as a proper noun, specifically a product or framework name related to AR development, making it valid.)
+WAF -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+WO -> Validated as VALID by Groq API (Reason: It appears to be an abbreviation or identifier, which is likely a technical term.)
+Wikitude -> Validated as VALID by Groq API (Reason: Wikitude seems to be a proper noun, likely a product or framework name in the context of AR development, which is considered valid.)
+Xaarin -> Validated as VALID by Groq API (Reason: It's a valid company or product name, although it may be unfamiliar and similar to 'Xamarin'.)
+Yii -> Validated as VALID by Groq API (Reason: Yii is identified as a proper noun, specifically a framework or library name, which is valid in this context.)
+Zeev -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+Zend -> Validated as VALID by Groq API (Reason: Zend appears to be a proper noun, specifically a framework or company name, which is valid in this context.)
+Zev -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+artefacts -> Validated as VALID by Groq API (Reason: Artefacts is a recognized spelling variant, especially in British English, making it valid in this context.)
+blockquote-cls -> Validated as VALID by Groq API (Reason: It appears to be a class or identifier in a shortcode, which is likely a technical term.)
+centralised -> Validated as VALID by Groq API (Reason: Centralised is a recognized spelling variant, particularly in British English, making it valid in this context.)
+centre -> Validated as VALID by Groq API (Reason: Centre is a valid spelling variant, particularly in British English, and does not constitute a spelling mistake in this context.)
+centres -> Validated as VALID by Groq API (Reason: Centres is a valid spelling variant, especially in British English, and does not constitute a spelling mistake.)
+containerised -> Validated as VALID by Groq API (Reason: Containerised is a valid spelling variant, particularly in British English, and does not constitute a spelling mistake.)
+containerising -> Validated as VALID by Groq API (Reason: Containerising is a valid spelling variant, particularly in British English, and is considered valid in this context.)
+customised -> Validated as VALID by Groq API (Reason: Customised is a valid spelling variant, especially in British English, and is considered valid in this context.)
+dedicatedly -> Validated as VALID by Groq API (Reason: It is a valid adverb form, although 'dedicated' would also be acceptable in this context.)
+eCom -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+eLearning -> Validated as VALID by Groq API (Reason: It's a valid term for electronic learning.)
+ebooks -> Validated as VALID by Groq API (Reason: It's a valid word, commonly used in digital publishing.)
+e‑commerce -> Validated as VALID by Groq API (Reason: It's a valid term, and the hyphen is correctly used.)
+fulfilment -> Validated as VALID by Groq API (Reason: It's a valid word, commonly used in British English.)
+full‑time -> Validated as VALID by Groq API (Reason: It's a valid term, and the hyphen is correctly used.)
+hypercare -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+iWatch -> Validated as VALID by Groq API (Reason: iWatch appears to be a proper noun, specifically a product name, making it valid in this context.)
+kickstart -> Validated as VALID by Groq API (Reason: Kickstart, despite spacing variations, is a common term in project initiation and is considered valid in this context.)
+kubenet -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+lify -> Validated as VALID by Groq API (Reason: It's a valid part of a product or library name, possibly related to 'Amply'.)
+long‑term -> Validated as VALID by Groq API (Reason: It's a valid term, and the hyphen is correctly used.)
+mHealth -> Validated as VALID by Groq API (Reason: It's a valid term for mobile health.)
+mPOS -> Validated as VALID by Groq API (Reason: It's a valid term for mobile point of sale.)
+materialised -> Validated as VALID by Groq API (Reason: Materialised is a valid spelling variant, especially in British English, and does not constitute a spelling mistake.)
+microservices -> Validated as VALID by Groq API (Reason: Microservices is a recognized term in software development and does not appear to be a spelling mistake in this context.)
+minutes -> Validated as VALID by Groq API (Reason: It is a valid noun form, and the sentence context supports its use.)
+mobilise -> Validated as VALID by Groq API (Reason: Mobilise is a valid spelling variant, especially in British English, making it valid in this context.)
+modernise -> Validated as VALID by Groq API (Reason: Modernise is a valid spelling variant, particularly in British English, and is considered valid in this context.)
+modernising -> Validated as VALID by Groq API (Reason: Modernising is a variant of 'modernizing' and is considered valid due to differences in regional spelling preferences.)
+monetisation -> Validated as VALID by Groq API (Reason: Monetisation is a valid spelling variant, particularly in British English, and is considered valid.)
+navigations -> Validated as VALID by Groq API (Reason: Navigations, while potentially redundant, does not appear to be a spelling mistake in this context.)
+optimise -> Validated as VALID by Groq API (Reason: Optimise is a recognized spelling variant, particularly in British English, and is considered valid.)
+organisation -> Validated as VALID by Groq API (Reason: Organisation is a valid spelling variant, particularly in British English, and does not constitute a spelling mistake.)
+organisations -> Validated as VALID by Groq API (Reason: Organisations is a valid spelling variant, especially in British English, and is considered valid in this context.)
+otw -> Validated as VALID by Groq API (Reason: It appears to be part of a shortcode, which is likely a technical term or identifier.)
+otw-sc-quote -> Validated as VALID by Groq API (Reason: It contains characteristics of a product or module identifier, such as mixed capitalization.)
+overprovisioned -> Validated as VALID by Groq API (Reason: Overprovisioned is a term used in cloud computing and resource management, and does not appear to be a spelling mistake.)
+overprovisioning -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+part‑time -> Validated as VALID by Groq API (Reason: It's a valid term, and the hyphen is correctly used.)
+popularised -> Validated as VALID by Groq API (Reason: It is a valid verb form, commonly used in British English.)
+preemptible -> Validated as VALID by Groq API (Reason: Preemptible is recognized as a term in cloud computing and does not appear to be a spelling mistake in this context.)
+preta -> Validated as VALID by Groq API (Reason: It's a valid term, although it may be a product or library name.)
+prioritised -> Validated as VALID by Groq API (Reason: Prioritised is a valid spelling variant, particularly in British English, and is considered valid.)
+realised -> Validated as VALID by Groq API (Reason: Realised is a valid spelling variant, especially in British English, and is not considered a spelling mistake.)
+rehost -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+replatform -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+replatforming -> Validated as VALID by Groq API (Reason: Replatforming, despite suggested alternatives, is recognized as a valid term in the context of cloud migration strategies.)
+round‑the‑clock -> Validated as VALID by Groq API (Reason: It's a valid term, and the hyphens are correctly used.)
+softwares -> Validated as VALID by Groq API (Reason: It's a valid word, although 'software' is more commonly used as an uncountable noun.)
+solutions -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+specialise -> Validated as VALID by Groq API (Reason: It's a valid word, commonly used in British English.)
+top‑tier -> Validated as VALID by Groq API (Reason: It's a valid term, and the hyphen is correctly used.)
+utilisation -> Validated as VALID by Groq API (Reason: Utilisation is a valid spelling variant, especially in British English, and is considered valid in this context.)
+who's spin -> Validated as VALID by Groq API (Reason: The word 'who's' is a valid contraction, and the sentence context supports its use.)
+
+==================================================
+3. WORDS REPORTED AS TYPOS (20)
+==================================================
+Coroprate
+Delievery
+Dones
+Feild
+Hourss
+Its
+Kubernets
+Reschedual
+Roofng
+Sunt
+coordinatively
+enterprice
+expertized
+flawy
+hghg
+ofter
+reshift
+speciality
+unappropriate
+whichng

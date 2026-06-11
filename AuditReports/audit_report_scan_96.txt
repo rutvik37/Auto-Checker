@@ -1,0 +1,56 @@
+==================================================
+AUDIT REPORT FOR SCAN SESSION #96
+Generated: 2026-06-11T17:33:58.017436600
+==================================================
+
+SUMMARY STATS:
+--------------------------------------------------
+Words Ignored by Static Dictionaries: 0
+Words Ignored by Dynamic Entity Layers: 30
+Words Reported as Spelling Mistakes: 4
+
+==================================================
+1. WORDS IGNORED BY STATIC DICTIONARIES (0)
+==================================================
+
+==================================================
+2. WORDS IGNORED BY DYNAMIC ENTITY LAYERS (30)
+==================================================
+Armbrister -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+CabsOn -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+Chandrashekar -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+DApps -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+Derema -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+Farrer -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+Fratney -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+Garyson -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+Hayabuchi -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+Jatin -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+Kew -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+Lonc -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+MEVN -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+Moffett -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+Murtaza -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+Musikaa -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+NestJS -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+Nuxt -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+Panchal -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+Rlogical -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+Sadia -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+Satkar -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+Strapi -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+Tanishq -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+TicketPickUp -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+Tsuzuki-ku -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+Vasant -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+Zeev -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+Zev -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+eCom -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+
+==================================================
+3. WORDS REPORTED AS TYPOS (4)
+==================================================
+Coroprate
+Kubernets
+Sunt
+ofter

@@ -92,7 +92,11 @@ public class SpellingValidator {
         String w = word.trim().toLowerCase(Locale.ROOT);
         String s = suggestion.trim().toLowerCase(Locale.ROOT);
         try {
-            return validationCacheRepository.findByWordAndSuggestion(w, s)
+            long dbStart = System.nanoTime();
+            Optional<ValidationCache> result = validationCacheRepository.findByWordAndSuggestion(w, s);
+            long dbTime = (System.nanoTime() - dbStart) / 1_000_000;
+            DbPerformanceMonitor.recordQuery(dbTime);
+            return result
                     .map(ValidationCache::getDecision)
                     .filter(decision -> "VALID".equals(decision) || "TYPO".equals(decision));
         } catch (Exception e) {
@@ -383,8 +387,14 @@ public class SpellingValidator {
         try {
             String w = word.trim().toLowerCase(Locale.ROOT);
             String s = suggestion.trim().toLowerCase(Locale.ROOT);
+
+            long queryStart = System.nanoTime();
             Optional<ValidationCache> existing = validationCacheRepository.findByWordAndSuggestion(w, s);
+            long queryTime = (System.nanoTime() - queryStart) / 1_000_000;
+            DbPerformanceMonitor.recordQuery(queryTime);
+
             ValidationCache cacheEntry;
+            boolean isNew = !existing.isPresent();
             if (existing.isPresent()) {
                 cacheEntry = existing.get();
                 cacheEntry.setDecision(decision);
@@ -396,6 +406,13 @@ public class SpellingValidator {
             long dbStart = System.nanoTime();
             validationCacheRepository.save(cacheEntry);
             long dbTime = (System.nanoTime() - dbStart) / 1_000_000;
+
+            if (isNew) {
+                DbPerformanceMonitor.recordInsert(dbTime);
+            } else {
+                DbPerformanceMonitor.recordUpdate(dbTime);
+            }
+
             PerformanceTracker.add("db_save", dbTime);
             System.out.println("[PERF] Database Save Time = " + dbTime + " ms");
         } catch (Exception e) {

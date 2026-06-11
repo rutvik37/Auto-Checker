@@ -126,11 +126,16 @@ public class CrawlScanService {
     // -------------------------------------------------------------------------
     @Async
     public void startScanAsync(Long scanId) {
+        DbPerformanceMonitor.registerScan(scanId);
         long totalScanStart = System.nanoTime();
         // Load scan record
+        long dbLoadStart = System.nanoTime();
         Scan scan = scanRepository.findById(scanId).orElse(null);
+        long dbLoadTime = (System.nanoTime() - dbLoadStart) / 1_000_000;
+        DbPerformanceMonitor.recordQuery(dbLoadTime);
         if (scan == null) {
             logger.error("Scan with ID {} not found – aborting", scanId);
+            DbPerformanceMonitor.unregisterScan(scanId);
             return;
         }
 
@@ -139,6 +144,7 @@ public class CrawlScanService {
         long dbStart = System.nanoTime();
         scanRepository.save(scan);
         long dbTime = (System.nanoTime() - dbStart) / 1_000_000;
+        DbPerformanceMonitor.recordUpdate(dbTime);
         PerformanceTracker.add("db_save", dbTime);
         System.out.println("[PERF] Database Save Time = " + dbTime + " ms");
 
@@ -254,6 +260,7 @@ public class CrawlScanService {
 
                 for (int w = 0; w < workersCount; w++) {
                     executor.submit(() -> {
+                        DbPerformanceMonitor.associateCurrentThread(scanId);
                         while (!scanCancellationTokens.getOrDefault(scanId, false)) {
                             CrawlTask task = null;
                             synchronized (concurrentQueue) {
@@ -707,7 +714,11 @@ public class CrawlScanService {
             long dbSaveTimeInGen = 0;
             // Fetch all existing issues for the scan to perform case-insensitive in-memory
             // lookups
+            long existingStart = System.nanoTime();
             List<Issue> existingIssues = issueRepository.findByScanId(scan.getId());
+            long existingTime = (System.nanoTime() - existingStart) / 1_000_000;
+            DbPerformanceMonitor.recordQuery(existingTime);
+
             Map<String, Issue> normalizedIssueMap = new HashMap<>();
             for (Issue issue : existingIssues) {
                 if (issue.getWord() != null) {
@@ -729,6 +740,10 @@ public class CrawlScanService {
                     beforeDedup++;
                 }
             }
+
+            Set<Issue> issuesToSave = new java.util.LinkedHashSet<>();
+            int numInserts = 0;
+            int numUpdates = 0;
 
             for (RawFinding rf : rawFindings) {
                 if (rf.word == null)
@@ -756,12 +771,7 @@ public class CrawlScanService {
                             Set<String> urlSet = new LinkedHashSet<>(Arrays.asList(currentUrls.split(",\\s*")));
                             if (urlSet.add(rf.pageUrl)) {
                                 existing.setPageUrl(String.join(", ", urlSet));
-
-                                long dbSaveStart = System.nanoTime();
-                                issueRepository.save(existing);
-                                long dbSaveEnd = System.nanoTime();
-                                dbSaveTimeInGen += (dbSaveEnd - dbSaveStart);
-
+                                issuesToSave.add(existing);
                                 logInfo(scanId, "Typo \"" + rf.word + "\" also found on " + rf.pageUrl, finalLogWriter);
                             }
                         } else {
@@ -777,21 +787,41 @@ public class CrawlScanService {
                             issue.setHtmlTag("Unknown");
                             issue.setDetectionSource("N/A");
 
-                            long dbSaveStart = System.nanoTime();
-                            Issue savedIssue = issueRepository.save(issue);
-                            long dbSaveEnd = System.nanoTime();
-                            dbSaveTimeInGen += (dbSaveEnd - dbSaveStart);
-
-                            normalizedIssueMap.put(normalizedWord, savedIssue);
+                            issuesToSave.add(issue);
+                            normalizedIssueMap.put(normalizedWord, issue);
 
                             totalIssuesCount.incrementAndGet();
                             logInfo(scanId, "Typo found: \"" + rf.word + "\" on " + rf.pageUrl, finalLogWriter);
                         }
                     } catch (Exception saveEx) {
-                        logger.error("Failed to save/update issue for word '{}': {}", rf.word, saveEx.getMessage());
+                        logger.error("Failed to process issue for word '{}': {}", rf.word, saveEx.getMessage());
                     }
                 }
             }
+
+            if (!issuesToSave.isEmpty()) {
+                for (Issue issue : issuesToSave) {
+                    if (issue.getId() == null) {
+                        numInserts++;
+                    } else {
+                        numUpdates++;
+                    }
+                }
+                try {
+                    long dbSaveStart = System.nanoTime();
+                    issueRepository.saveAll(issuesToSave);
+                    long dbSaveEnd = System.nanoTime();
+                    long dbSaveTime = dbSaveEnd - dbSaveStart;
+                    dbSaveTimeInGen += dbSaveTime;
+                    
+                    long dbSaveMs = dbSaveTime / 1_000_000;
+                    DbPerformanceMonitor.recordBatchInsert(numInserts, 0);
+                    DbPerformanceMonitor.recordBatchUpdate(numUpdates, dbSaveMs);
+                } catch (Exception batchSaveEx) {
+                    logger.error("Failed to batch save issues: {}", batchSaveEx.getMessage());
+                }
+            }
+
             long issueGenEnd = System.nanoTime();
 
             long dbSaveMs = dbSaveTimeInGen / 1_000_000;
@@ -863,6 +893,7 @@ public class CrawlScanService {
             long dbStartFinally = System.nanoTime();
             scanRepository.save(scan);
             long dbTimeFinally = (System.nanoTime() - dbStartFinally) / 1_000_000;
+            DbPerformanceMonitor.recordUpdate(dbTimeFinally);
             PerformanceTracker.add("db_save", dbTimeFinally);
             System.out.println("[PERF] Database Save Time = " + dbTimeFinally + " ms");
             logInfo(scanId, "[PERF] Database Save Time = " + dbTimeFinally + " ms", finalLogWriter);
@@ -940,6 +971,50 @@ public class CrawlScanService {
             logInfo(scanId, "[PERF] Total Scan Time = " + totalScanTime + " ms", finalLogWriter);
             logInfo(scanId, "=====================================================", finalLogWriter);
 
+            DbPerformanceMonitor.ScanDbMetrics dbMetrics = DbPerformanceMonitor.getMetrics(scanId);
+            int queries = dbMetrics != null ? dbMetrics.queries.get() : 0;
+            int inserts = dbMetrics != null ? dbMetrics.inserts.get() : 0;
+            int updates = dbMetrics != null ? dbMetrics.updates.get() : 0;
+            int batchInserts = dbMetrics != null ? dbMetrics.batchInserts.get() : 0;
+            int batchUpdates = dbMetrics != null ? dbMetrics.batchUpdates.get() : 0;
+            long dbTimeMs = dbMetrics != null ? dbMetrics.dbTimeMs.get() : 0;
+
+            System.out.println("[DB] Queries Executed = " + queries);
+            System.out.println("[DB] Inserts Executed = " + inserts);
+            System.out.println("[DB] Updates Executed = " + updates);
+            System.out.println("[DB] Batch Inserts = " + batchInserts);
+            System.out.println("[DB] Batch Updates = " + batchUpdates);
+            System.out.println("[DB] Database Time = " + dbTimeMs + " ms");
+
+            logInfo(scanId, "[DB] Queries Executed = " + queries, finalLogWriter);
+            logInfo(scanId, "[DB] Inserts Executed = " + inserts, finalLogWriter);
+            logInfo(scanId, "[DB] Updates Executed = " + updates, finalLogWriter);
+            logInfo(scanId, "[DB] Batch Inserts = " + batchInserts, finalLogWriter);
+            logInfo(scanId, "[DB] Batch Updates = " + batchUpdates, finalLogWriter);
+            logInfo(scanId, "[DB] Database Time = " + dbTimeMs + " ms", finalLogWriter);
+
+            System.out.println("================ DATABASE SUMMARY ================");
+            System.out.println();
+            System.out.println("[DB] Queries Executed = " + queries);
+            System.out.println("[DB] Inserts Executed = " + inserts);
+            System.out.println("[DB] Updates Executed = " + updates);
+            System.out.println("[DB] Batch Inserts = " + batchInserts);
+            System.out.println("[DB] Batch Updates = " + batchUpdates);
+            System.out.println("[DB] Total Database Time = " + dbTimeMs + " ms");
+            System.out.println();
+            System.out.println("==================================================");
+
+            logInfo(scanId, "================ DATABASE SUMMARY ================", finalLogWriter);
+            logInfo(scanId, "", finalLogWriter);
+            logInfo(scanId, "[DB] Queries Executed = " + queries, finalLogWriter);
+            logInfo(scanId, "[DB] Inserts Executed = " + inserts, finalLogWriter);
+            logInfo(scanId, "[DB] Updates Executed = " + updates, finalLogWriter);
+            logInfo(scanId, "[DB] Batch Inserts = " + batchInserts, finalLogWriter);
+            logInfo(scanId, "[DB] Batch Updates = " + batchUpdates, finalLogWriter);
+            logInfo(scanId, "[DB] Total Database Time = " + dbTimeMs + " ms", finalLogWriter);
+            logInfo(scanId, "", finalLogWriter);
+            logInfo(scanId, "==================================================", finalLogWriter);
+
             System.out.println("================ CACHE SUMMARY ================");
             System.out.println();
             System.out.println("[CACHE] Candidates Checked = " + cacheCandidatesChecked);
@@ -961,6 +1036,7 @@ public class CrawlScanService {
             logInfo(scanId, "================================================", finalLogWriter);
 
             scanCancellationTokens.remove(scanId);
+            DbPerformanceMonitor.unregisterScan(scanId);
 
             if (finalLogWriter != null) {
                 finalLogWriter.close();
@@ -978,6 +1054,7 @@ public class CrawlScanService {
             long dbStart = System.nanoTime();
             scannedPageRepository.save(new ScannedPage(scan, url, title, statusCode));
             long dbTime = (System.nanoTime() - dbStart) / 1_000_000;
+            DbPerformanceMonitor.recordInsert(dbTime);
             PerformanceTracker.add("db_save", dbTime);
             System.out.println("[PERF] Database Save Time = " + dbTime + " ms");
         } catch (Exception e) {
