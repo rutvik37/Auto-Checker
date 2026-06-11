@@ -260,7 +260,7 @@ public class CrawlScanService {
                     pagesScannedCount.incrementAndGet();
 
                     // Collect spelling findings in raw list
-                    runSpellingCheck(doc, langTool, currentUrl, title, extractedText, rawFindings);
+                    runSpellingCheck(doc, langTool, currentUrl, title, extractedText, rawFindings, scanId, finalLogWriter);
 
                     // Broadcast live progress (issues count remains 0 until processed later)
                     broadcastProgress(scanId, pagesScannedCount, wordsCheckedCount, totalIssuesCount, currentUrl);
@@ -669,23 +669,46 @@ public class CrawlScanService {
             logger.error("Failed to save scanned page {}: {}", url, e.getMessage());
         }
     }
-
-    // -------------------------------------------------------------------------
     // Spelling check + save issues
     // -------------------------------------------------------------------------
     private void runSpellingCheck(Document doc, JLanguageTool langTool,
             String pageUrl, String pageTitle, String text,
-            List<RawFinding> rawFindings) {
+            List<RawFinding> rawFindings, Long scanId, PrintWriter logWriter) {
         if (text == null || text.trim().isEmpty())
             return;
 
+        int rawTokensCount = 0;
+        int preFilteredTokensCount = 0;
+        int tokensRemovedCount = 0;
+
+        StringBuilder sb = new StringBuilder(text);
+        java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("\\S+");
+        java.util.regex.Matcher matcher = pattern.matcher(text);
+
+        while (matcher.find()) {
+            rawTokensCount++;
+            String token = matcher.group();
+            if (shouldPreFilter(token)) {
+                tokensRemovedCount++;
+                for (int i = matcher.start(); i < matcher.end(); i++) {
+                    sb.setCharAt(i, ' ');
+                }
+            } else {
+                preFilteredTokensCount++;
+            }
+        }
+        String filteredText = sb.toString();
+
         try {
             long ltStart = System.nanoTime();
-            List<RuleMatch> matches = langTool.check(text);
+            List<RuleMatch> matches = langTool.check(filteredText);
             long ltEnd = System.nanoTime();
             long ltTime = (ltEnd - ltStart) / 1_000_000;
             PerformanceTracker.add("languagetool_processing", ltTime);
             System.out.println("[PERF] LanguageTool Processing = " + ltTime + " ms");
+            logInfo(scanId, "[PERF] LanguageTool Processing = " + ltTime + " ms", logWriter);
+
+            int languageToolCandidatesCount = 0;
 
             long extractStart = System.nanoTime();
             for (RuleMatch match : matches) {
@@ -697,6 +720,8 @@ public class CrawlScanService {
                         || match.getRule().getId().contains("MORFOLOGIK");
                 if (!isSpelling)
                     continue;
+
+                languageToolCandidatesCount++;
 
                 int fromPos = match.getFromPos();
                 int toPos = match.getToPos();
@@ -732,9 +757,70 @@ public class CrawlScanService {
             long extractTime = (extractEnd - extractStart) / 1_000_000;
             PerformanceTracker.add("candidate_extract", extractTime);
             System.out.println("[PERF] Candidate Extraction Time = " + extractTime + " ms");
+            logInfo(scanId, "[PERF] Candidate Extraction Time = " + extractTime + " ms", logWriter);
+
+            System.out.println("[PERF] Raw Text Tokens = " + rawTokensCount);
+            System.out.println("[PERF] Pre-Filtered Tokens = " + preFilteredTokensCount);
+            System.out.println("[PERF] LanguageTool Candidates = " + languageToolCandidatesCount);
+            System.out.println("[PERF] Tokens Removed Before LanguageTool = " + tokensRemovedCount);
+
+            logInfo(scanId, "[PERF] Raw Text Tokens = " + rawTokensCount, logWriter);
+            logInfo(scanId, "[PERF] Pre-Filtered Tokens = " + preFilteredTokensCount, logWriter);
+            logInfo(scanId, "[PERF] LanguageTool Candidates = " + languageToolCandidatesCount, logWriter);
+            logInfo(scanId, "[PERF] Tokens Removed Before LanguageTool = " + tokensRemovedCount, logWriter);
         } catch (Exception e) {
             logger.error("Spell-check error on {}: {}", pageUrl, e.getMessage());
         }
+    }
+
+    private static boolean shouldPreFilter(String token) {
+        if (token == null)
+            return true;
+        String t = token.trim();
+        if (t.isEmpty())
+            return true;
+
+        // Values containing no alphabetic characters
+        if (!t.matches(".*[a-zA-Z].*")) {
+            return true;
+        }
+
+        // URLs
+        if (t.toLowerCase().startsWith("http://") || 
+            t.toLowerCase().startsWith("https://") || 
+            t.toLowerCase().startsWith("www.") ||
+            t.toLowerCase().startsWith("file://") ||
+            t.matches("(?i)^[a-z0-9]+([\\-\\.]{1}[a-z0-9]+)*\\.[a-z]{2,5}(:[0-9]{1,5})?(\\/.*)?$") ||
+            t.contains("localhost:")) {
+            return true;
+        }
+
+        // Email addresses
+        if (t.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$")) {
+            return true;
+        }
+
+        // HTML tags
+        if (t.startsWith("<") && t.endsWith(">")) {
+            return true;
+        }
+
+        // JSON blobs
+        if ((t.startsWith("{") && t.endsWith("}")) || (t.startsWith("[") && t.endsWith("]"))) {
+            return true;
+        }
+
+        // Base64 content & extremely long machine-generated tokens
+        if (t.length() > 30) {
+            return true;
+        }
+
+        // Script / Style content fragments
+        if (t.contains("javascript:") || t.contains("console.log") || t.contains("function(") || t.contains("var ") || t.contains("const ") || t.contains("let ")) {
+            return true;
+        }
+
+        return false;
     }
 
     private static boolean isSpaceNormalizedEqual(String word, String suggestion) {

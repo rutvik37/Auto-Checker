@@ -1,0 +1,41 @@
+==================================================
+AUDIT REPORT FOR SCAN SESSION #82
+Generated: 2026-06-11T16:21:34.501894400
+==================================================
+
+SUMMARY STATS:
+--------------------------------------------------
+Words Ignored by Static Dictionaries: 0
+Words Ignored by Dynamic Entity Layers: 9
+Words Reported as Spelling Mistakes: 10
+
+==================================================
+1. WORDS IGNORED BY STATIC DICTIONARIES (0)
+==================================================
+
+==================================================
+2. WORDS IGNORED BY DYNAMIC ENTITY LAYERS (9)
+==================================================
+Brijesh -> Validated as VALID by Groq API (Reason: Appears to be a person name, no clear correction exists)
+DataSphereX -> Validated as VALID by Groq API (Reason: Product or module name, mixed capitalization, appears to be a valid identifier)
+Groq -> Validated as VALID by Groq API (Reason: Appears to be a product, module, or company name, no clear correction exists)
+JMeter -> Validated as VALID by Groq API (Reason: Product or module name, mixed capitalization, appears to be a valid identifier)
+Rutvik -> Validated as VALID by Groq API (Reason: Appears to be a person name, no clear correction exists)
+TestNG -> Validated as VALID by Groq API (Reason: Product or module name, mixed capitalization, appears to be a valid identifier)
+UserFlowEngine -> Validated as VALID by Groq API (Reason: Product or module name, mixed capitalization, appears to be a valid identifier)
+XyloCore -> Validated as VALID by Groq API (Reason: Product or module name, mixed capitalization, appears to be a valid identifier)
+signin -> Validated as VALID by Groq API (Reason: Mixed spacing variation, 'signin' vs 'sign in', appears to be a valid identifier or term)
+
+==================================================
+3. WORDS REPORTED AS TYPOS (10)
+==================================================
+acomodation
+applcation
+automtion
+dashbord
+definately
+frmaework
+goverment
+playwrigt
+recieve
+resposibility
