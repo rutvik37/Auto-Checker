@@ -1,0 +1,43 @@
+==================================================
+VALIDATION DEBUG REPORT FOR SCAN SESSION #46
+Generated: 2026-06-09T13:33:09.056210600
+==================================================
+
+1. REPORTED CANDIDATES:
+--------------------------------------------------
+Word: Posiv
+Reported By Layer: Spelling Scanner
+Reason: Passed all validation layers
+Validation Trace:
+- LanguageTool: Candidate (Spelling error flagged by LanguageTool)
+- Basic Format Filter: Passed (Not a number and length > 1)
+- Static Whitelist: Passed (No match in static dictionaries)
+- Product Group Consistency: Checking (Group size: 3, Sibling classified count: 1/2 (Ratio: 0.5))
+- Website Entity Discovery: Passed (Score: 0, Signals: )
+- Website Entity Discovery: Passed (Did not qualify as a website entity)
+- Confidence Engine - Person Detection: Matched (+40) (Matches person name pattern)
+- Confidence Engine - Organization Detection: Passed (0) (No match)
+- Confidence Engine - Location Detection: Passed (0) (No match)
+- Confidence Engine - Technology Detection: Passed (0) (Not found in tech registries)
+- Confidence Engine - Website Entity Match: Passed (0) (No match)
+- Confidence Engine - High Frequency: Passed (0) (Low frequency on site)
+- Confidence Engine - Knowledge Verification: Passed (0) (Could not verify via knowledge APIs)
+- Confidence Engine: Passed (Total Score: 40, reasons: Person Pattern(+40))
+- Human Name Filter: Passed (No match)
+- Length Filter: Passed (Length > 1 and not single letter fragment)
+- Session Whitelist: Passed (No match)
+- Product Whitelist: Passed (No match)
+- Technical Filter: Passed (No match)
+- Unit Filter: Passed (No match)
+- Code / Variable Filter: Passed (No match)
+- Package Context Filter: Passed (Not near package keywords)
+- Location Context Filter: Passed (No match)
+- Portfolio / Project Filter: Passed (No match)
+- Technical Article Filter: Passed (No match)
+- English / Plural Verification: Passed (No match)
+- Case Variations Filter: Passed (Lowercase version is also a typo)
+- Final Result: Reported (Passed all validation layers)
+--------------------------------------------------
+
+2. IGNORED CANDIDATES:
+--------------------------------------------------

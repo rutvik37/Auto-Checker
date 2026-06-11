@@ -1,0 +1,31 @@
+# Maven build target
+target/
+*.class
+
+# SQLite Local Database Files
+scanner.db
+scanner.db-shm
+scanner.db-wal
+
+# Pre-packaged tools
+.tools/
+
+# Projects crawled reports & logs
+Projects/
+
+# Logs & temp files
+*.log
+.tempmediaStorage/
+.system_generated/
+walkthrough.md
+implementation_plan.md
+task.md
+
+# IDE configurations
+.idea/
+*.iml
+.settings/
+.project
+.classpath
+.metadata/
+bin/

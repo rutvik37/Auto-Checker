@@ -1,0 +1,35 @@
+==================================================
+AUDIT REPORT FOR SCAN SESSION #58
+Generated: 2026-06-10T15:54:56.864077800
+==================================================
+
+SUMMARY STATS:
+--------------------------------------------------
+Words Ignored by Static Dictionaries: 0
+Words Ignored by Dynamic Entity Layers: 8
+Words Reported as Spelling Mistakes: 5
+
+==================================================
+1. WORDS IGNORED BY STATIC DICTIONARIES (0)
+==================================================
+
+==================================================
+2. WORDS IGNORED BY DYNAMIC ENTITY LAYERS (8)
+==================================================
+JMeter -> Marked PENDING (validation failed or skipped)
+TestNG -> Validated as VALID by SQLite Cache (Reason: )
+applcation -> Marked PENDING (validation failed or skipped)
+automtion -> Marked PENDING (validation failed or skipped)
+dashbord -> Marked PENDING (validation failed or skipped)
+frmaework -> Marked PENDING (validation failed or skipped)
+playwrigt -> Marked PENDING (validation failed or skipped)
+signin -> Marked PENDING (validation failed or skipped)
+
+==================================================
+3. WORDS REPORTED AS TYPOS (5)
+==================================================
+acomodation
+definately
+goverment
+recieve
+resposibility

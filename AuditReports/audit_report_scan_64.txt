@@ -1,0 +1,41 @@
+==================================================
+AUDIT REPORT FOR SCAN SESSION #64
+Generated: 2026-06-11T13:22:08.819713
+==================================================
+
+SUMMARY STATS:
+--------------------------------------------------
+Words Ignored by Static Dictionaries: 0
+Words Ignored by Dynamic Entity Layers: 9
+Words Reported as Spelling Mistakes: 10
+
+==================================================
+1. WORDS IGNORED BY STATIC DICTIONARIES (0)
+==================================================
+
+==================================================
+2. WORDS IGNORED BY DYNAMIC ENTITY LAYERS (9)
+==================================================
+Brijesh -> Validated as VALID by Groq API (Reason: It appears to be a proper noun, likely a name, and thus is treated as valid.)
+DataSphereX -> Validated as VALID by Groq API (Reason: It appears to be a valid product or module name, possibly related to data management or analytics.)
+Groq -> Validated as VALID by Groq API (Reason: Although it has similar suggestions, there's not enough evidence to classify it as a typo; it could be a proper noun or a specific term.)
+JMeter -> Validated as VALID by Groq API (Reason: It appears to be a valid product or tool name, possibly related to performance testing.)
+Rutvik -> Validated as VALID by Groq API (Reason: It appears to be a proper noun, likely a name, and thus is treated as valid.)
+TestNG -> Validated as VALID by Groq API (Reason: It appears to be a valid product or module name, possibly related to testing.)
+UserFlowEngine -> Validated as VALID by Groq API (Reason: It appears to be a valid module or product name, likely related to user experience or workflow management.)
+XyloCore -> Validated as VALID by Groq API (Reason: It has characteristics of a product or module name, possibly with a unique spelling, so it's treated as valid.)
+signin -> Validated as VALID by Groq API (Reason: It appears to be a valid word, often used in the context of user authentication; it's also acceptable as 'sign in' with a space.)
+
+==================================================
+3. WORDS REPORTED AS TYPOS (10)
+==================================================
+acomodation
+applcation
+automtion
+dashbord
+definately
+frmaework
+goverment
+playwrigt
+recieve
+resposibility

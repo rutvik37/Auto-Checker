@@ -1,0 +1,41 @@
+==================================================
+AUDIT REPORT FOR SCAN SESSION #65
+Generated: 2026-06-11T13:30:14.658980800
+==================================================
+
+SUMMARY STATS:
+--------------------------------------------------
+Words Ignored by Static Dictionaries: 0
+Words Ignored by Dynamic Entity Layers: 9
+Words Reported as Spelling Mistakes: 10
+
+==================================================
+1. WORDS IGNORED BY STATIC DICTIONARIES (0)
+==================================================
+
+==================================================
+2. WORDS IGNORED BY DYNAMIC ENTITY LAYERS (9)
+==================================================
+Brijesh -> Validated as VALID by Groq API (Reason: The word 'Brijesh' appears to be a proper noun or person name.)
+DataSphereX -> Validated as VALID by Groq API (Reason: The word 'DataSphereX' appears to be a product name, framework, or module with characteristics like CamelCase or PascalCase.)
+Groq -> Validated as VALID by Groq API (Reason: Although there are suggestions for alternatives, 'Groq' could be a valid domain-specific term or company name without sufficient context for a correction.)
+JMeter -> Validated as VALID by Groq API (Reason: The word appears to be a proper noun or product name.)
+Rutvik -> Validated as VALID by Groq API (Reason: The word 'Rutvik' appears to be a proper noun or person name.)
+TestNG -> Validated as VALID by Groq API (Reason: The word appears to be a proper noun or product name.)
+UserFlowEngine -> Validated as VALID by Groq API (Reason: The word 'UserFlowEngine' appears to be a product name, framework, or module with characteristics like CamelCase.)
+XyloCore -> Validated as VALID by Groq API (Reason: The word 'XyloCore' appears to be a product name, framework, or module with characteristics like CamelCase.)
+signin -> Validated as VALID by Groq API (Reason: The word 'signin' could be a valid term with spacing variation (e.g., sign in).)
+
+==================================================
+3. WORDS REPORTED AS TYPOS (10)
+==================================================
+acomodation
+applcation
+automtion
+dashbord
+definately
+frmaework
+goverment
+playwrigt
+recieve
+resposibility

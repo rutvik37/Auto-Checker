@@ -1,0 +1,1095 @@
+==================================================
+VALIDATION DEBUG REPORT FOR SCAN SESSION #43
+Generated: 2026-06-09T12:22:23.874552500
+==================================================
+
+1. REPORTED CANDIDATES:
+--------------------------------------------------
+Word: achive
+Reported By Layer: Spelling Scanner
+Reason: Passed all validation layers
+Validation Trace:
+- LanguageTool: Candidate (Spelling error flagged by LanguageTool)
+- Basic Format Filter: Passed (Not a number and length > 1)
+- Static Whitelist: Passed (No match in static dictionaries)
+- Website Entity Discovery: Passed (Score: 0, Signals: )
+- Website Entity Discovery: Passed (Did not qualify as a website entity)
+- Confidence Engine - Person Detection: Passed (0) (No match)
+- Confidence Engine - Organization Detection: Passed (0) (No match)
+- Confidence Engine - Location Detection: Passed (0) (No match)
+- Confidence Engine - Technology Detection: Passed (0) (Not found in tech registries)
+- Confidence Engine - Website Entity Match: Passed (0) (No match)
+- Confidence Engine - High Frequency: Passed (0) (Low frequency on site)
+- Confidence Engine: Passed (Total Score: 0, reasons: )
+- Human Name Filter: Passed (No match)
+- Length Filter: Passed (Length > 1 and not single letter fragment)
+- Session Whitelist: Passed (No match)
+- Product Whitelist: Passed (No match)
+- Technical Filter: Passed (No match)
+- Unit Filter: Passed (No match)
+- Code / Variable Filter: Passed (No match)
+- Package Context Filter: Passed (No match)
+- Location Context Filter: Passed (No match)
+- Portfolio / Project Filter: Passed (No match)
+- Technical Article Filter: Passed (No match)
+- English / Plural Verification: Passed (No match)
+- Final Result: Reported (Passed all validation layers)
+--------------------------------------------------
+Word: availble
+Reported By Layer: Spelling Scanner
+Reason: Passed all validation layers
+Validation Trace:
+- LanguageTool: Candidate (Spelling error flagged by LanguageTool)
+- Basic Format Filter: Passed (Not a number and length > 1)
+- Static Whitelist: Passed (No match in static dictionaries)
+- Website Entity Discovery: Passed (Score: 0, Signals: )
+- Website Entity Discovery: Passed (Did not qualify as a website entity)
+- Confidence Engine - Person Detection: Passed (0) (No match)
+- Confidence Engine - Organization Detection: Passed (0) (No match)
+- Confidence Engine - Location Detection: Passed (0) (No match)
+- Confidence Engine - Technology Detection: Passed (0) (Not found in tech registries)
+- Confidence Engine - Website Entity Match: Passed (0) (No match)
+- Confidence Engine - High Frequency: Passed (0) (Low frequency on site)
+- Confidence Engine: Passed (Total Score: 0, reasons: )
+- Human Name Filter: Passed (No match)
+- Length Filter: Passed (Length > 1 and not single letter fragment)
+- Session Whitelist: Passed (No match)
+- Product Whitelist: Passed (No match)
+- Technical Filter: Passed (No match)
+- Unit Filter: Passed (No match)
+- Code / Variable Filter: Passed (No match)
+- Package Context Filter: Passed (No match)
+- Location Context Filter: Passed (No match)
+- Portfolio / Project Filter: Passed (No match)
+- Technical Article Filter: Passed (No match)
+- English / Plural Verification: Passed (No match)
+- Final Result: Reported (Passed all validation layers)
+--------------------------------------------------
+Word: comunication
+Reported By Layer: Spelling Scanner
+Reason: Passed all validation layers
+Validation Trace:
+- LanguageTool: Candidate (Spelling error flagged by LanguageTool)
+- Basic Format Filter: Passed (Not a number and length > 1)
+- Static Whitelist: Passed (No match in static dictionaries)
+- Product Group Consistency: Checking (Group size: 2, Sibling classified count: 1/1 (Ratio: 1.0))
+- Website Entity Discovery: Passed (Score: 0, Signals: )
+- Website Entity Discovery: Passed (Did not qualify as a website entity)
+- Confidence Engine - Person Detection: Passed (0) (No match)
+- Confidence Engine - Organization Detection: Passed (0) (No match)
+- Confidence Engine - Location Detection: Passed (0) (No match)
+- Confidence Engine - Technology Detection: Passed (0) (Not found in tech registries)
+- Confidence Engine - Website Entity Match: Passed (0) (No match)
+- Confidence Engine - High Frequency: Passed (0) (Low frequency on site)
+- Confidence Engine: Passed (Total Score: 0, reasons: )
+- Human Name Filter: Passed (No match)
+- Length Filter: Passed (Length > 1 and not single letter fragment)
+- Session Whitelist: Passed (No match)
+- Product Whitelist: Passed (No match)
+- Technical Filter: Passed (No match)
+- Unit Filter: Passed (No match)
+- Code / Variable Filter: Passed (No match)
+- Package Context Filter: Passed (No match)
+- Location Context Filter: Passed (No match)
+- Portfolio / Project Filter: Passed (No match)
+- Technical Article Filter: Passed (No match)
+- English / Plural Verification: Passed (No match)
+- Final Result: Reported (Passed all validation layers)
+--------------------------------------------------
+Word: goverment
+Reported By Layer: Spelling Scanner
+Reason: Passed all validation layers
+Validation Trace:
+- LanguageTool: Candidate (Spelling error flagged by LanguageTool)
+- Basic Format Filter: Passed (Not a number and length > 1)
+- Static Whitelist: Passed (No match in static dictionaries)
+- Product Group Consistency: Checking (Group size: 2, Sibling classified count: 1/1 (Ratio: 1.0))
+- Website Entity Discovery: Passed (Score: 0, Signals: )
+- Website Entity Discovery: Passed (Did not qualify as a website entity)
+- Confidence Engine - Person Detection: Passed (0) (No match)
+- Confidence Engine - Organization Detection: Passed (0) (No match)
+- Confidence Engine - Location Detection: Passed (0) (No match)
+- Confidence Engine - Technology Detection: Passed (0) (Not found in tech registries)
+- Confidence Engine - Website Entity Match: Passed (0) (No match)
+- Confidence Engine - High Frequency: Passed (0) (Low frequency on site)
+- Confidence Engine: Passed (Total Score: 0, reasons: )
+- Human Name Filter: Passed (No match)
+- Length Filter: Passed (Length > 1 and not single letter fragment)
+- Session Whitelist: Passed (No match)
+- Product Whitelist: Passed (No match)
+- Technical Filter: Passed (No match)
+- Unit Filter: Passed (No match)
+- Code / Variable Filter: Passed (No match)
+- Package Context Filter: Passed (No match)
+- Location Context Filter: Passed (No match)
+- Portfolio / Project Filter: Passed (No match)
+- Technical Article Filter: Passed (No match)
+- English / Plural Verification: Passed (No match)
+- Final Result: Reported (Passed all validation layers)
+--------------------------------------------------
+Word: maintainance
+Reported By Layer: Spelling Scanner
+Reason: Passed all validation layers
+Validation Trace:
+- LanguageTool: Candidate (Spelling error flagged by LanguageTool)
+- Basic Format Filter: Passed (Not a number and length > 1)
+- Static Whitelist: Passed (No match in static dictionaries)
+- Product Group Consistency: Checking (Group size: 2, Sibling classified count: 0/1 (Ratio: 0.0))
+- Website Entity Discovery: Passed (Score: 0, Signals: )
+- Website Entity Discovery: Passed (Did not qualify as a website entity)
+- Confidence Engine - Person Detection: Passed (0) (No match)
+- Confidence Engine - Organization Detection: Passed (0) (No match)
+- Confidence Engine - Location Detection: Passed (0) (No match)
+- Confidence Engine - Technology Detection: Passed (0) (Not found in tech registries)
+- Confidence Engine - Website Entity Match: Passed (0) (No match)
+- Confidence Engine - High Frequency: Passed (0) (Low frequency on site)
+- Confidence Engine: Passed (Total Score: 0, reasons: )
+- Human Name Filter: Passed (No match)
+- Length Filter: Passed (Length > 1 and not single letter fragment)
+- Session Whitelist: Passed (No match)
+- Product Whitelist: Passed (No match)
+- Technical Filter: Passed (No match)
+- Unit Filter: Passed (No match)
+- Code / Variable Filter: Passed (No match)
+- Package Context Filter: Passed (No match)
+- Location Context Filter: Passed (No match)
+- Portfolio / Project Filter: Passed (No match)
+- Technical Article Filter: Passed (No match)
+- English / Plural Verification: Passed (No match)
+- Final Result: Reported (Passed all validation layers)
+--------------------------------------------------
+Word: managment
+Reported By Layer: Spelling Scanner
+Reason: Passed all validation layers
+Validation Trace:
+- LanguageTool: Candidate (Spelling error flagged by LanguageTool)
+- Basic Format Filter: Passed (Not a number and length > 1)
+- Static Whitelist: Passed (No match in static dictionaries)
+- Product Group Consistency: Checking (Group size: 2, Sibling classified count: 1/1 (Ratio: 1.0))
+- Website Entity Discovery: Passed (Score: 0, Signals: )
+- Website Entity Discovery: Passed (Did not qualify as a website entity)
+- Confidence Engine - Person Detection: Passed (0) (No match)
+- Confidence Engine - Organization Detection: Passed (0) (No match)
+- Confidence Engine - Location Detection: Passed (0) (No match)
+- Confidence Engine - Technology Detection: Passed (0) (Not found in tech registries)
+- Confidence Engine - Website Entity Match: Passed (0) (No match)
+- Confidence Engine - High Frequency: Passed (0) (Low frequency on site)
+- Confidence Engine: Passed (Total Score: 0, reasons: )
+- Human Name Filter: Passed (No match)
+- Length Filter: Passed (Length > 1 and not single letter fragment)
+- Session Whitelist: Passed (No match)
+- Product Whitelist: Passed (No match)
+- Technical Filter: Passed (No match)
+- Unit Filter: Passed (No match)
+- Code / Variable Filter: Passed (No match)
+- Package Context Filter: Passed (No match)
+- Location Context Filter: Passed (No match)
+- Portfolio / Project Filter: Passed (No match)
+- Technical Article Filter: Passed (No match)
+- English / Plural Verification: Passed (No match)
+- Final Result: Reported (Passed all validation layers)
+--------------------------------------------------
+Word: MemberSyncPro
+Reported By Layer: Spelling Scanner
+Reason: Passed all validation layers
+Validation Trace:
+- LanguageTool: Candidate (Spelling error flagged by LanguageTool)
+- Basic Format Filter: Passed (Not a number and length > 1)
+- Static Whitelist: Passed (No match in static dictionaries)
+- Website Entity Discovery: Passed (Score: 35, Signals: Product List(+20), CamelCase(+15))
+- Website Entity Discovery: Passed (Did not qualify as a website entity)
+- Confidence Engine - Person Detection: Passed (0) (No match)
+- Confidence Engine - Organization Detection: Matched (+40) (Matches organization pattern)
+- Confidence Engine - Location Detection: Passed (0) (No match)
+- Confidence Engine - Technology Detection: Passed (0) (Not found in tech registries)
+- Confidence Engine - Website Entity Match: Passed (0) (No match)
+- Confidence Engine - High Frequency: Passed (0) (Low frequency on site)
+- Confidence Engine - Knowledge Verification: Passed (0) (Could not verify via knowledge APIs)
+- Confidence Engine: Passed (Total Score: 40, reasons: Organization Pattern(+40))
+- Human Name Filter: Passed (No match)
+- Length Filter: Passed (Length > 1 and not single letter fragment)
+- Session Whitelist: Passed (No match)
+- Product Whitelist: Passed (No match)
+- Technical Filter: Passed (No match)
+- Unit Filter: Passed (No match)
+- Code / Variable Filter: Passed (No match)
+- Package Context Filter: Passed (No match)
+- Location Context Filter: Passed (No match)
+- Portfolio / Project Filter: Passed (No match)
+- Technical Article Filter: Passed (No match)
+- English / Plural Verification: Passed (No match)
+- Case Variations Filter: Passed (Lowercase version is also a typo)
+- Final Result: Reported (Passed all validation layers)
+--------------------------------------------------
+Word: occured
+Reported By Layer: Spelling Scanner
+Reason: Passed all validation layers
+Validation Trace:
+- LanguageTool: Candidate (Spelling error flagged by LanguageTool)
+- Basic Format Filter: Passed (Not a number and length > 1)
+- Static Whitelist: Passed (No match in static dictionaries)
+- Website Entity Discovery: Passed (Score: 0, Signals: )
+- Website Entity Discovery: Passed (Did not qualify as a website entity)
+- Confidence Engine - Person Detection: Passed (0) (No match)
+- Confidence Engine - Organization Detection: Passed (0) (No match)
+- Confidence Engine - Location Detection: Passed (0) (No match)
+- Confidence Engine - Technology Detection: Passed (0) (Not found in tech registries)
+- Confidence Engine - Website Entity Match: Passed (0) (No match)
+- Confidence Engine - High Frequency: Passed (0) (Low frequency on site)
+- Confidence Engine: Passed (Total Score: 0, reasons: )
+- Human Name Filter: Passed (No match)
+- Length Filter: Passed (Length > 1 and not single letter fragment)
+- Session Whitelist: Passed (No match)
+- Product Whitelist: Passed (No match)
+- Technical Filter: Passed (No match)
+- Unit Filter: Passed (No match)
+- Code / Variable Filter: Passed (No match)
+- Package Context Filter: Passed (No match)
+- Location Context Filter: Passed (No match)
+- Portfolio / Project Filter: Passed (No match)
+- Technical Article Filter: Passed (No match)
+- English / Plural Verification: Passed (No match)
+- Final Result: Reported (Passed all validation layers)
+--------------------------------------------------
+Word: performence
+Reported By Layer: Spelling Scanner
+Reason: Passed all validation layers
+Validation Trace:
+- LanguageTool: Candidate (Spelling error flagged by LanguageTool)
+- Basic Format Filter: Passed (Not a number and length > 1)
+- Static Whitelist: Passed (No match in static dictionaries)
+- Product Group Consistency: Checking (Group size: 2, Sibling classified count: 1/1 (Ratio: 1.0))
+- Website Entity Discovery: Passed (Score: 0, Signals: )
+- Website Entity Discovery: Passed (Did not qualify as a website entity)
+- Confidence Engine - Person Detection: Passed (0) (No match)
+- Confidence Engine - Organization Detection: Passed (0) (No match)
+- Confidence Engine - Location Detection: Passed (0) (No match)
+- Confidence Engine - Technology Detection: Passed (0) (Not found in tech registries)
+- Confidence Engine - Website Entity Match: Passed (0) (No match)
+- Confidence Engine - High Frequency: Passed (0) (Low frequency on site)
+- Confidence Engine: Passed (Total Score: 0, reasons: )
+- Human Name Filter: Passed (No match)
+- Length Filter: Passed (Length > 1 and not single letter fragment)
+- Session Whitelist: Passed (No match)
+- Product Whitelist: Passed (No match)
+- Technical Filter: Passed (No match)
+- Unit Filter: Passed (No match)
+- Code / Variable Filter: Passed (No match)
+- Package Context Filter: Passed (No match)
+- Location Context Filter: Passed (No match)
+- Portfolio / Project Filter: Passed (No match)
+- Technical Article Filter: Passed (No match)
+- English / Plural Verification: Passed (No match)
+- Final Result: Reported (Passed all validation layers)
+--------------------------------------------------
+Word: resposibility
+Reported By Layer: Spelling Scanner
+Reason: Passed all validation layers
+Validation Trace:
+- LanguageTool: Candidate (Spelling error flagged by LanguageTool)
+- Basic Format Filter: Passed (Not a number and length > 1)
+- Static Whitelist: Passed (No match in static dictionaries)
+- Website Entity Discovery: Passed (Score: 0, Signals: )
+- Website Entity Discovery: Passed (Did not qualify as a website entity)
+- Confidence Engine - Person Detection: Passed (0) (No match)
+- Confidence Engine - Organization Detection: Passed (0) (No match)
+- Confidence Engine - Location Detection: Matched (+40) (Matches location pattern)
+- Confidence Engine - Technology Detection: Passed (0) (Not found in tech registries)
+- Confidence Engine - Website Entity Match: Passed (0) (No match)
+- Confidence Engine - High Frequency: Passed (0) (Low frequency on site)
+- Confidence Engine - Knowledge Verification: Passed (0) (Could not verify via knowledge APIs)
+- Confidence Engine: Passed (Total Score: 40, reasons: Location Pattern(+40))
+- Human Name Filter: Passed (No match)
+- Length Filter: Passed (Length > 1 and not single letter fragment)
+- Session Whitelist: Passed (No match)
+- Product Whitelist: Passed (No match)
+- Technical Filter: Passed (No match)
+- Unit Filter: Passed (No match)
+- Code / Variable Filter: Passed (No match)
+- Package Context Filter: Passed (No match)
+- Location Context Filter: Passed (No match)
+- Portfolio / Project Filter: Passed (No match)
+- Technical Article Filter: Passed (No match)
+- English / Plural Verification: Passed (No match)
+- Final Result: Reported (Passed all validation layers)
+--------------------------------------------------
+Word: seperately
+Reported By Layer: Spelling Scanner
+Reason: Passed all validation layers
+Validation Trace:
+- LanguageTool: Candidate (Spelling error flagged by LanguageTool)
+- Basic Format Filter: Passed (Not a number and length > 1)
+- Static Whitelist: Passed (No match in static dictionaries)
+- Website Entity Discovery: Passed (Score: 0, Signals: )
+- Website Entity Discovery: Passed (Did not qualify as a website entity)
+- Confidence Engine - Person Detection: Passed (0) (No match)
+- Confidence Engine - Organization Detection: Passed (0) (No match)
+- Confidence Engine - Location Detection: Passed (0) (No match)
+- Confidence Engine - Technology Detection: Passed (0) (Not found in tech registries)
+- Confidence Engine - Website Entity Match: Passed (0) (No match)
+- Confidence Engine - High Frequency: Passed (0) (Low frequency on site)
+- Confidence Engine: Passed (Total Score: 0, reasons: )
+- Human Name Filter: Passed (No match)
+- Length Filter: Passed (Length > 1 and not single letter fragment)
+- Session Whitelist: Passed (No match)
+- Product Whitelist: Passed (No match)
+- Technical Filter: Passed (No match)
+- Unit Filter: Passed (No match)
+- Code / Variable Filter: Passed (No match)
+- Package Context Filter: Passed (No match)
+- Location Context Filter: Passed (No match)
+- Portfolio / Project Filter: Passed (No match)
+- Technical Article Filter: Passed (No match)
+- English / Plural Verification: Passed (No match)
+- Final Result: Reported (Passed all validation layers)
+--------------------------------------------------
+Word: sucessfully
+Reported By Layer: Spelling Scanner
+Reason: Passed all validation layers
+Validation Trace:
+- LanguageTool: Candidate (Spelling error flagged by LanguageTool)
+- Basic Format Filter: Passed (Not a number and length > 1)
+- Static Whitelist: Passed (No match in static dictionaries)
+- Website Entity Discovery: Passed (Score: 0, Signals: )
+- Website Entity Discovery: Passed (Did not qualify as a website entity)
+- Confidence Engine - Person Detection: Passed (0) (No match)
+- Confidence Engine - Organization Detection: Passed (0) (No match)
+- Confidence Engine - Location Detection: Passed (0) (No match)
+- Confidence Engine - Technology Detection: Passed (0) (Not found in tech registries)
+- Confidence Engine - Website Entity Match: Passed (0) (No match)
+- Confidence Engine - High Frequency: Passed (0) (Low frequency on site)
+- Confidence Engine: Passed (Total Score: 0, reasons: )
+- Human Name Filter: Passed (No match)
+- Length Filter: Passed (Length > 1 and not single letter fragment)
+- Session Whitelist: Passed (No match)
+- Product Whitelist: Passed (No match)
+- Technical Filter: Passed (No match)
+- Unit Filter: Passed (No match)
+- Code / Variable Filter: Passed (No match)
+- Package Context Filter: Passed (No match)
+- Location Context Filter: Passed (No match)
+- Portfolio / Project Filter: Passed (No match)
+- Technical Article Filter: Passed (No match)
+- English / Plural Verification: Passed (No match)
+- Final Result: Reported (Passed all validation layers)
+--------------------------------------------------
+
+2. IGNORED CANDIDATES:
+--------------------------------------------------
+Word: $attendanceList
+Ignored By Layer: Post-Validation Suppression Layer
+Reason: Code / Variable Filter
+Validation Trace:
+- LanguageTool: Candidate (Spelling error flagged by LanguageTool)
+- Basic Format Filter: Passed (Not a number and length > 1)
+- Static Whitelist: Passed (No match in static dictionaries)
+- Website Entity Discovery: Passed (Score: 20, Signals: Product List(+20))
+- Website Entity Discovery: Passed (Did not qualify as a website entity)
+- Confidence Engine - Person Detection: Passed (0) (No match)
+- Confidence Engine - Organization Detection: Matched (+40) (Matches organization pattern)
+- Confidence Engine - Location Detection: Passed (0) (No match)
+- Confidence Engine - Technology Detection: Passed (0) (Not found in tech registries)
+- Confidence Engine - Website Entity Match: Passed (0) (No match)
+- Confidence Engine - High Frequency: Passed (0) (Low frequency on site)
+- Confidence Engine - Knowledge Verification: Passed (0) (Could not verify via knowledge APIs)
+- Confidence Engine: Passed (Total Score: 40, reasons: Organization Pattern(+40))
+- Human Name Filter: Passed (No match)
+- Length Filter: Passed (Length > 1 and not single letter fragment)
+- Session Whitelist: Passed (No match)
+- Product Whitelist: Passed (No match)
+- Technical Filter: Passed (No match)
+- Unit Filter: Passed (No match)
+- Code / Variable Filter: Ignored (Matches code symbols)
+--------------------------------------------------
+Word: $studentInfo
+Ignored By Layer: Post-Validation Suppression Layer
+Reason: Code / Variable Filter
+Validation Trace:
+- LanguageTool: Candidate (Spelling error flagged by LanguageTool)
+- Basic Format Filter: Passed (Not a number and length > 1)
+- Static Whitelist: Passed (No match in static dictionaries)
+- Website Entity Discovery: Passed (Score: 20, Signals: Product List(+20))
+- Website Entity Discovery: Passed (Did not qualify as a website entity)
+- Confidence Engine - Person Detection: Passed (0) (No match)
+- Confidence Engine - Organization Detection: Matched (+40) (Matches organization pattern)
+- Confidence Engine - Location Detection: Passed (0) (No match)
+- Confidence Engine - Technology Detection: Passed (0) (Not found in tech registries)
+- Confidence Engine - Website Entity Match: Passed (0) (No match)
+- Confidence Engine - High Frequency: Passed (0) (Low frequency on site)
+- Confidence Engine - Knowledge Verification: Passed (0) (Could not verify via knowledge APIs)
+- Confidence Engine: Passed (Total Score: 40, reasons: Organization Pattern(+40))
+- Human Name Filter: Passed (No match)
+- Length Filter: Passed (Length > 1 and not single letter fragment)
+- Session Whitelist: Passed (No match)
+- Product Whitelist: Passed (No match)
+- Technical Filter: Passed (No match)
+- Unit Filter: Passed (No match)
+- Code / Variable Filter: Ignored (Matches code symbols)
+--------------------------------------------------
+Word: $userData
+Ignored By Layer: Post-Validation Suppression Layer
+Reason: Code / Variable Filter
+Validation Trace:
+- LanguageTool: Candidate (Spelling error flagged by LanguageTool)
+- Basic Format Filter: Passed (Not a number and length > 1)
+- Static Whitelist: Passed (No match in static dictionaries)
+- Website Entity Discovery: Passed (Score: 20, Signals: Product List(+20))
+- Website Entity Discovery: Passed (Did not qualify as a website entity)
+- Confidence Engine - Person Detection: Passed (0) (No match)
+- Confidence Engine - Organization Detection: Matched (+40) (Matches organization pattern)
+- Confidence Engine - Location Detection: Passed (0) (No match)
+- Confidence Engine - Technology Detection: Passed (0) (Not found in tech registries)
+- Confidence Engine - Website Entity Match: Passed (0) (No match)
+- Confidence Engine - High Frequency: Passed (0) (Low frequency on site)
+- Confidence Engine - Knowledge Verification: Passed (0) (Could not verify via knowledge APIs)
+- Confidence Engine: Passed (Total Score: 40, reasons: Organization Pattern(+40))
+- Human Name Filter: Passed (No match)
+- Length Filter: Passed (Length > 1 and not single letter fragment)
+- Session Whitelist: Passed (No match)
+- Product Whitelist: Passed (No match)
+- Technical Filter: Passed (No match)
+- Unit Filter: Passed (No match)
+- Code / Variable Filter: Ignored (Matches code symbols)
+--------------------------------------------------
+Word: acomodation
+Ignored By Layer: Post-Validation Suppression Layer
+Reason: Package Context Filter
+Validation Trace:
+- LanguageTool: Candidate (Spelling error flagged by LanguageTool)
+- Basic Format Filter: Passed (Not a number and length > 1)
+- Static Whitelist: Passed (No match in static dictionaries)
+- Website Entity Discovery: Passed (Score: 0, Signals: )
+- Website Entity Discovery: Passed (Did not qualify as a website entity)
+- Confidence Engine - Person Detection: Passed (0) (No match)
+- Confidence Engine - Organization Detection: Passed (0) (No match)
+- Confidence Engine - Location Detection: Passed (0) (No match)
+- Confidence Engine - Technology Detection: Passed (0) (Not found in tech registries)
+- Confidence Engine - Website Entity Match: Passed (0) (No match)
+- Confidence Engine - High Frequency: Passed (0) (Low frequency on site)
+- Confidence Engine: Passed (Total Score: 0, reasons: )
+- Human Name Filter: Passed (No match)
+- Length Filter: Passed (Length > 1 and not single letter fragment)
+- Session Whitelist: Passed (No match)
+- Product Whitelist: Passed (No match)
+- Technical Filter: Passed (No match)
+- Unit Filter: Passed (No match)
+- Code / Variable Filter: Passed (No match)
+- Package Context Filter: Ignored (Adjacent to package installation keywords)
+--------------------------------------------------
+Word: AttendanceFlow
+Ignored By Layer: Website Entity Discovery
+Reason: Inherited from Product Group Consistency
+Validation Trace:
+- Website Entity Discovery: Ignored (Score: 80, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20))
+- Website Entity Discovery: Ignored (Score: 80, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20))
+- Website Entity Discovery: Ignored (Score: 80, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20))
+- Website Entity Discovery: Ignored (Score: 80, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20))
+- Website Entity Discovery: Ignored (Score: 80, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20))
+- Website Entity Discovery: Ignored (Score: 80, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20))
+- LanguageTool: Candidate (Spelling error flagged by LanguageTool)
+- Basic Format Filter: Passed (Not a number and length > 1)
+- Static Whitelist: Passed (No match in static dictionaries)
+- Product Group Consistency: Checking (Group size: 7, Sibling classified count: 5/6 (Ratio: 0.8333333333333334))
+- Website Entity Discovery: Ignored (Inherited from Product Group Consistency)
+--------------------------------------------------
+Word: CareBridge
+Ignored By Layer: Website Entity Discovery
+Reason: Inherited from Product Group Consistency
+Validation Trace:
+- Website Entity Discovery: Passed (Score: 35, Signals: Product List(+20), CamelCase(+15))
+- Website Entity Discovery: Passed (Score: 35, Signals: Product List(+20), CamelCase(+15))
+- Website Entity Discovery: Passed (Score: 35, Signals: Product List(+20), CamelCase(+15))
+- Website Entity Discovery: Passed (Score: 35, Signals: Product List(+20), CamelCase(+15))
+- LanguageTool: Candidate (Spelling error flagged by LanguageTool)
+- Basic Format Filter: Passed (Not a number and length > 1)
+- Static Whitelist: Passed (No match in static dictionaries)
+- Product Group Consistency: Checking (Group size: 6, Sibling classified count: 5/5 (Ratio: 1.0))
+- Website Entity Discovery: Ignored (Inherited from Product Group Consistency)
+- Website Entity Discovery: Passed (Score: 35, Signals: Product List(+20), CamelCase(+15))
+--------------------------------------------------
+Word: ClinicCloud
+Ignored By Layer: Website Entity Discovery
+Reason: Inherited from Product Group Consistency
+Validation Trace:
+- Website Entity Discovery: Ignored (Score: 80, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20))
+- Website Entity Discovery: Ignored (Score: 80, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20))
+- Website Entity Discovery: Ignored (Score: 80, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20))
+- Website Entity Discovery: Ignored (Score: 80, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20))
+- Website Entity Discovery: Ignored (Score: 80, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20))
+- LanguageTool: Candidate (Spelling error flagged by LanguageTool)
+- Basic Format Filter: Passed (Not a number and length > 1)
+- Static Whitelist: Passed (No match in static dictionaries)
+- Product Group Consistency: Checking (Group size: 6, Sibling classified count: 4/5 (Ratio: 0.8))
+- Website Entity Discovery: Ignored (Inherited from Product Group Consistency)
+--------------------------------------------------
+Word: CoursePilot
+Ignored By Layer: Website Entity Discovery
+Reason: Inherited from Product Group Consistency
+Validation Trace:
+- Website Entity Discovery: Passed (Score: 35, Signals: Product List(+20), CamelCase(+15))
+- Website Entity Discovery: Passed (Score: 35, Signals: Product List(+20), CamelCase(+15))
+- Website Entity Discovery: Passed (Score: 35, Signals: Product List(+20), CamelCase(+15))
+- LanguageTool: Candidate (Spelling error flagged by LanguageTool)
+- Basic Format Filter: Passed (Not a number and length > 1)
+- Static Whitelist: Passed (No match in static dictionaries)
+- Product Group Consistency: Checking (Group size: 7, Sibling classified count: 6/6 (Ratio: 1.0))
+- Website Entity Discovery: Ignored (Inherited from Product Group Consistency)
+- Website Entity Discovery: Passed (Score: 35, Signals: Product List(+20), CamelCase(+15))
+- Website Entity Discovery: Passed (Score: 35, Signals: Product List(+20), CamelCase(+15))
+- Website Entity Discovery: Passed (Score: 35, Signals: Product List(+20), CamelCase(+15))
+--------------------------------------------------
+Word: dbal
+Ignored By Layer: Static Whitelist
+Reason: Matched techWhitelist
+Validation Trace:
+- LanguageTool: Candidate (Spelling error flagged by LanguageTool)
+- Basic Format Filter: Passed (Not a number and length > 1)
+- Static Whitelist: Ignored (Matched techWhitelist)
+--------------------------------------------------
+Word: definately
+Ignored By Layer: Post-Validation Suppression Layer
+Reason: Package Context Filter
+Validation Trace:
+- LanguageTool: Candidate (Spelling error flagged by LanguageTool)
+- Basic Format Filter: Passed (Not a number and length > 1)
+- Static Whitelist: Passed (No match in static dictionaries)
+- Website Entity Discovery: Passed (Score: 0, Signals: )
+- Website Entity Discovery: Passed (Did not qualify as a website entity)
+- Confidence Engine - Person Detection: Passed (0) (No match)
+- Confidence Engine - Organization Detection: Passed (0) (No match)
+- Confidence Engine - Location Detection: Passed (0) (No match)
+- Confidence Engine - Technology Detection: Passed (0) (Not found in tech registries)
+- Confidence Engine - Website Entity Match: Passed (0) (No match)
+- Confidence Engine - High Frequency: Passed (0) (Low frequency on site)
+- Confidence Engine: Passed (Total Score: 0, reasons: )
+- Human Name Filter: Passed (No match)
+- Length Filter: Passed (Length > 1 and not single letter fragment)
+- Session Whitelist: Passed (No match)
+- Product Whitelist: Passed (No match)
+- Technical Filter: Passed (No match)
+- Unit Filter: Passed (No match)
+- Code / Variable Filter: Passed (No match)
+- Package Context Filter: Ignored (Adjacent to package installation keywords)
+--------------------------------------------------
+Word: DoctorHub
+Ignored By Layer: Website Entity Discovery
+Reason: Score: 80 >= 40, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20)
+Validation Trace:
+- LanguageTool: Candidate (Spelling error flagged by LanguageTool)
+- Basic Format Filter: Passed (Not a number and length > 1)
+- Static Whitelist: Passed (No match in static dictionaries)
+- Product Group Consistency: Checking (Group size: 6, Sibling classified count: 4/5 (Ratio: 0.8))
+- Website Entity Discovery: Ignored (Inherited from Product Group Consistency)
+- Website Entity Discovery: Ignored (Score: 80, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20))
+- Website Entity Discovery: Ignored (Score: 80, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20))
+- Website Entity Discovery: Ignored (Score: 80, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20))
+- Website Entity Discovery: Ignored (Score: 80, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20))
+- Website Entity Discovery: Ignored (Score: 80, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20))
+--------------------------------------------------
+Word: EduTrackAI
+Ignored By Layer: Website Entity Discovery
+Reason: Score: 130 >= 40, Signals: Navigation(+20), Usage(3+)(+10), Title(+20), Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20)
+Validation Trace:
+- LanguageTool: Candidate (Spelling error flagged by LanguageTool)
+- Basic Format Filter: Passed (Not a number and length > 1)
+- Static Whitelist: Passed (No match in static dictionaries)
+- Website Entity Discovery: Ignored (Score: 130, Signals: Navigation(+20), Usage(3+)(+10), Title(+20), Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20))
+- Website Entity Discovery: Ignored (Score: 130, Signals: Navigation(+20), Usage(3+)(+10), Title(+20), Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20))
+- Website Entity Discovery: Ignored (Score: 130, Signals: Navigation(+20), Usage(3+)(+10), Title(+20), Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20))
+- Website Entity Discovery: Ignored (Score: 130, Signals: Navigation(+20), Usage(3+)(+10), Title(+20), Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20))
+- LanguageTool: Candidate (Spelling error flagged by LanguageTool)
+- Basic Format Filter: Passed (Not a number and length > 1)
+- Static Whitelist: Passed (No match in static dictionaries)
+- Product Group Consistency: Checking (Group size: 4, Sibling classified count: 3/3 (Ratio: 1.0))
+- Website Entity Discovery: Ignored (Inherited from Product Group Consistency)
+- LanguageTool: Candidate (Spelling error flagged by LanguageTool)
+- Basic Format Filter: Passed (Not a number and length > 1)
+- Static Whitelist: Passed (No match in static dictionaries)
+- Website Entity Discovery: Ignored (Score: 130, Signals: Navigation(+20), Usage(3+)(+10), Title(+20), Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20))
+- LanguageTool: Candidate (Spelling error flagged by LanguageTool)
+- Basic Format Filter: Passed (Not a number and length > 1)
+- Static Whitelist: Passed (No match in static dictionaries)
+- Product Group Consistency: Checking (Group size: 2, Sibling classified count: 1/1 (Ratio: 1.0))
+- Website Entity Discovery: Ignored (Score: 130, Signals: Navigation(+20), Usage(3+)(+10), Title(+20), Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20))
+--------------------------------------------------
+Word: enviroment
+Ignored By Layer: Confidence Engine
+Reason: Total Score: 80 >= 60
+Validation Trace:
+- LanguageTool: Candidate (Spelling error flagged by LanguageTool)
+- Basic Format Filter: Passed (Not a number and length > 1)
+- Static Whitelist: Passed (No match in static dictionaries)
+- Product Group Consistency: Checking (Group size: 2, Sibling classified count: 1/1 (Ratio: 1.0))
+- Website Entity Discovery: Passed (Score: 0, Signals: )
+- Website Entity Discovery: Passed (Did not qualify as a website entity)
+- Confidence Engine - Person Detection: Passed (0) (No match)
+- Confidence Engine - Organization Detection: Passed (0) (No match)
+- Confidence Engine - Location Detection: Matched (+40) (Matches location pattern)
+- Confidence Engine - Technology Detection: Matched (+40) (Found in npm/maven registries)
+- Confidence Engine - Website Entity Match: Passed (0) (No match)
+- Confidence Engine - High Frequency: Passed (0) (Low frequency on site)
+- Confidence Engine: Ignored (Total Score: 80, reasons: Location Pattern(+40), Tech Registry(+40))
+--------------------------------------------------
+Word: ExamTrack
+Ignored By Layer: Website Entity Discovery
+Reason: Score: 80 >= 40, Signals: Navigation(+20), Product List(+20), CamelCase(+15), Tech Suffix(+25)
+Validation Trace:
+- Website Entity Discovery: Ignored (Score: 80, Signals: Navigation(+20), Product List(+20), CamelCase(+15), Tech Suffix(+25))
+- Website Entity Discovery: Ignored (Score: 80, Signals: Navigation(+20), Product List(+20), CamelCase(+15), Tech Suffix(+25))
+- LanguageTool: Candidate (Spelling error flagged by LanguageTool)
+- Basic Format Filter: Passed (Not a number and length > 1)
+- Static Whitelist: Passed (No match in static dictionaries)
+- Product Group Consistency: Checking (Group size: 4, Sibling classified count: 3/3 (Ratio: 1.0))
+- Website Entity Discovery: Ignored (Inherited from Product Group Consistency)
+- Website Entity Discovery: Ignored (Score: 80, Signals: Navigation(+20), Product List(+20), CamelCase(+15), Tech Suffix(+25))
+- Website Entity Discovery: Ignored (Score: 80, Signals: Navigation(+20), Product List(+20), CamelCase(+15), Tech Suffix(+25))
+- Website Entity Discovery: Ignored (Score: 80, Signals: Navigation(+20), Product List(+20), CamelCase(+15), Tech Suffix(+25))
+- LanguageTool: Candidate (Spelling error flagged by LanguageTool)
+- Basic Format Filter: Passed (Not a number and length > 1)
+- Static Whitelist: Passed (No match in static dictionaries)
+- Product Group Consistency: Checking (Group size: 7, Sibling classified count: 5/6 (Ratio: 0.8333333333333334))
+- Website Entity Discovery: Ignored (Inherited from Product Group Consistency)
+- Website Entity Discovery: Ignored (Score: 80, Signals: Navigation(+20), Product List(+20), CamelCase(+15), Tech Suffix(+25))
+- Website Entity Discovery: Ignored (Score: 80, Signals: Navigation(+20), Product List(+20), CamelCase(+15), Tech Suffix(+25))
+- Website Entity Discovery: Ignored (Score: 80, Signals: Navigation(+20), Product List(+20), CamelCase(+15), Tech Suffix(+25))
+- Website Entity Discovery: Ignored (Score: 80, Signals: Navigation(+20), Product List(+20), CamelCase(+15), Tech Suffix(+25))
+--------------------------------------------------
+Word: FutureBridge
+Ignored By Layer: Website Entity Discovery
+Reason: Inherited from Product Group Consistency
+Validation Trace:
+- Website Entity Discovery: Passed (Score: 35, Signals: Product List(+20), CamelCase(+15))
+- Website Entity Discovery: Passed (Score: 35, Signals: Product List(+20), CamelCase(+15))
+- LanguageTool: Candidate (Spelling error flagged by LanguageTool)
+- Basic Format Filter: Passed (Not a number and length > 1)
+- Static Whitelist: Passed (No match in static dictionaries)
+- Product Group Consistency: Checking (Group size: 6, Sibling classified count: 4/5 (Ratio: 0.8))
+- Website Entity Discovery: Ignored (Inherited from Product Group Consistency)
+--------------------------------------------------
+Word: GymNation
+Ignored By Layer: Website Entity Discovery
+Reason: Inherited from Product Group Consistency
+Validation Trace:
+- LanguageTool: Candidate (Spelling error flagged by LanguageTool)
+- Basic Format Filter: Passed (Not a number and length > 1)
+- Static Whitelist: Passed (No match in static dictionaries)
+- Product Group Consistency: Checking (Group size: 6, Sibling classified count: 4/5 (Ratio: 0.8))
+- Website Entity Discovery: Ignored (Inherited from Product Group Consistency)
+- Website Entity Discovery: Passed (Score: 35, Signals: Product List(+20), CamelCase(+15))
+- Website Entity Discovery: Passed (Score: 35, Signals: Product List(+20), CamelCase(+15))
+--------------------------------------------------
+Word: HealthFlowAI
+Ignored By Layer: Website Entity Discovery
+Reason: Score: 80 >= 40, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20)
+Validation Trace:
+- Website Entity Discovery: Ignored (Score: 80, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20))
+- Website Entity Discovery: Ignored (Score: 80, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20))
+- LanguageTool: Candidate (Spelling error flagged by LanguageTool)
+- Basic Format Filter: Passed (Not a number and length > 1)
+- Static Whitelist: Passed (No match in static dictionaries)
+- Product Group Consistency: Checking (Group size: 6, Sibling classified count: 4/5 (Ratio: 0.8))
+- Website Entity Discovery: Ignored (Inherited from Product Group Consistency)
+- Website Entity Discovery: Ignored (Score: 80, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20))
+- Website Entity Discovery: Ignored (Score: 80, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20))
+- Website Entity Discovery: Ignored (Score: 80, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20))
+--------------------------------------------------
+Word: HealthSphere
+Ignored By Layer: Website Entity Discovery
+Reason: Inherited from Product Group Consistency
+Validation Trace:
+- Website Entity Discovery: Passed (Score: 35, Signals: Product List(+20), CamelCase(+15))
+- LanguageTool: Candidate (Spelling error flagged by LanguageTool)
+- Basic Format Filter: Passed (Not a number and length > 1)
+- Static Whitelist: Passed (No match in static dictionaries)
+- Product Group Consistency: Checking (Group size: 6, Sibling classified count: 4/5 (Ratio: 0.8))
+- Website Entity Discovery: Ignored (Inherited from Product Group Consistency)
+- Website Entity Discovery: Passed (Score: 35, Signals: Product List(+20), CamelCase(+15))
+--------------------------------------------------
+Word: HyperAnalyticsCloud
+Ignored By Layer: Website Entity Discovery
+Reason: Score: 80 >= 40, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20)
+Validation Trace:
+- LanguageTool: Candidate (Spelling error flagged by LanguageTool)
+- Basic Format Filter: Passed (Not a number and length > 1)
+- Static Whitelist: Passed (No match in static dictionaries)
+- Website Entity Discovery: Ignored (Score: 80, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20))
+--------------------------------------------------
+Word: InventoryCloud
+Ignored By Layer: Website Entity Discovery
+Reason: Inherited from Product Group Consistency
+Validation Trace:
+- Website Entity Discovery: Ignored (Score: 80, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20))
+- Website Entity Discovery: Ignored (Score: 80, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20))
+- Website Entity Discovery: Ignored (Score: 80, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20))
+- Website Entity Discovery: Ignored (Score: 80, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20))
+- LanguageTool: Candidate (Spelling error flagged by LanguageTool)
+- Basic Format Filter: Passed (Not a number and length > 1)
+- Static Whitelist: Passed (No match in static dictionaries)
+- Product Group Consistency: Checking (Group size: 5, Sibling classified count: 3/4 (Ratio: 0.75))
+- Website Entity Discovery: Ignored (Inherited from Product Group Consistency)
+--------------------------------------------------
+Word: Jatin
+Ignored By Layer: Website Entity Discovery
+Reason: Inherited from Product Group Consistency
+Validation Trace:
+- LanguageTool: Candidate (Spelling error flagged by LanguageTool)
+- Basic Format Filter: Passed (Not a number and length > 1)
+- Static Whitelist: Passed (No match in static dictionaries)
+- Product Group Consistency: Checking (Group size: 14, Sibling classified count: 13/13 (Ratio: 1.0))
+- Website Entity Discovery: Ignored (Inherited from Product Group Consistency)
+--------------------------------------------------
+Word: Kint
+Ignored By Layer: Static Whitelist
+Reason: Matched techWhitelist
+Validation Trace:
+- LanguageTool: Candidate (Spelling error flagged by LanguageTool)
+- Basic Format Filter: Passed (Not a number and length > 1)
+- Static Whitelist: Ignored (Matched techWhitelist)
+--------------------------------------------------
+Word: Krumo
+Ignored By Layer: Static Whitelist
+Reason: Matched techWhitelist
+Validation Trace:
+- LanguageTool: Candidate (Spelling error flagged by LanguageTool)
+- Basic Format Filter: Passed (Not a number and length > 1)
+- Static Whitelist: Ignored (Matched techWhitelist)
+--------------------------------------------------
+Word: LearnFlow
+Ignored By Layer: Website Entity Discovery
+Reason: Score: 80 >= 40, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20)
+Validation Trace:
+- LanguageTool: Candidate (Spelling error flagged by LanguageTool)
+- Basic Format Filter: Passed (Not a number and length > 1)
+- Static Whitelist: Passed (No match in static dictionaries)
+- Product Group Consistency: Checking (Group size: 6, Sibling classified count: 4/5 (Ratio: 0.8))
+- Website Entity Discovery: Ignored (Inherited from Product Group Consistency)
+- Website Entity Discovery: Ignored (Score: 80, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20))
+- Website Entity Discovery: Ignored (Score: 80, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20))
+--------------------------------------------------
+Word: LearningHub
+Ignored By Layer: Website Entity Discovery
+Reason: Score: 80 >= 40, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20)
+Validation Trace:
+- Website Entity Discovery: Ignored (Score: 80, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20))
+- Website Entity Discovery: Ignored (Score: 80, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20))
+- Website Entity Discovery: Ignored (Score: 80, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20))
+- Website Entity Discovery: Ignored (Score: 80, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20))
+- LanguageTool: Candidate (Spelling error flagged by LanguageTool)
+- Basic Format Filter: Passed (Not a number and length > 1)
+- Static Whitelist: Passed (No match in static dictionaries)
+- Product Group Consistency: Checking (Group size: 7, Sibling classified count: 5/6 (Ratio: 0.8333333333333334))
+- Website Entity Discovery: Ignored (Inherited from Product Group Consistency)
+- Website Entity Discovery: Ignored (Score: 80, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20))
+- Website Entity Discovery: Ignored (Score: 80, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20))
+--------------------------------------------------
+Word: MediTrack
+Ignored By Layer: Website Entity Discovery
+Reason: Score: 60 >= 40, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25)
+Validation Trace:
+- Website Entity Discovery: Ignored (Score: 60, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25))
+- LanguageTool: Candidate (Spelling error flagged by LanguageTool)
+- Basic Format Filter: Passed (Not a number and length > 1)
+- Static Whitelist: Passed (No match in static dictionaries)
+- Product Group Consistency: Checking (Group size: 6, Sibling classified count: 4/5 (Ratio: 0.8))
+- Website Entity Discovery: Ignored (Inherited from Product Group Consistency)
+- Website Entity Discovery: Ignored (Score: 60, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25))
+- Website Entity Discovery: Ignored (Score: 60, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25))
+- Website Entity Discovery: Ignored (Score: 60, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25))
+- Website Entity Discovery: Ignored (Score: 60, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25))
+--------------------------------------------------
+Word: NextJS
+Ignored By Layer: Static Whitelist
+Reason: Matched techWhitelist
+Validation Trace:
+- LanguageTool: Candidate (Spelling error flagged by LanguageTool)
+- Basic Format Filter: Passed (Not a number and length > 1)
+- Static Whitelist: Ignored (Matched techWhitelist)
+--------------------------------------------------
+Word: OrderFlow
+Ignored By Layer: Website Entity Discovery
+Reason: Score: 80 >= 40, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20)
+Validation Trace:
+- Website Entity Discovery: Ignored (Score: 80, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20))
+- Website Entity Discovery: Ignored (Score: 80, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20))
+- LanguageTool: Candidate (Spelling error flagged by LanguageTool)
+- Basic Format Filter: Passed (Not a number and length > 1)
+- Static Whitelist: Passed (No match in static dictionaries)
+- Product Group Consistency: Checking (Group size: 5, Sibling classified count: 3/4 (Ratio: 0.75))
+- Website Entity Discovery: Ignored (Inherited from Product Group Consistency)
+- Website Entity Discovery: Ignored (Score: 80, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20))
+- Website Entity Discovery: Ignored (Score: 80, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20))
+--------------------------------------------------
+Word: PatientSync
+Ignored By Layer: Website Entity Discovery
+Reason: Score: 60 >= 40, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25)
+Validation Trace:
+- Website Entity Discovery: Ignored (Score: 60, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25))
+- Website Entity Discovery: Ignored (Score: 60, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25))
+- Website Entity Discovery: Ignored (Score: 60, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25))
+- LanguageTool: Candidate (Spelling error flagged by LanguageTool)
+- Basic Format Filter: Passed (Not a number and length > 1)
+- Static Whitelist: Passed (No match in static dictionaries)
+- Product Group Consistency: Checking (Group size: 6, Sibling classified count: 4/5 (Ratio: 0.8))
+- Website Entity Discovery: Ignored (Inherited from Product Group Consistency)
+- Website Entity Discovery: Ignored (Score: 60, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25))
+- Website Entity Discovery: Ignored (Score: 60, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25))
+--------------------------------------------------
+Word: Platform
+Ignored By Layer: Website Entity Discovery
+Reason: Score: 40 >= 40, Signals: Navigation(+20), Title(+20)
+Validation Trace:
+- Website Entity Discovery: Ignored (Score: 40, Signals: Navigation(+20), Title(+20))
+--------------------------------------------------
+Word: Preact
+Ignored By Layer: Website Entity Discovery
+Reason: Inherited from Product Group Consistency
+Validation Trace:
+- Website Entity Discovery: Passed (Score: 20, Signals: Product List(+20))
+- LanguageTool: Candidate (Spelling error flagged by LanguageTool)
+- Basic Format Filter: Passed (Not a number and length > 1)
+- Static Whitelist: Passed (No match in static dictionaries)
+- Product Group Consistency: Checking (Group size: 10, Sibling classified count: 8/9 (Ratio: 0.8888888888888888))
+- Website Entity Discovery: Ignored (Inherited from Product Group Consistency)
+--------------------------------------------------
+Word: Predis
+Ignored By Layer: Website Entity Discovery
+Reason: Inherited from Product Group Consistency
+Validation Trace:
+- LanguageTool: Candidate (Spelling error flagged by LanguageTool)
+- Basic Format Filter: Passed (Not a number and length > 1)
+- Static Whitelist: Passed (No match in static dictionaries)
+- Product Group Consistency: Checking (Group size: 10, Sibling classified count: 8/9 (Ratio: 0.8888888888888888))
+- Website Entity Discovery: Ignored (Inherited from Product Group Consistency)
+- Website Entity Discovery: Passed (Score: 20, Signals: Product List(+20))
+--------------------------------------------------
+Word: ProgressAI
+Ignored By Layer: Website Entity Discovery
+Reason: Score: 80 >= 40, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20)
+Validation Trace:
+- Website Entity Discovery: Ignored (Score: 80, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20))
+- Website Entity Discovery: Ignored (Score: 80, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20))
+- Website Entity Discovery: Ignored (Score: 80, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20))
+- Website Entity Discovery: Ignored (Score: 80, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20))
+- Website Entity Discovery: Ignored (Score: 80, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20))
+- LanguageTool: Candidate (Spelling error flagged by LanguageTool)
+- Basic Format Filter: Passed (Not a number and length > 1)
+- Static Whitelist: Passed (No match in static dictionaries)
+- Product Group Consistency: Checking (Group size: 7, Sibling classified count: 5/6 (Ratio: 0.8333333333333334))
+- Website Entity Discovery: Ignored (Inherited from Product Group Consistency)
+- Website Entity Discovery: Ignored (Score: 80, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20))
+--------------------------------------------------
+Word: QuickCartAI
+Ignored By Layer: Website Entity Discovery
+Reason: Score: 80 >= 40, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20)
+Validation Trace:
+- Website Entity Discovery: Ignored (Score: 80, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20))
+- LanguageTool: Candidate (Spelling error flagged by LanguageTool)
+- Basic Format Filter: Passed (Not a number and length > 1)
+- Static Whitelist: Passed (No match in static dictionaries)
+- Product Group Consistency: Checking (Group size: 5, Sibling classified count: 3/4 (Ratio: 0.75))
+- Website Entity Discovery: Ignored (Inherited from Product Group Consistency)
+- Website Entity Discovery: Ignored (Score: 80, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20))
+- Website Entity Discovery: Ignored (Score: 80, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20))
+- Website Entity Discovery: Ignored (Score: 80, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20))
+--------------------------------------------------
+Word: recieve
+Ignored By Layer: Post-Validation Suppression Layer
+Reason: Package Context Filter
+Validation Trace:
+- LanguageTool: Candidate (Spelling error flagged by LanguageTool)
+- Basic Format Filter: Passed (Not a number and length > 1)
+- Static Whitelist: Passed (No match in static dictionaries)
+- Product Group Consistency: Checking (Group size: 2, Sibling classified count: 1/1 (Ratio: 1.0))
+- Website Entity Discovery: Passed (Score: 0, Signals: )
+- Website Entity Discovery: Passed (Did not qualify as a website entity)
+- Confidence Engine - Person Detection: Passed (0) (No match)
+- Confidence Engine - Organization Detection: Passed (0) (No match)
+- Confidence Engine - Location Detection: Passed (0) (No match)
+- Confidence Engine - Technology Detection: Passed (0) (Not found in tech registries)
+- Confidence Engine - Website Entity Match: Passed (0) (No match)
+- Confidence Engine - High Frequency: Passed (0) (Low frequency on site)
+- Confidence Engine: Passed (Total Score: 0, reasons: )
+- Human Name Filter: Passed (No match)
+- Length Filter: Passed (Length > 1 and not single letter fragment)
+- Session Whitelist: Passed (No match)
+- Product Whitelist: Passed (No match)
+- Technical Filter: Passed (No match)
+- Unit Filter: Passed (No match)
+- Code / Variable Filter: Passed (No match)
+- Package Context Filter: Ignored (Adjacent to package installation keywords)
+--------------------------------------------------
+Word: RetailBridge
+Ignored By Layer: Website Entity Discovery
+Reason: Inherited from Product Group Consistency
+Validation Trace:
+- Website Entity Discovery: Passed (Score: 35, Signals: Product List(+20), CamelCase(+15))
+- Website Entity Discovery: Passed (Score: 35, Signals: Product List(+20), CamelCase(+15))
+- Website Entity Discovery: Passed (Score: 35, Signals: Product List(+20), CamelCase(+15))
+- LanguageTool: Candidate (Spelling error flagged by LanguageTool)
+- Basic Format Filter: Passed (Not a number and length > 1)
+- Static Whitelist: Passed (No match in static dictionaries)
+- Product Group Consistency: Checking (Group size: 5, Sibling classified count: 4/4 (Ratio: 1.0))
+- Website Entity Discovery: Ignored (Inherited from Product Group Consistency)
+- Website Entity Discovery: Passed (Score: 35, Signals: Product List(+20), CamelCase(+15))
+--------------------------------------------------
+Word: Rutvik
+Ignored By Layer: Static Whitelist
+Reason: Matched nameWhitelist
+Validation Trace:
+- LanguageTool: Candidate (Spelling error flagged by LanguageTool)
+- Basic Format Filter: Passed (Not a number and length > 1)
+- Static Whitelist: Ignored (Matched nameWhitelist)
+--------------------------------------------------
+Word: Satkar
+Ignored By Layer: Website Entity Discovery
+Reason: Inherited from Product Group Consistency
+Validation Trace:
+- LanguageTool: Candidate (Spelling error flagged by LanguageTool)
+- Basic Format Filter: Passed (Not a number and length > 1)
+- Static Whitelist: Passed (No match in static dictionaries)
+- Product Group Consistency: Checking (Group size: 7, Sibling classified count: 6/6 (Ratio: 1.0))
+- Website Entity Discovery: Ignored (Inherited from Product Group Consistency)
+--------------------------------------------------
+Word: Scikit
+Ignored By Layer: Static Whitelist
+Reason: Matched techWhitelist
+Validation Trace:
+- LanguageTool: Candidate (Spelling error flagged by LanguageTool)
+- Basic Format Filter: Passed (Not a number and length > 1)
+- Static Whitelist: Ignored (Matched techWhitelist)
+--------------------------------------------------
+Word: ShopVerse
+Ignored By Layer: Website Entity Discovery
+Reason: Inherited from Product Group Consistency
+Validation Trace:
+- LanguageTool: Candidate (Spelling error flagged by LanguageTool)
+- Basic Format Filter: Passed (Not a number and length > 1)
+- Static Whitelist: Passed (No match in static dictionaries)
+- Product Group Consistency: Checking (Group size: 5, Sibling classified count: 3/4 (Ratio: 0.75))
+- Website Entity Discovery: Ignored (Inherited from Product Group Consistency)
+- Website Entity Discovery: Passed (Score: 35, Signals: Product List(+20), CamelCase(+15))
+- Website Entity Discovery: Passed (Score: 35, Signals: Product List(+20), CamelCase(+15))
+- Website Entity Discovery: Passed (Score: 35, Signals: Product List(+20), CamelCase(+15))
+- Website Entity Discovery: Passed (Score: 35, Signals: Product List(+20), CamelCase(+15))
+--------------------------------------------------
+Word: SkillBridge
+Ignored By Layer: Website Entity Discovery
+Reason: Inherited from Product Group Consistency
+Validation Trace:
+- Website Entity Discovery: Passed (Score: 35, Signals: Product List(+20), CamelCase(+15))
+- LanguageTool: Candidate (Spelling error flagged by LanguageTool)
+- Basic Format Filter: Passed (Not a number and length > 1)
+- Static Whitelist: Passed (No match in static dictionaries)
+- Product Group Consistency: Checking (Group size: 6, Sibling classified count: 4/5 (Ratio: 0.8))
+- Website Entity Discovery: Ignored (Inherited from Product Group Consistency)
+- Website Entity Discovery: Passed (Score: 35, Signals: Product List(+20), CamelCase(+15))
+--------------------------------------------------
+Word: SmartCampus
+Ignored By Layer: Website Entity Discovery
+Reason: Inherited from Product Group Consistency
+Validation Trace:
+- Website Entity Discovery: Passed (Score: 35, Signals: Product List(+20), CamelCase(+15))
+- Website Entity Discovery: Passed (Score: 35, Signals: Product List(+20), CamelCase(+15))
+- LanguageTool: Candidate (Spelling error flagged by LanguageTool)
+- Basic Format Filter: Passed (Not a number and length > 1)
+- Static Whitelist: Passed (No match in static dictionaries)
+- Product Group Consistency: Checking (Group size: 6, Sibling classified count: 4/5 (Ratio: 0.8))
+- Website Entity Discovery: Ignored (Inherited from Product Group Consistency)
+--------------------------------------------------
+Word: SpringBoot
+Ignored By Layer: Static Whitelist
+Reason: Matched techWhitelist
+Validation Trace:
+- LanguageTool: Candidate (Spelling error flagged by LanguageTool)
+- Basic Format Filter: Passed (Not a number and length > 1)
+- Static Whitelist: Ignored (Matched techWhitelist)
+--------------------------------------------------
+Word: StudentSync
+Ignored By Layer: Website Entity Discovery
+Reason: Score: 80 >= 40, Signals: Navigation(+20), Product List(+20), CamelCase(+15), Tech Suffix(+25)
+Validation Trace:
+- LanguageTool: Candidate (Spelling error flagged by LanguageTool)
+- Basic Format Filter: Passed (Not a number and length > 1)
+- Static Whitelist: Passed (No match in static dictionaries)
+- Product Group Consistency: Checking (Group size: 4, Sibling classified count: 3/3 (Ratio: 1.0))
+- Website Entity Discovery: Ignored (Inherited from Product Group Consistency)
+- Website Entity Discovery: Ignored (Score: 80, Signals: Navigation(+20), Product List(+20), CamelCase(+15), Tech Suffix(+25))
+- Website Entity Discovery: Ignored (Score: 80, Signals: Navigation(+20), Product List(+20), CamelCase(+15), Tech Suffix(+25))
+- Website Entity Discovery: Ignored (Score: 80, Signals: Navigation(+20), Product List(+20), CamelCase(+15), Tech Suffix(+25))
+- LanguageTool: Candidate (Spelling error flagged by LanguageTool)
+- Basic Format Filter: Passed (Not a number and length > 1)
+- Static Whitelist: Passed (No match in static dictionaries)
+- Product Group Consistency: Checking (Group size: 7, Sibling classified count: 5/6 (Ratio: 0.8333333333333334))
+- Website Entity Discovery: Ignored (Inherited from Product Group Consistency)
+- Website Entity Discovery: Ignored (Score: 80, Signals: Navigation(+20), Product List(+20), CamelCase(+15), Tech Suffix(+25))
+- Website Entity Discovery: Ignored (Score: 80, Signals: Navigation(+20), Product List(+20), CamelCase(+15), Tech Suffix(+25))
+- Website Entity Discovery: Ignored (Score: 80, Signals: Navigation(+20), Product List(+20), CamelCase(+15), Tech Suffix(+25))
+- Website Entity Discovery: Ignored (Score: 80, Signals: Navigation(+20), Product List(+20), CamelCase(+15), Tech Suffix(+25))
+- Website Entity Discovery: Ignored (Score: 80, Signals: Navigation(+20), Product List(+20), CamelCase(+15), Tech Suffix(+25))
+- Website Entity Discovery: Ignored (Score: 80, Signals: Navigation(+20), Product List(+20), CamelCase(+15), Tech Suffix(+25))
+--------------------------------------------------
+Word: Supabase
+Ignored By Layer: Static Whitelist
+Reason: Matched techWhitelist
+Validation Trace:
+- LanguageTool: Candidate (Spelling error flagged by LanguageTool)
+- Basic Format Filter: Passed (Not a number and length > 1)
+- Static Whitelist: Ignored (Matched techWhitelist)
+--------------------------------------------------
+Word: TeacherFlow
+Ignored By Layer: Website Entity Discovery
+Reason: Score: 100 >= 40, Signals: Navigation(+20), Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20)
+Validation Trace:
+- Website Entity Discovery: Ignored (Score: 100, Signals: Navigation(+20), Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20))
+- LanguageTool: Candidate (Spelling error flagged by LanguageTool)
+- Basic Format Filter: Passed (Not a number and length > 1)
+- Static Whitelist: Passed (No match in static dictionaries)
+- Product Group Consistency: Checking (Group size: 4, Sibling classified count: 3/3 (Ratio: 1.0))
+- Website Entity Discovery: Ignored (Inherited from Product Group Consistency)
+- Website Entity Discovery: Ignored (Score: 100, Signals: Navigation(+20), Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20))
+- Website Entity Discovery: Ignored (Score: 100, Signals: Navigation(+20), Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20))
+- Website Entity Discovery: Ignored (Score: 100, Signals: Navigation(+20), Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20))
+- LanguageTool: Candidate (Spelling error flagged by LanguageTool)
+- Basic Format Filter: Passed (Not a number and length > 1)
+- Static Whitelist: Passed (No match in static dictionaries)
+- Product Group Consistency: Checking (Group size: 7, Sibling classified count: 5/6 (Ratio: 0.8333333333333334))
+- Website Entity Discovery: Ignored (Inherited from Product Group Consistency)
+- Website Entity Discovery: Ignored (Score: 100, Signals: Navigation(+20), Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20))
+- Website Entity Discovery: Ignored (Score: 100, Signals: Navigation(+20), Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20))
+- Website Entity Discovery: Ignored (Score: 100, Signals: Navigation(+20), Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20))
+- Website Entity Discovery: Ignored (Score: 100, Signals: Navigation(+20), Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20))
+- Website Entity Discovery: Ignored (Score: 100, Signals: Navigation(+20), Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20))
+--------------------------------------------------
+Word: TestNG
+Ignored By Layer: Static Whitelist
+Reason: Matched techWhitelist
+Validation Trace:
+- LanguageTool: Candidate (Spelling error flagged by LanguageTool)
+- Basic Format Filter: Passed (Not a number and length > 1)
+- Static Whitelist: Ignored (Matched techWhitelist)
+--------------------------------------------------
+Word: TrainerFlowAI
+Ignored By Layer: Website Entity Discovery
+Reason: Score: 80 >= 40, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20)
+Validation Trace:
+- LanguageTool: Candidate (Spelling error flagged by LanguageTool)
+- Basic Format Filter: Passed (Not a number and length > 1)
+- Static Whitelist: Passed (No match in static dictionaries)
+- Website Entity Discovery: Ignored (Score: 80, Signals: Product List(+20), CamelCase(+15), Tech Suffix(+25), Entity Family(+20))
+--------------------------------------------------
+Word: XDebug
+Ignored By Layer: Static Whitelist
+Reason: Matched techWhitelist
+Validation Trace:
+- LanguageTool: Candidate (Spelling error flagged by LanguageTool)
+- Basic Format Filter: Passed (Not a number and length > 1)
+- Static Whitelist: Ignored (Matched techWhitelist)
+--------------------------------------------------
+Word: Zend
+Ignored By Layer: Static Whitelist
+Reason: Matched techWhitelist
+Validation Trace:
+- LanguageTool: Candidate (Spelling error flagged by LanguageTool)
+- Basic Format Filter: Passed (Not a number and length > 1)
+- Static Whitelist: Ignored (Matched techWhitelist)
+--------------------------------------------------

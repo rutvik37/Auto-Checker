@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HealthSphere AI Platform - Ultimate Spelling Validation Test</title>
+</head>
+
+<body>
+
+    <h1>HealthSphere AI Platform</h1>
+
+    <p>This platform helps organizations improve software quality and automation testing.</p>
+
+    <hr>
+
+    <h2>1. Valid Technical Terms (Should NOT be reported)</h2>
+
+    <p>Playwright is used for browser automation.</p>
+    <p>TestNG is used for test execution.</p>
+    <p>JMeter is used for performance testing.</p>
+    <p>Flutter is used for mobile application development.</p>
+    <p>ChatGPT helps generate documentation.</p>
+    <p>Groq helps validate spelling results.</p>
+    <p>OpenAI develops advanced AI models.</p>
+    <p>SpringBoot powers backend services.</p>
+    <p>PostgreSQL stores application data.</p>
+    <p>GitHub hosts source code repositories.</p>
+    <p>GitLab supports CI/CD pipelines.</p>
+    <p>JavaScript powers frontend applications.</p>
+    <p>TypeScript improves code maintainability.</p>
+    <p>React is a frontend framework.</p>
+    <p>NodeJS runs backend services.</p>
+
+    <hr>
+
+    <h2>2. Genuine Spelling Mistakes (Should be reported)</h2>
+
+    <p>This is a critical applcation issue.</p>
+    <p>The dashbord is not loading correctly.</p>
+    <p>The automtion suite failed overnight.</p>
+    <p>The frmaework requires configuration updates.</p>
+    <p>The playwrigt execution failed unexpectedly.</p>
+    <p>It is our resposibility to maintain software quality.</p>
+    <p>The goverment released a new healthcare policy.</p>
+    <p>The hotel acomodation has been confirmed.</p>
+    <p>Please recieve the deployment report tomorrow.</p>
+    <p>This is definately a critical production issue.</p>
+
+    <hr>
+
+    <h2>3. Mixed Valid + Invalid (Should report only typo)</h2>
+
+    <p>This project uses Playwrigt with TestNG.</p>
+    <p>The Automtion suite executes daily using Playwright.</p>
+    <p>The Frmaework integrates with Flutter.</p>
+
+    <hr>
+
+    <h2>4. Duplicate Typo Validation (Should create only ONE entry per unique typo)</h2>
+
+    <p>Playwrigt is used for browser automation.</p>
+    <p>Playwrigt supports Chromium.</p>
+    <p>Playwrigt supports Firefox.</p>
+    <p>Playwrigt supports WebKit.</p>
+    <p>Playwrigt provides locators.</p>
+
+    <hr>
+
+    <h2>5. Case-Insensitive Duplicate Validation (Should create only ONE entry)</h2>
+
+    <p>Playwrigt execution started.</p>
+    <p>PLAYWRIGT execution started.</p>
+    <p>playwrigt execution started.</p>
+    <p>PlAyWrIgT execution started.</p>
+
+    <hr>
+
+    <h2>6. Space Difference Cases (Should NOT be reported)</h2>
+
+    <p>signin</p>
+    <p>sign in</p>
+
+    <p>signup</p>
+    <p>sign up</p>
+
+    <p>logout</p>
+    <p>log out</p>
+
+    <p>forgotpassword</p>
+    <p>forgot password</p>
+
+    <p>userdata</p>
+    <p>user data</p>
+
+    <p>salaryslip</p>
+    <p>salary slip</p>
+
+    <hr>
+
+    <h2>7. Business Terminology (Should NOT be reported)</h2>
+
+    <p>DashboardMenu</p>
+    <p>UserManagement</p>
+    <p>CustomerPortal</p>
+    <p>AdminPanel</p>
+    <p>OrderHistory</p>
+    <p>ProfilePage</p>
+    <p>TransactionLog</p>
+
+    <hr>
+
+    <h2>8. Proper Nouns (Should NOT be reported)</h2>
+
+    <p>Rutvik reviewed the automation framework.</p>
+    <p>Jagdish provided KT for the project.</p>
+    <p>Brijesh approved the release.</p>
+    <p>Surat office completed testing.</p>
+
+    <hr>
+
+    <h2>9. Numbers Only (Should NOT go to Groq)</h2>
+
+    <p>123</p>
+    <p>99999</p>
+    <p>2026</p>
+    <p>9876543210</p>
+
+    <hr>
+
+    <h2>10. Decimal Numbers (Should NOT go to Groq)</h2>
+
+    <p>10.5</p>
+    <p>99.99</p>
+    <p>100.00</p>
+
+    <hr>
+
+    <h2>11. Percentage Values (Should NOT go to Groq)</h2>
+
+    <p>100%</p>
+    <p>50%</p>
+    <p>99.99%</p>
+
+    <hr>
+
+    <h2>12. URLs (Should NOT go to Groq)</h2>
+
+    <p>https://www.google.com</p>
+    <p>https://chat.openai.com</p>
+    <p>http://localhost:8080</p>
+    <p>www.github.com</p>
+
+    <hr>
+
+    <h2>13. Email Addresses (Should NOT go to Groq)</h2>
+
+    <p>test@gmail.com</p>
+    <p>admin@company.com</p>
+    <p>support@test.org</p>
+
+    <hr>
+
+    <h2>14. Special Characters (Should NOT go to Groq)</h2>
+
+    <p>@</p>
+    <p>#</p>
+    <p>$</p>
+    <p>%</p>
+    <p>&</p>
+    <p>*</p>
+    <p>!</p>
+
+    <hr>
+
+    <h2>15. Empty Value Simulation</h2>
+
+    <p></p>
+    <p> </p>
+
+    <hr>
+
+    <h2>16. Short Words (Should NOT be reported)</h2>
+
+    <p>a</p>
+    <p>i</p>
+    <p>ok</p>
+    <p>ui</p>
+    <p>qa</p>
+    <p>db</p>
+    <p>api</p>
+
+    <hr>
+
+    <h2>17. Technical Sentences (Should NOT be reported)</h2>
+
+    <p>Playwright integrates with TestNG.</p>
+    <p>JMeter executes performance tests.</p>
+    <p>Flutter builds Android applications.</p>
+    <p>PostgreSQL stores relational data.</p>
+    <p>SpringBoot exposes REST APIs.</p>
+
+    <hr>
+
+    <h2>18. Cache Validation Section</h2>
+
+    <p>Playwrigt</p>
+    <p>Playwrigt</p>
+    <p>Playwrigt</p>
+    <p>PLAYWRIGT</p>
+    <p>playwrigt</p>
+    <p>PlAyWrIgT</p>
+
+    <hr>
+
+    <h2>19. Context-Based Validation</h2>
+
+    <p>The new product name is XyloCore.</p>
+    <p>The customer uses DataSphereX.</p>
+    <p>The module name is UserFlowEngine.</p>
+
+    <hr>
+
+    <h2>20. Real Sentence Typos</h2>
+
+    <p>The applcation crashes after login.</p>
+    <p>The goverment website is unavailable.</p>
+    <p>Please recieve the attachment.</p>
+    <p>The dashbord widgets are broken.</p>
+    <p>The automtion script failed.</p>
+
+    <hr>
+
+    <h2>Expected Unique Spelling Issues After Deduplication</h2>
+
+    <ul>
+        <li>applcation → application</li>
+        <li>dashbord → dashboard</li>
+        <li>automtion → automation</li>
+        <li>frmaework → framework</li>
+        <li>playwrigt → playwright</li>
+        <li>resposibility → responsibility</li>
+        <li>goverment → government</li>
+        <li>acomodation → accommodation</li>
+        <li>recieve → receive</li>
+        <li>definately → definitely</li>
+    </ul>
+
+    <p><strong>Expected Final Unique Issue Count = 10</strong></p>
+
+</body>
+
+</html>

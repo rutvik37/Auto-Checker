@@ -1,0 +1,36 @@
+==================================================
+AUDIT REPORT FOR SCAN SESSION #61
+Generated: 2026-06-11T12:06:02.832155800
+==================================================
+
+SUMMARY STATS:
+--------------------------------------------------
+Words Ignored by Static Dictionaries: 0
+Words Ignored by Dynamic Entity Layers: 2
+Words Reported as Spelling Mistakes: 12
+
+==================================================
+1. WORDS IGNORED BY STATIC DICTIONARIES (0)
+==================================================
+
+==================================================
+2. WORDS IGNORED BY DYNAMIC ENTITY LAYERS (2)
+==================================================
+JMeter -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+TestNG -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+
+==================================================
+3. WORDS REPORTED AS TYPOS (12)
+==================================================
+Groq
+acomodation
+applcation
+automtion
+dashbord
+definately
+frmaework
+goverment
+playwrigt
+recieve
+resposibility
+signin

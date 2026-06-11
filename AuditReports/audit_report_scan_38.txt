@@ -1,0 +1,75 @@
+==================================================
+AUDIT REPORT FOR SCAN SESSION #38
+Generated: 2026-06-09T11:09:28.421811300
+==================================================
+
+SUMMARY STATS:
+--------------------------------------------------
+Words Ignored by Static Dictionaries: 11
+Words Ignored by Dynamic Entity Layers: 20
+Words Reported as Spelling Mistakes: 22
+
+==================================================
+1. WORDS IGNORED BY STATIC DICTIONARIES (11)
+==================================================
+Kint
+Krumo
+NextJS
+Rutvik
+Scikit
+SpringBoot
+Supabase
+TestNG
+XDebug
+Zend
+dbal
+
+==================================================
+2. WORDS IGNORED BY DYNAMIC ENTITY LAYERS (20)
+==================================================
+$casts -> Ignored by post-validation suppression rules
+$dates -> Ignored by post-validation suppression rules
+$gymMember -> Ignored by post-validation suppression rules
+$userData -> Ignored by post-validation suppression rules
+FitZonePro -> Ignored by Confidence Engine. Total Score: 60, Reasons: Organization Pattern(+40), Website Entity Match(+20)
+GymFlow -> Ignored by Confidence Engine. Total Score: 60, Reasons: Organization Pattern(+40), Website Entity Match(+20)
+GymNation -> Ignored by Confidence Engine. Total Score: 100, Reasons: Person Pattern(+40), Organization Pattern(+40), Website Entity Match(+20)
+HealthSphere -> Ignored by Confidence Engine. Total Score: 80, Reasons: Person Pattern(+40), Organization Pattern(+40)
+HealthTrack -> Ignored by Confidence Engine. Total Score: 60, Reasons: Organization Pattern(+40), Website Entity Match(+20)
+HyperGymOS -> Ignored by post-validation suppression rules
+Jatin -> Ignored by Confidence Engine. Total Score: 120, Reasons: Person Pattern(+40), Location Pattern(+40), Tech Registry(+40)
+MemberHub -> Ignored by Confidence Engine. Total Score: 60, Reasons: Organization Pattern(+40), Website Entity Match(+20)
+MuscleTech -> Ignored by Confidence Engine. Total Score: 80, Reasons: Person Pattern(+40), Organization Pattern(+40)
+PowerGym -> Ignored by Confidence Engine. Total Score: 80, Reasons: Person Pattern(+40), Organization Pattern(+40)
+Preact -> Ignored by post-validation suppression rules
+Predis -> Ignored by post-validation suppression rules
+Satkar -> Ignored by Confidence Engine. Total Score: 80, Reasons: Person Pattern(+40), Location Pattern(+40)
+TrainerSync -> Ignored by Confidence Engine. Total Score: 60, Reasons: Organization Pattern(+40), Website Entity Match(+20)
+WellnessBridge -> Ignored by Confidence Engine. Total Score: 80, Reasons: Person Pattern(+40), Organization Pattern(+40)
+ZXQWERTYFRAMEWORK -> Ignored by Confidence Engine. Total Score: 80, Reasons: Person Pattern(+40), Organization Pattern(+40)
+
+==================================================
+3. WORDS REPORTED AS TYPOS (22)
+==================================================
+$casts
+$dates
+$gymMember
+$userData
+FitAnalytics
+HyperGymOS
+MuscleSyncCloud
+NutritionFlow
+Preact
+Predis
+TitanFitAI
+WorkoutSync
+achive
+comunication
+definately
+developmnt
+enviroment
+goverment
+maintainance
+occured
+performence
+recieved

@@ -1,0 +1,334 @@
+==================================================
+AUDIT REPORT FOR SCAN SESSION #50
+Generated: 2026-06-09T19:12:27.139021100
+==================================================
+
+SUMMARY STATS:
+--------------------------------------------------
+Words Ignored by Static Dictionaries: 28
+Words Ignored by Dynamic Entity Layers: 137
+Words Reported as Spelling Mistakes: 146
+
+==================================================
+1. WORDS IGNORED BY STATIC DICTIONARIES (28)
+==================================================
+Agentic
+AngularJs
+Api
+Aws
+DataBrew
+EmberJs
+ExpressJS
+FrontEnd
+Github
+Gitlab
+Javascript
+Js
+NestJS
+NodeJs
+Nodejs
+Php
+ReactNative
+Techsoft
+Zend
+agentic
+https
+ios
+javascript
+microservices
+nodejs
+salesforce
+vue
+vuejs
+
+==================================================
+2. WORDS IGNORED BY DYNAMIC ENTITY LAYERS (137)
+==================================================
+AIOps -> Ignored by Website Entity Discovery Layer
+ARcore -> Ignored by Confidence Engine. Total Score: 80, Reasons: Person Pattern(+40), Organization Pattern(+40)
+Aldus -> Ignored by Confidence Engine. Total Score: 80, Reasons: Person Pattern(+40), Tech Registry(+40)
+AlloyDB -> Ignored by Website Entity Discovery Layer
+Apigee -> Ignored by Confidence Engine. Total Score: 80, Reasons: Person Pattern(+40), Tech Registry(+40)
+Armbrister -> Ignored by Confidence Engine. Total Score: 60, Reasons: Person Pattern(+40), High Frequency Match(+20)
+Autoscaler -> Ignored by Website Entity Discovery Layer
+Auz -> Ignored by Confidence Engine. Total Score: 60, Reasons: Person Pattern(+40), High Frequency Match(+20)
+Badshah -> Ignored by Confidence Engine. Total Score: 60, Reasons: Person Pattern(+40), High Frequency Match(+20)
+Budget‑Friendly -> Ignored by Confidence Engine. Total Score: 80, Reasons: Person Pattern(+40), Organization Pattern(+40)
+CMEK -> Ignored by Website Entity Discovery Layer
+CabOn -> Ignored by Confidence Engine. Total Score: 80, Reasons: Person Pattern(+40), Organization Pattern(+40)
+CabsOn -> Ignored by Website Entity Discovery Layer
+Casestudy -> Ignored by Website Entity Discovery Layer
+Chandrashekar -> Ignored by Confidence Engine. Total Score: 60, Reasons: Person Pattern(+40), High Frequency Match(+20)
+CloudTrail -> Ignored by Website Entity Discovery Layer
+CodeBuild -> Ignored by Confidence Engine. Total Score: 80, Reasons: Person Pattern(+40), Organization Pattern(+40)
+CodeDeploy -> Ignored by Confidence Engine. Total Score: 120, Reasons: Person Pattern(+40), Organization Pattern(+40), Tech Registry(+40)
+CodePipeline -> Ignored by Website Entity Discovery Layer
+Codeigniter -> Ignored by Website Entity Discovery Layer
+Contentful -> Ignored by Confidence Engine. Total Score: 60, Reasons: Person Pattern(+40), Knowledge Verification(+20)
+Customised -> Ignored by Confidence Engine. Total Score: 60, Reasons: Person Pattern(+40), High Frequency Match(+20)
+DApp -> Ignored by Website Entity Discovery Layer
+DApps -> Ignored by Website Entity Discovery Layer
+Dataflow -> Ignored by Website Entity Discovery Layer
+Dataplex -> Ignored by Website Entity Discovery Layer
+Derema -> Ignored by Confidence Engine. Total Score: 80, Reasons: Person Pattern(+40), Website Entity Match(+20), High Frequency Match(+20)
+DevSecOps -> Ignored by Website Entity Discovery Layer
+EdTech -> Ignored by Website Entity Discovery Layer
+ElastiCache -> Ignored by Website Entity Discovery Layer
+Entra -> Ignored by Website Entity Discovery Layer
+EventBridge -> Ignored by Website Entity Discovery Layer
+ExpressRoute -> Ignored by Confidence Engine. Total Score: 80, Reasons: Person Pattern(+40), Organization Pattern(+40)
+Farrer -> Ignored by Website Entity Discovery Layer
+FastAPI -> Ignored by Website Entity Discovery Layer
+Feild -> Ignored by Confidence Engine. Total Score: 60, Reasons: Person Pattern(+40), Knowledge Verification(+20)
+FinOps -> Ignored by Website Entity Discovery Layer
+FinTech -> Ignored by Website Entity Discovery Layer
+Footages -> Ignored by Confidence Engine. Total Score: 80, Reasons: Person Pattern(+40), Location Pattern(+40)
+Fratney -> Ignored by Website Entity Discovery Layer
+Garyson -> Ignored by Confidence Engine. Total Score: 60, Reasons: Person Pattern(+40), High Frequency Match(+20)
+GitOps -> Ignored by Confidence Engine. Total Score: 80, Reasons: Person Pattern(+40), Organization Pattern(+40)
+GuardDuty -> Ignored by Website Entity Discovery Layer
+Hayabuchi -> Ignored by Website Entity Discovery Layer
+IAM-based -> Ignored by Confidence Engine. Total Score: 80, Reasons: Organization Pattern(+40), Location Pattern(+40)
+IaC -> Ignored by Confidence Engine. Total Score: 60, Reasons: Organization Pattern(+40), High Frequency Match(+20)
+Ingenico -> Ignored by Website Entity Discovery Layer
+Ipsum -> Ignored by Confidence Engine. Total Score: 80, Reasons: Person Pattern(+40), Tech Registry(+40)
+Its -> Ignored by Website Entity Discovery Layer
+Jatin -> Ignored by Website Entity Discovery Layer
+KEDA-driven -> Ignored by Confidence Engine. Total Score: 80, Reasons: Organization Pattern(+40), Location Pattern(+40)
+Kew -> Ignored by Website Entity Discovery Layer
+Kubernets -> Ignored by Confidence Engine. Total Score: 60, Reasons: Person Pattern(+40), High Frequency Match(+20)
+LangChain -> Ignored by Website Entity Discovery Layer
+Lonc -> Ignored by Confidence Engine. Total Score: 60, Reasons: Person Pattern(+40), High Frequency Match(+20)
+Lorem -> Ignored by Confidence Engine. Total Score: 80, Reasons: Person Pattern(+40), Tech Registry(+40)
+MEVN -> Ignored by Website Entity Discovery Layer
+MIGs -> Ignored by Confidence Engine. Total Score: 80, Reasons: Person Pattern(+40), Organization Pattern(+40)
+MLaaS -> Ignored by Website Entity Discovery Layer
+MLflow -> Ignored by Website Entity Discovery Layer
+MUSIKAA -> Ignored by Website Entity Discovery Layer
+Medscape -> Ignored by Website Entity Discovery Layer
+Moffett -> Ignored by Website Entity Discovery Layer
+Murtaza -> Ignored by Confidence Engine. Total Score: 60, Reasons: Person Pattern(+40), High Frequency Match(+20)
+Musikaa -> Ignored by Confidence Engine. Total Score: 80, Reasons: Person Pattern(+40), Website Entity Match(+20), High Frequency Match(+20)
+NativeBase -> Ignored by Confidence Engine. Total Score: 80, Reasons: Person Pattern(+40), Organization Pattern(+40)
+NativeScript -> Ignored by Website Entity Discovery Layer
+Non‑Disclosure -> Ignored by Confidence Engine. Total Score: 80, Reasons: Person Pattern(+40), Organization Pattern(+40)
+Nuxt -> Ignored by Website Entity Discovery Layer
+Optimisation -> Ignored by Website Entity Discovery Layer
+Organisation -> Ignored by Website Entity Discovery Layer
+OurWeb -> Ignored by Confidence Engine. Total Score: 80, Reasons: Person Pattern(+40), Organization Pattern(+40)
+PageMaker -> Ignored by Confidence Engine. Total Score: 120, Reasons: Person Pattern(+40), Organization Pattern(+40), Tech Registry(+40)
+Panchal -> Ignored by Confidence Engine. Total Score: 60, Reasons: Person Pattern(+40), High Frequency Match(+20)
+PhoneGap -> Ignored by Confidence Engine. Total Score: 80, Reasons: Person Pattern(+40), Organization Pattern(+40)
+PhotoShop -> Ignored by Website Entity Discovery Layer
+PoS -> Ignored by Website Entity Discovery Layer
+PropTech -> Ignored by Confidence Engine. Total Score: 80, Reasons: Person Pattern(+40), Organization Pattern(+40)
+RLogical -> Ignored by Website Entity Discovery Layer
+RPOs -> Ignored by Website Entity Discovery Layer
+ReactJs -> Ignored by Website Entity Discovery Layer
+Replatform -> Ignored by Website Entity Discovery Layer
+Rlogical -> Ignored by Website Entity Discovery Layer
+RoR -> Ignored by Website Entity Discovery Layer
+SEO‑Friendly -> Ignored by Confidence Engine. Total Score: 80, Reasons: Person Pattern(+40), Organization Pattern(+40)
+SLOs -> Ignored by Website Entity Discovery Layer
+SMO -> Ignored by Website Entity Discovery Layer
+SPAs -> Ignored by Confidence Engine. Total Score: 80, Reasons: Organization Pattern(+40), Location Pattern(+40)
+Sadia -> Ignored by Confidence Engine. Total Score: 100, Reasons: Person Pattern(+40), Tech Registry(+40), High Frequency Match(+20)
+Satkar -> Ignored by Website Entity Discovery Layer
+Sitecore -> Ignored by Confidence Engine. Total Score: 60, Reasons: Person Pattern(+40), Knowledge Verification(+20)
+Skillset -> Ignored by Website Entity Discovery Layer
+Skillsets -> Ignored by Website Entity Discovery Layer
+Strapi -> Ignored by Confidence Engine. Total Score: 60, Reasons: Person Pattern(+40), High Frequency Match(+20)
+TIcket -> Ignored by Website Entity Discovery Layer
+Tanishq -> Ignored by Website Entity Discovery Layer
+TicketPickUp -> Ignored by Website Entity Discovery Layer
+Transcoder -> Ignored by Website Entity Discovery Layer
+Tsuzuki-ku -> Ignored by Website Entity Discovery Layer
+Ui-Ux -> Ignored by Confidence Engine. Total Score: 100, Reasons: Person Pattern(+40), Organization Pattern(+40), High Frequency Match(+20)
+Umbraco -> Ignored by Confidence Engine. Total Score: 60, Reasons: Person Pattern(+40), Knowledge Verification(+20)
+Verifone -> Ignored by Website Entity Discovery Layer
+Vuex -> Ignored by Confidence Engine. Total Score: 80, Reasons: Person Pattern(+40), Location Pattern(+40)
+WAF -> Ignored by Website Entity Discovery Layer
+WO -> Ignored by Website Entity Discovery Layer
+WO Number -> Ignored by Confidence Engine. Total Score: 80, Reasons: Person Pattern(+40), Organization Pattern(+40)
+Wikitude -> Ignored by Confidence Engine. Total Score: 60, Reasons: Person Pattern(+40), Knowledge Verification(+20)
+Yii -> Ignored by Confidence Engine. Total Score: 80, Reasons: Person Pattern(+40), Tech Registry(+40)
+Yokohama-shi -> Ignored by Website Entity Discovery Layer
+Zeev -> Ignored by Confidence Engine. Total Score: 60, Reasons: Person Pattern(+40), High Frequency Match(+20)
+customised -> Ignored by Website Entity Discovery Layer
+eCom -> Ignored by Website Entity Discovery Layer
+eCommerce -> Ignored by Website Entity Discovery Layer
+eLearning -> Ignored by Confidence Engine. Total Score: 80, Reasons: Organization Pattern(+40), Tech Registry(+40)
+eMail -> Ignored by Website Entity Discovery Layer
+iONIC -> Ignored by Website Entity Discovery Layer
+iPAD -> Ignored by Website Entity Discovery Layer
+iWatch -> Ignored by Website Entity Discovery Layer
+india -> Ignored by Website Entity Discovery Layer
+jason -> Ignored by Website Entity Discovery Layer
+kickstart -> Ignored by Confidence Engine. Total Score: 100, Reasons: Location Pattern(+40), Tech Registry(+40), High Frequency Match(+20)
+mPOS -> Ignored by Website Entity Discovery Layer
+nd -> Ignored by Website Entity Discovery Layer
+ofter -> Ignored by Website Entity Discovery Layer
+og -> Ignored by Website Entity Discovery Layer
+optimisation -> Ignored by Website Entity Discovery Layer
+organisation -> Ignored by Website Entity Discovery Layer
+pos -> Ignored by Website Entity Discovery Layer
+rLogical -> Ignored by Website Entity Discovery Layer
+replatform -> Ignored by Website Entity Discovery Layer
+rlogical -> Ignored by Website Entity Discovery Layer
+seo -> Ignored by Website Entity Discovery Layer
+setup -> Ignored by Website Entity Discovery Layer
+shortcode -> Ignored by Confidence Engine. Total Score: 60, Reasons: Tech Registry(+40), Knowledge Verification(+20)
+skillset -> Ignored by Website Entity Discovery Layer
+skillsets -> Ignored by Confidence Engine. Total Score: 80, Reasons: Location Pattern(+40), Tech Registry(+40)
+solutions -> Ignored by Website Entity Discovery Layer
+
+==================================================
+3. WORDS REPORTED AS TYPOS (146)
+==================================================
+ARKIT
+ARkit
+Adwords
+Algolia
+ArgoCD
+BI 
+Rlogical
+Badshah
+CAPTCHAs
+Chandrashekar
+Cognishen
+Colab
+Coldline
+Coroprate
+Customised
+Decentralised
+Delievery
+Derema
+Dones
+Eventarc
+FERPA
+Filestore
+FinOps
+Garyson
+GoodFirms
+Hayabuchi
+Hourss
+Ipsum
+Istio
+Its
+Jatin
+Kubernets
+Letraset
+Lonc
+Lorem
+MLKit
+MLaaS
+Matraman
+Medscape-like
+Modernisation
+Modernising
+Monaca
+Mongo
+Murtaza
+Musikaa
+NavtiveScript
+Nearline
+Now a days
+NuxtJS
+Omni-channel
+On‑Time
+Opencart
+Organisations
+RazorPay
+Rehost
+Rekognition
+Reschedual
+Roofng
+Rowback
+SIRIKIT
+SPAs
+Skillsets
+Strapi
+Strategie
+Sunt
+Textract
+Tsuzuki-ku
+Upgradation
+VUIs
+Vasant
+Vuforia
+WAF
+Webapplications
+Whitepapers
+Workorders
+Xaarin
+Yokohama-shi
+Zeev
+Zev
+any one
+artefacts
+blockquote-cls
+centralised
+centre
+centres
+cloudant
+containerised
+containerising
+coordinatively
+crawlability
+customised
+dedicatedly
+ebooks
+enterprice
+expertized
+flawy
+for mTLS
+fulfilment
+full‑time
+hghg
+hypercare
+jampacked
+kickstart
+kubenet
+long‑term
+mapview
+materialised
+mobilise
+modernise
+modernising
+monetisation
+navigations
+now a days
+ofter
+optimise
+organisations
+otw
+otw-sc-quote
+outpass
+overprovisioned
+overprovisioning
+part‑time
+popularised
+preemptible
+prioritised
+pro cess
+realised
+rehost
+replatforming
+reshift
+round‑the‑clock
+runbook
+runbooks
+shortcode
+skillset
+softwares
+specialise
+speciality
+toolchains
+top‑tier
+unappropriate
+utilisation
+whichng
+whitepapers
+who's spin
+workorder
+wp-content

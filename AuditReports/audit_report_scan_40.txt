@@ -1,0 +1,72 @@
+==================================================
+AUDIT REPORT FOR SCAN SESSION #40
+Generated: 2026-06-09T11:46:45.429866700
+==================================================
+
+SUMMARY STATS:
+--------------------------------------------------
+Words Ignored by Static Dictionaries: 11
+Words Ignored by Dynamic Entity Layers: 25
+Words Reported as Spelling Mistakes: 14
+
+==================================================
+1. WORDS IGNORED BY STATIC DICTIONARIES (11)
+==================================================
+Kint
+Krumo
+NextJS
+Rutvik
+Scikit
+SpringBoot
+Supabase
+TestNG
+XDebug
+Zend
+dbal
+
+==================================================
+2. WORDS IGNORED BY DYNAMIC ENTITY LAYERS (25)
+==================================================
+$casts -> Ignored by post-validation suppression rules
+$dates -> Ignored by post-validation suppression rules
+$gymMember -> Ignored by post-validation suppression rules
+$userData -> Ignored by post-validation suppression rules
+FitAnalytics -> Ignored by Website Entity Discovery Layer
+FitZonePro -> Ignored by Website Entity Discovery Layer
+GymFlow -> Ignored by Website Entity Discovery Layer
+GymNation -> Ignored by Website Entity Discovery Layer
+HealthSphere -> Ignored by Website Entity Discovery Layer
+HealthTrack -> Ignored by Website Entity Discovery Layer
+HyperGymOS -> Ignored by Website Entity Discovery Layer
+Jatin -> Ignored by Website Entity Discovery Layer
+MemberHub -> Ignored by Website Entity Discovery Layer
+MuscleSyncCloud -> Ignored by Website Entity Discovery Layer
+MuscleTech -> Ignored by Website Entity Discovery Layer
+NutritionFlow -> Ignored by Website Entity Discovery Layer
+PowerGym -> Ignored by Website Entity Discovery Layer
+Preact -> Ignored by Website Entity Discovery Layer
+Predis -> Ignored by Website Entity Discovery Layer
+Satkar -> Ignored by Website Entity Discovery Layer
+TitanFitAI -> Ignored by Website Entity Discovery Layer
+TrainerSync -> Ignored by Website Entity Discovery Layer
+WellnessBridge -> Ignored by Website Entity Discovery Layer
+WorkoutSync -> Ignored by Website Entity Discovery Layer
+ZXQWERTYFRAMEWORK -> Ignored by Website Entity Discovery Layer
+
+==================================================
+3. WORDS REPORTED AS TYPOS (14)
+==================================================
+$casts
+$dates
+$gymMember
+$userData
+achive
+comunication
+definately
+developmnt
+enviroment
+goverment
+maintainance
+occured
+performence
+recieved

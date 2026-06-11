@@ -1,0 +1,1 @@
+# Global Custom Dictionary - Add one word per line

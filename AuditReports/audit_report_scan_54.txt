@@ -1,0 +1,57 @@
+==================================================
+AUDIT REPORT FOR SCAN SESSION #54
+Generated: 2026-06-10T14:39:14.887732100
+==================================================
+
+SUMMARY STATS:
+--------------------------------------------------
+Words Ignored by Static Dictionaries: 0
+Words Ignored by Dynamic Entity Layers: 35
+Words Reported as Spelling Mistakes: 0
+
+==================================================
+1. WORDS IGNORED BY STATIC DICTIONARIES (0)
+==================================================
+
+==================================================
+2. WORDS IGNORED BY DYNAMIC ENTITY LAYERS (35)
+==================================================
+$employeeInfo -> Marked PENDING (validation failed or skipped)
+$userData -> Marked PENDING (validation failed or skipped)
+CareBridge -> Marked PENDING (validation failed or skipped)
+FitZoneCloud -> Marked PENDING (validation failed or skipped)
+HealthMonitorX -> Marked PENDING (validation failed or skipped)
+HealthSphereService -> Marked PENDING (validation failed or skipped)
+HyperAnalyticsCloud -> Marked PENDING (validation failed or skipped)
+Jatin -> Marked PENDING (validation failed or skipped)
+Kint -> Marked PENDING (validation failed or skipped)
+Krumo -> Marked PENDING (validation failed or skipped)
+MediFlow -> Marked PENDING (validation failed or skipped)
+MemberSyncPro -> Marked PENDING (validation failed or skipped)
+PatientTrackManager -> Marked PENDING (validation failed or skipped)
+Predis -> Marked PENDING (validation failed or skipped)
+Rutvik -> Marked PENDING (validation failed or skipped)
+Satkar -> Marked PENDING (validation failed or skipped)
+TestNG -> Marked PENDING (validation failed or skipped)
+TrainerFlowAI -> Marked PENDING (validation failed or skipped)
+XDebug -> Marked PENDING (validation failed or skipped)
+achive -> Marked PENDING (validation failed or skipped)
+acomodation -> Marked PENDING (validation failed or skipped)
+availble -> Marked PENDING (validation failed or skipped)
+comunication -> Marked PENDING (validation failed or skipped)
+dbal -> Marked PENDING (validation failed or skipped)
+definately -> Marked PENDING (validation failed or skipped)
+enviroment -> Marked PENDING (validation failed or skipped)
+goverment -> Marked PENDING (validation failed or skipped)
+maintainance -> Marked PENDING (validation failed or skipped)
+managment -> Marked PENDING (validation failed or skipped)
+occured -> Marked PENDING (validation failed or skipped)
+performence -> Marked PENDING (validation failed or skipped)
+recieve -> Marked PENDING (validation failed or skipped)
+resposibility -> Marked PENDING (validation failed or skipped)
+seperately -> Marked PENDING (validation failed or skipped)
+sucessfully -> Marked PENDING (validation failed or skipped)
+
+==================================================
+3. WORDS REPORTED AS TYPOS (0)
+==================================================

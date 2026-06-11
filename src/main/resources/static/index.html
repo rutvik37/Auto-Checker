@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Website Content QA Scanner</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="glow-bg"></div>
+    <div class="app-container">
+        <!-- Hidden elements to maintain app.js compatibility without errors -->
+        <aside class="sidebar" style="display: none;">
+            <button class="nav-btn active" id="nav-btn-dashboard"></button>
+            <button class="nav-btn" id="nav-btn-projects"></button>
+        </aside>
+
+        <!-- Main Workspace -->
+        <main class="workspace">
+            <!-- Header -->
+            <header class="workspace-header">
+                <div>
+                    <h1 style="font-family: var(--font-header); font-weight: 800; font-size: 32px; background: linear-gradient(135deg, #a855f7, #6366f1); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">QA Spelling Auto-Checker</h1>
+                    <p style="color: var(--text-secondary); margin-top: 4px; font-size: 14px;">Verify spelling issues on any website instantly</p>
+                </div>
+                <div class="project-selector-wrapper" style="display: none;">
+                    <select id="global-project-select">
+                        <option value="1">Default</option>
+                    </select>
+                </div>
+            </header>
+
+            <!-- Main Tab -->
+            <section class="tab-content active" id="tab-dashboard">
+                <div class="dashboard-grid" style="grid-template-columns: 1fr;">
+                    
+                    <!-- Scan Config Form -->
+                    <div class="card glass-card">
+                        <div class="card-header">
+                            <h2><i class="fa-solid fa-magnifying-glass"></i> Website Spell Check</h2>
+                        </div>
+                        <form id="scan-form" onsubmit="startScan(event)">
+                            <div class="form-group">
+                                <label for="scan-url" style="font-size: 14px; font-weight: 600;">Website URL to Scan <span class="required">*</span></label>
+                                <input type="url" id="scan-url" placeholder="https://example.com" required style="padding: 14px; font-size: 15px;">
+                            </div>
+                            
+                            <!-- Hidden inputs for compatibility with app.js -->
+                            <div style="display: none;">
+                                <input type="text" id="scan-name" value="Auto-Scan">
+                                <input type="number" id="max-pages" value="100">
+                                <input type="number" id="crawl-depth" value="3">
+                                <input type="checkbox" id="respect-robots" checked>
+                            </div>
+                            
+                            <div style="display: flex; gap: 15px;">
+                                <button type="submit" class="btn btn-primary" id="btn-start-scan" style="flex: 2; padding: 14px; font-size: 16px;">
+                                    <i class="fa-solid fa-play"></i> Start Spelling Check
+                                </button>
+                                <button type="button" class="btn btn-outline" id="btn-reset-scan" onclick="resetFormAndOutput()" style="flex: 1; padding: 14px; font-size: 16px;">
+                                    <i class="fa-solid fa-rotate-right"></i> Reset
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Progress Statistics Card -->
+                    <div class="card glass-card progress-card" id="active-scan-container" style="display: none;">
+                        <div class="card-header flex-header">
+                            <h2><i class="fa-solid fa-circle-notch fa-spin status-pulse" id="scan-status-icon"></i> <span id="scan-status-text">Scanning Progress</span></h2>
+                            <button class="btn btn-danger btn-sm" id="btn-cancel-scan" onclick="cancelActiveScan()">
+                                <i class="fa-solid fa-stop"></i> Stop Scan
+                            </button>
+                        </div>
+                        <div class="progress-stats-grid" style="grid-template-columns: 1fr 1fr;">
+                            <div class="stat-box">
+                                <span class="stat-value" id="stat-pages">0</span>
+                                <span class="stat-label">Pages Crawled</span>
+                            </div>
+                            <div class="stat-box warning">
+                                <span class="stat-value" id="stat-spelling">0</span>
+                                <span class="stat-label">Spelling Issues Found</span>
+                            </div>
+                            <!-- Hidden stats for compatibility -->
+                            <div style="display: none;">
+                                <span id="stat-words">0</span>
+                            </div>
+                        </div>
+
+                        <!-- Progress Bar -->
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-label">
+                                <span>Scanning: <strong id="current-scan-url">N/A</strong></span>
+                                <span id="progress-percentage">0%</span>
+                            </div>
+                            <div class="progress-track">
+                                <div class="progress-fill" id="progress-bar-fill" style="width: 0%;"></div>
+                            </div>
+                        </div>
+
+                        <!-- Hidden Live Console Logs for cleaner interface -->
+                        <div style="display: none;">
+                            <div id="live-logs-terminal"></div>
+                        </div>
+
+                        <!-- Detected Typos Live Table -->
+                        <div style="margin-top: 25px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+                                <h3 style="font-size: 16px; font-family: var(--font-header); margin: 0; color: var(--color-warning); display: flex; align-items: center; gap: 8px;">
+                                    <i class="fa-solid fa-list-check"></i> Spelling Mistakes Log
+                                </h3>
+                                <div style="display: flex; gap: 10px;" id="export-buttons-container">
+                                    <button class="btn btn-outline btn-sm" onclick="exportData('csv')" style="padding: 6px 12px; font-size: 12px; display: inline-flex; align-items: center; gap: 5px; height: 32px;">
+                                        <i class="fa-solid fa-file-csv"></i> Export CSV
+                                    </button>
+                                    <button class="btn btn-outline btn-sm" onclick="exportData('excel')" style="padding: 6px 12px; font-size: 12px; display: inline-flex; align-items: center; gap: 5px; height: 32px;">
+                                        <i class="fa-solid fa-file-excel"></i> Export Excel
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="table-responsive" style="max-height: 400px; overflow-y: auto; background: rgba(0, 0, 0, 0.2); border-radius: 8px; border: 1px solid var(--card-border);">
+                                <table class="table" id="live-issues-table" style="font-size: 13px;">
+                                    <thead>
+                                        <tr>
+                                            <th>Spelling Mistake Word</th>
+                                            <th>Expected Correct Word</th>
+                                            <th>Page URL</th>
+                                            <th>Page Title</th>
+                                            <th>Sentence</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="live-issues-table-body">
+                                        <tr><td colspan="6" class="text-center" style="color: var(--text-muted); padding: 20px;">No typos detected yet...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Empty State for Scan Progress -->
+                    <div class="card glass-card scan-empty-card" id="scan-empty-state" style="height: 250px;">
+                        <div class="empty-state-content">
+                            <i class="fa-solid fa-spell-check icon-radar" style="font-size: 48px; color: var(--color-primary);"></i>
+                            <h3 style="margin-top: 15px;">Ready to Scan</h3>
+                            <p>Enter a website URL above and click "Start Spelling Check" to begin crawling and finding spelling typos.</p>
+                        </div>
+                    </div>
+
+                    <!-- Hidden legacy components to prevent JavaScript errors -->
+                    <div style="display: none;">
+                        <table id="scans-history-table">
+                            <tbody>
+                                <tr><td>Empty</td></tr>
+                            </tbody>
+                        </table>
+                        <div id="issues-explorer-card">
+                            <span id="issues-explorer-scan-name">Scan</span>
+                            <table id="issues-table">
+                                <tbody id="issues-table-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <!-- Create Project Modal -->
+    <div class="modal" id="create-project-modal">
+        <div class="modal-content glass-card">
+            <div class="modal-header">
+                <h2>Create New QA Project</h2>
+                <button class="modal-close-btn" onclick="closeCreateProjectModal()">&times;</button>
+            </div>
+            <form onsubmit="createProject(event)">
+                <div class="form-group">
+                    <label for="new-project-name">Project Name <span class="required">*</span></label>
+                    <input type="text" id="new-project-name" placeholder="E.g., Posiv E-Commerce" required>
+                    <small>Folders and databases will be created under this workspace folder.</small>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline" onclick="closeCreateProjectModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create Project</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Custom Dialog Modal (Alert/Confirm) -->
+    <div class="modal" id="custom-dialog-modal">
+        <div class="modal-content glass-card" style="width: 400px; text-align: center;">
+            <div class="modal-header" style="justify-content: center; border-bottom: none; margin-bottom: 10px;">
+                <h2 id="dialog-title" style="font-size: 20px;">Alert</h2>
+            </div>
+            <div style="margin-bottom: 25px;">
+                <p id="dialog-message" style="font-size: 14px; color: var(--text-secondary); line-height: 1.5;"></p>
+            </div>
+            <div class="modal-footer" style="justify-content: center; margin-top: 0; gap: 15px;">
+                <button type="button" class="btn btn-outline" id="btn-dialog-cancel" onclick="closeCustomDialog(false)">Cancel</button>
+                <button type="button" class="btn btn-primary" id="btn-dialog-ok" onclick="closeCustomDialog(true)">OK</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Delete Issue Confirmation Modal -->
+    <div class="modal" id="delete-issue-confirm-modal">
+        <div class="modal-content glass-card" style="width: 500px;">
+            <div class="modal-header">
+                <h2>Confirm Removal</h2>
+                <button class="modal-close-btn" onclick="closeDeleteConfirmModal(false)">&times;</button>
+            </div>
+            <div style="margin-bottom: 20px;">
+                <p style="font-size: 14px; margin-bottom: 15px; color: var(--text-primary); font-weight: 500;">
+                    Are you sure you want to remove this issue from the report?
+                </p>
+                <div style="background: rgba(0, 0, 0, 0.25); padding: 15px; border-radius: 8px; border: 1px solid var(--card-border); display: flex; flex-direction: column; gap: 10px; font-size: 13px;">
+                    <div>
+                        <span style="color: var(--text-secondary); display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px;">Spelling Mistake Word</span>
+                        <strong id="confirm-issue-word" style="color: var(--color-error); font-size: 14px;"></strong>
+                    </div>
+                    <div>
+                        <span style="color: var(--text-secondary); display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px;">Expected Correct Word</span>
+                        <span id="confirm-issue-suggestion" class="highlight-suggestions" style="font-weight: 600;"></span>
+                    </div>
+                    <div>
+                        <span style="color: var(--text-secondary); display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px;">Page URL</span>
+                        <a id="confirm-issue-url" href="#" target="_blank" class="table-link" style="word-break: break-all;"></a>
+                    </div>
+                    <div>
+                        <span style="color: var(--text-secondary); display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px;">Page Title</span>
+                        <span id="confirm-issue-title" style="color: var(--text-primary);"></span>
+                    </div>
+                    <div>
+                        <span style="color: var(--text-secondary); display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px;">Sentence</span>
+                        <span id="confirm-issue-sentence" style="font-style: italic; color: var(--text-primary);"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="gap: 15px;">
+                <button type="button" class="btn btn-outline" onclick="closeDeleteConfirmModal(false)">No</button>
+                <button type="button" class="btn btn-danger" onclick="closeDeleteConfirmModal(true)">Yes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script imports -->
+    <script src="app.js"></script>
+</body>
+</html>

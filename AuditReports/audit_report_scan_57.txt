@@ -1,0 +1,57 @@
+==================================================
+AUDIT REPORT FOR SCAN SESSION #57
+Generated: 2026-06-10T15:43:39.764954100
+==================================================
+
+SUMMARY STATS:
+--------------------------------------------------
+Words Ignored by Static Dictionaries: 0
+Words Ignored by Dynamic Entity Layers: 30
+Words Reported as Spelling Mistakes: 5
+
+==================================================
+1. WORDS IGNORED BY STATIC DICTIONARIES (0)
+==================================================
+
+==================================================
+2. WORDS IGNORED BY DYNAMIC ENTITY LAYERS (30)
+==================================================
+$employeeInfo -> Marked PENDING (validation failed or skipped)
+$userData -> Marked PENDING (validation failed or skipped)
+CareBridge -> Marked PENDING (validation failed or skipped)
+FitZoneCloud -> Validated as VALID by SQLite Cache (Reason: )
+HealthMonitorX -> Marked PENDING (validation failed or skipped)
+HealthSphereService -> Marked PENDING (validation failed or skipped)
+HyperAnalyticsCloud -> Marked PENDING (validation failed or skipped)
+Jatin -> Validated as VALID by SQLite Cache (Reason: )
+Kint -> Marked PENDING (validation failed or skipped)
+Krumo -> Marked PENDING (validation failed or skipped)
+MediFlow -> Marked PENDING (validation failed or skipped)
+MemberSyncPro -> Marked PENDING (validation failed or skipped)
+PatientTrackManager -> Marked PENDING (validation failed or skipped)
+Predis -> Marked PENDING (validation failed or skipped)
+Rutvik -> Validated as VALID by SQLite Cache (Reason: )
+Satkar -> Validated as VALID by SQLite Cache (Reason: )
+TestNG -> Validated as VALID by SQLite Cache (Reason: )
+TrainerFlowAI -> Marked PENDING (validation failed or skipped)
+XDebug -> Marked PENDING (validation failed or skipped)
+achive -> Marked PENDING (validation failed or skipped)
+availble -> Marked PENDING (validation failed or skipped)
+comunication -> Marked PENDING (validation failed or skipped)
+dbal -> Marked PENDING (validation failed or skipped)
+enviroment -> Marked PENDING (validation failed or skipped)
+maintainance -> Marked PENDING (validation failed or skipped)
+managment -> Marked PENDING (validation failed or skipped)
+occured -> Marked PENDING (validation failed or skipped)
+performence -> Marked PENDING (validation failed or skipped)
+seperately -> Marked PENDING (validation failed or skipped)
+sucessfully -> Marked PENDING (validation failed or skipped)
+
+==================================================
+3. WORDS REPORTED AS TYPOS (5)
+==================================================
+acomodation
+definately
+goverment
+recieve
+resposibility

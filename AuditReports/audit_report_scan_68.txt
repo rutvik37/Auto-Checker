@@ -1,0 +1,200 @@
+==================================================
+AUDIT REPORT FOR SCAN SESSION #68
+Generated: 2026-06-11T14:45:09.185188400
+==================================================
+
+SUMMARY STATS:
+--------------------------------------------------
+Words Ignored by Static Dictionaries: 0
+Words Ignored by Dynamic Entity Layers: 155
+Words Reported as Spelling Mistakes: 23
+
+==================================================
+1. WORDS IGNORED BY STATIC DICTIONARIES (0)
+==================================================
+
+==================================================
+2. WORDS IGNORED BY DYNAMIC ENTITY LAYERS (155)
+==================================================
+AETMOS -> Validated as VALID by Groq API (Reason: The word 'AETMOS' appears to be a proper noun, likely a company or brand name.)
+ASPICE -> Validated as VALID by Groq API (Reason: The word 'ASPICE' is a valid term in the context of software development process assessments.)
+Agentic -> Validated as VALID by Groq API (Reason: Agentic appears to be a valid term or brand name and is used correctly in the sentence.)
+Aldus -> Validated as VALID by Groq API (Reason: Proper noun, name of a company)
+Algolia -> Validated as VALID by Groq API (Reason: The word 'Algolia' is a valid company name in the context of search and discovery platforms.)
+AlloyDB -> Validated as VALID by Groq API (Reason: AlloyDB appears to be a valid term or product name in the context of relational database migration, and the suggestion list does not provide a clear correction.)
+Apigee -> Validated as VALID by Groq API (Reason: Apigee appears to be a valid term or product name in the context of API management, and the suggestion list does not provide a clear correction.)
+Armbrister -> Validated as VALID by Groq API (Reason: Armbrister appears to be a person's last name and is used correctly in the sentence.)
+Autoscaler -> Validated as VALID by Groq API (Reason: Autoscaler appears to be a valid term or product name in the context of Horizontal Pod Autoscaler, and the suggestion list does not provide a clear correction.)
+Budget‑Friendly -> Validated as VALID by Groq API (Reason: The word 'Budget‑Friendly' is a valid term with a hyphen, indicating a compound adjective.)
+CMEK -> Validated as VALID by Groq API (Reason: CMEK appears to be a valid term or acronym in the context of Cloud Audit Logs and Security Command Center, and the suggestion list does not provide a clear correction.)
+CabOn -> Validated as VALID by Groq API (Reason: Contains characteristics of a product or module identifier)
+CabsOn -> Validated as VALID by Groq API (Reason: CabsOn appears to be a valid term or product name and is used correctly in the sentence.)
+Chandrashekar -> Validated as VALID by Groq API (Reason: Chandrashekar appears to be a person's name and is used correctly in the sentence.)
+Cognishen -> Validated as VALID by Groq API (Reason: The word 'Cognishen' appears to be a proper noun, likely a company name.)
+Colab -> Validated as VALID by Groq API (Reason: Part of a proper noun, name of a software product)
+Contentful -> Validated as VALID by Groq API (Reason: Proper noun, name of a software product or company)
+DApp -> Validated as VALID by Groq API (Reason: The word 'DApp' is a valid term in the context of decentralized applications.)
+DApps -> Validated as VALID by Groq API (Reason: DApps is a valid term for Decentralized Applications and appears to be used correctly in the sentence.)
+Dataplex -> Validated as VALID by Groq API (Reason: Dataplex appears to be a valid term or product name in the context of BigQuery Looker Studio and Dataflow, and the suggestion list does not provide a clear correction.)
+Decentralised -> Validated as VALID by Groq API (Reason: The word 'Decentralised' is a valid British English spelling of 'Decentralized'.)
+Derema -> Validated as VALID by Groq API (Reason: Derema appears to be a company or brand name and is used correctly in the sentence.)
+DevSecOps -> Validated as VALID by Groq API (Reason: DevSecOps is a valid term for Development, Security, and Operations and appears to be used correctly in the sentence.)
+EmberJs -> Validated as VALID by Groq API (Reason: EmberJs is a valid framework name and appears to be used correctly in the sentence.)
+Entra -> Validated as VALID by Groq API (Reason: Entra appears to be a valid term or brand name and is used correctly in the sentence.)
+ExpressJS -> Validated as VALID by Groq API (Reason: ExpressJS appears to be a valid term or product name in the context of Web Programming, and the suggestion list does not provide a clear correction.)
+FHIR -> Validated as VALID by Groq API (Reason: The word 'FHIR' is a valid term in the context of healthcare data exchange standards.)
+Farrer -> Validated as VALID by Groq API (Reason: Farrer appears to be a valid term or location name and is used correctly in the sentence.)
+Footages -> Validated as VALID by Groq API (Reason: Correct plural form of 'Footage')
+Fratney -> Validated as VALID by Groq API (Reason: Fratney appears to be a valid term or location name and is used correctly in the sentence.)
+Funly -> Validated as VALID by Groq API (Reason: The word 'Funly' appears to be a valid term, possibly a company or brand name.)
+Garyson -> Validated as VALID by Groq API (Reason: Garyson appears to be a person's last name and is used correctly in the sentence.)
+Hayabuchi -> Validated as VALID by Groq API (Reason: Hayabuchi appears to be a valid term or location name and is used correctly in the sentence.)
+IAM-based -> Validated as VALID by Groq API (Reason: IAM-based is a valid term for Identity and Access Management-based and appears to be used correctly in the sentence.)
+Ingenico -> Validated as VALID by Groq API (Reason: The word 'Ingenico' is a valid company name in the context of payment solutions.)
+Ipsum -> Validated as VALID by Groq API (Reason: Proper noun, part of a well-known term 'Lorem Ipsum')
+Istio -> Validated as VALID by Groq API (Reason: Istio appears to be a valid term or product name in the context of Service mesh implementation, and the suggestion list does not provide a clear correction.)
+Jatin -> Validated as VALID by Groq API (Reason: Jatin appears to be a person's name and is used correctly in the sentence.)
+KEDA-driven -> Validated as VALID by Groq API (Reason: KEDA-driven is a valid term for Kubernetes Event-driven Autoscaling and appears to be used correctly in the sentence.)
+Kew -> Validated as VALID by Groq API (Reason: Kew appears to be a valid term or location name and is used correctly in the sentence.)
+Letraset -> Validated as VALID by Groq API (Reason: Proper noun, name of a product or company)
+Lonc -> Validated as VALID by Groq API (Reason: Lonc appears to be a person's last name and is used correctly in the sentence.)
+Lorem -> Validated as VALID by Groq API (Reason: Proper noun, part of a well-known term 'Lorem Ipsum')
+MEVN -> Validated as VALID by Groq API (Reason: MEVN is a valid stack name and appears to be used correctly in the sentence.)
+MIGs -> Validated as VALID by Groq API (Reason: MIGs appears to be a valid term or acronym in the context of Cloud Run concurrency scaling, and the suggestion list does not provide a clear correction.)
+MLaaS -> Validated as VALID by Groq API (Reason: MLaaS is a valid term for Machine Learning as a Service and appears to be used correctly in the sentence.)
+Matraman -> Validated as VALID by Groq API (Reason: Appears to be a proper noun, possibly a name or location)
+Modernisation -> Validated as VALID by Groq API (Reason: Modernisation is a valid word, commonly used in British English, and is consistent with the sentence context.)
+Moffett -> Validated as VALID by Groq API (Reason: Moffett appears to be a person's last name and is used correctly in the sentence.)
+Monaca -> Validated as VALID by Groq API (Reason: Monaca appears to be a valid term or product name in the context of cross-platform app development, and the suggestion list does not provide a clear correction.)
+Mongo -> Validated as VALID by Groq API (Reason: Part of a proper noun, name of a database product)
+Murtaza -> Validated as VALID by Groq API (Reason: Murtaza appears to be a person's name and is used correctly in the sentence.)
+Musikaa -> Validated as VALID by Groq API (Reason: Musikaa appears to be a proper noun or a person's name and is used correctly in the sentence.)
+Nearline -> Validated as VALID by Groq API (Reason: Nearline appears to be a valid term or product name in the context of Cloud Storage lifecycle policy, and the suggestion list does not provide a clear correction.)
+NestJS -> Validated as VALID by Groq API (Reason: NestJS is a valid framework name and appears to be used correctly in the sentence.)
+Non‑Disclosure -> Validated as VALID by Groq API (Reason: The word 'Non‑Disclosure' is a valid term with a hyphen, indicating a compound noun.)
+Nuxt -> Validated as VALID by Groq API (Reason: Nuxt is a valid framework name and appears to be used correctly in the sentence.)
+NuxtJS -> Validated as VALID by Groq API (Reason: The word 'NuxtJS' is a valid term in the context of JavaScript frameworks.)
+OTAs -> Validated as VALID by Groq API (Reason: The word 'OTAs' is a valid term in the context of online travel agencies.)
+Omni-channel -> Validated as VALID by Groq API (Reason: Correct term with hyphen, 'Omnichannel' is also valid without hyphen)
+On‑Time -> Validated as VALID by Groq API (Reason: The word 'On‑Time' is a valid term with a hyphen, indicating a compound adjective.)
+Opencart -> Validated as VALID by Groq API (Reason: Opencart appears to be a valid term or product name in the context of e-commerce development, and the suggestion list does not provide a clear correction.)
+Optimisation -> Validated as VALID by Groq API (Reason: Optimisation is a valid word, commonly used in British English, and is consistent with the sentence context.)
+PHIPA -> Validated as VALID by Groq API (Reason: The word 'PHIPA' is a valid term in the context of healthcare data protection regulations.)
+PageMaker -> Validated as VALID by Groq API (Reason: Proper noun, name of a software product)
+Panchal -> Validated as VALID by Groq API (Reason: Panchal appears to be a person's last name and is used correctly in the sentence.)
+Partyz -> Validated as VALID by Groq API (Reason: The word 'Partyz' appears to be a proper noun, likely a company or brand name.)
+PyTest -> Validated as VALID by Groq API (Reason: The word 'PyTest' is a valid term in the context of Python testing frameworks.)
+RPOs -> Validated as VALID by Groq API (Reason: RPOs is a valid term for Recovery Point Objectives and appears to be used correctly in the sentence.)
+Rekognition -> Validated as VALID by Groq API (Reason: Rekognition appears to be a valid term or product name, likely related to Amazon Rekognition, and the suggestion list does not provide a clear correction.)
+Rlogca -> Validated as VALID by Groq API (Reason: The word 'Rlogca' appears to be a proper noun, likely a company or brand name.)
+Rlogical -> Validated as VALID by Groq API (Reason: Rlogical appears to be a company or brand name and is used correctly in the sentence.)
+SEO‑Friendly -> Validated as VALID by Groq API (Reason: The word 'SEO‑Friendly' is a valid term with a hyphen, indicating a compound adjective.)
+SLOs -> Validated as VALID by Groq API (Reason: SLOs appears to be a valid term or acronym in the context of Cloud Monitoring and multi-region load balancing, and the suggestion list does not provide a clear correction.)
+SMO -> Validated as VALID by Groq API (Reason: SMO appears to be a valid term or acronym in the context of Digital Marketing Services, and the suggestion list does not provide a clear correction.)
+Sadia -> Validated as VALID by Groq API (Reason: Sadia appears to be a person's name and is used correctly in the sentence.)
+Satkar -> Validated as VALID by Groq API (Reason: Satkar appears to be a valid term or location name and is used correctly in the sentence.)
+Selektaa -> Validated as VALID by Groq API (Reason: The word 'Selektaa' appears to be a proper noun, likely a company or brand name.)
+Strapi -> Validated as VALID by Groq API (Reason: Strapi is a valid framework name and appears to be used correctly in the sentence.)
+Strategie -> Validated as VALID by Groq API (Reason: Strategie is a valid word, although 'strategy' is the commonly used term in English. However, given the context, it might be a valid term or part of a proper name.)
+TPVREST -> Validated as VALID by Groq API (Reason: The word 'TPVREST' appears to be a valid term, possibly an acronym or code.)
+Tanishq -> Validated as VALID by Groq API (Reason: Tanishq appears to be a valid term or brand name and is used correctly in the sentence.)
+Telerik -> Validated as VALID by Groq API (Reason: The word 'Telerik' is a valid company name in the context of software development tools.)
+Textract -> Validated as VALID by Groq API (Reason: Textract appears to be a valid term or product name, and the suggestion list does not provide a clear correction.)
+TicketPickUp -> Validated as VALID by Groq API (Reason: TicketPickUp appears to be a valid term or product name and is used correctly in the sentence.)
+Transcoder -> Validated as VALID by Groq API (Reason: Transcoder appears to be a valid term or product name in the context of Batch and Transcoder API, and the suggestion list does not provide a clear correction.)
+Tsuzuki-ku -> Validated as VALID by Groq API (Reason: Tsuzuki-ku appears to be a valid term or location name and is used correctly in the sentence.)
+Ui-Ux -> Validated as VALID by Groq API (Reason: Ui-Ux appears to be a valid term or concept in the context of user experience and interface design, and the suggestion list does not provide a clear correction.)
+Umbraco -> Validated as VALID by Groq API (Reason: Umbraco appears to be a valid term or product name in the context of content management systems, and no suggestion is provided for correction.)
+VUIs -> Validated as VALID by Groq API (Reason: Appears to be an acronym or abbreviation for a specific term)
+Vasant -> Validated as VALID by Groq API (Reason: Vasant appears to be a person's name and is used correctly in the sentence.)
+Verifone -> Validated as VALID by Groq API (Reason: The word 'Verifone' is a valid company name in the context of payment solutions.)
+Vuex -> Validated as VALID by Groq API (Reason: The word 'Vuex' is a valid term in the context of state management in Vue.js.)
+Vuforia -> Validated as VALID by Groq API (Reason: Vuforia appears to be a valid term or product name in the context of AR App development, and the suggestion list does not provide a clear correction.)
+WAF -> Validated as VALID by Groq API (Reason: WAF is a valid term for Web Application Firewall and appears to be used correctly in the sentence.)
+WO -> Validated as VALID by Groq API (Reason: Appears to be an acronym or abbreviation for a specific term)
+Wikitude -> Validated as VALID by Groq API (Reason: Wikitude appears to be a valid term or product name in the context of AR App development, and the suggestion list does not provide a clear correction.)
+Xaarin -> Validated as VALID by Groq API (Reason: The word 'Xaarin' appears to be a proper noun, but it closely resembles 'Xamarin', which is a valid term in the context of mobile app development frameworks.)
+Yii -> Validated as VALID by Groq API (Reason: Yii appears to be a valid term or product name in the context of PHP framework development, and the suggestion list does not provide a clear correction.)
+Zeev -> Validated as VALID by Groq API (Reason: Zeev appears to be a person's name and is used correctly in the sentence.)
+Zend -> Validated as VALID by Groq API (Reason: Zend appears to be a valid term or product name in the context of PHP development, and the suggestion list does not provide a clear correction.)
+Zev -> Validated as VALID by Groq API (Reason: Zev appears to be a person's name and is used correctly in the sentence.)
+artefacts -> Validated as VALID by Groq API (Reason: Artefacts is a valid word, commonly used in British English, and is consistent with the sentence context.)
+blockquote-cls -> Validated as VALID by Groq API (Reason: Contains characteristics of a product or module identifier)
+centralised -> Validated as VALID by Groq API (Reason: Centralised is a valid word, commonly used in British English, and is consistent with the sentence context.)
+centre -> Validated as VALID by Groq API (Reason: Centre is a valid word, commonly used in British English, and is consistent with the sentence context.)
+centres -> Validated as VALID by Groq API (Reason: Centres is a valid word, commonly used in British English, and is consistent with the sentence context.)
+containerised -> Validated as VALID by Groq API (Reason: Containerised is a valid word, commonly used in British English, and is consistent with the sentence context.)
+containerising -> Validated as VALID by Groq API (Reason: Containerising is a valid word, commonly used in British English, and is consistent with the sentence context.)
+coordinatively -> Validated as VALID by Groq API (Reason: The word 'coordinatively' is a valid adverb in the context of team efforts.)
+customised -> Validated as VALID by Groq API (Reason: Customised is a valid word, commonly used in British English, and is consistent with the sentence context.)
+dedicatedly -> Validated as VALID by Groq API (Reason: Correct adverb form)
+eCom -> Validated as VALID by Groq API (Reason: eCom is a valid term for electronic commerce and appears to be used correctly in the sentence.)
+eLearning -> Validated as VALID by Groq API (Reason: The word 'eLearning' is a valid term in the context of online education platforms.)
+ebooks -> Validated as VALID by Groq API (Reason: The word 'ebooks' is a valid term in the context of content marketing.)
+e‑commerce -> Validated as VALID by Groq API (Reason: The word 'e‑commerce' is a valid term with a hyphen, indicating a compound noun.)
+fulfilment -> Validated as VALID by Groq API (Reason: The word 'fulfilment' is a valid British English spelling of 'fulfillment'.)
+full‑time -> Validated as VALID by Groq API (Reason: The word 'full‑time' is a valid term with a hyphen, indicating a compound adjective.)
+hypercare -> Validated as VALID by Groq API (Reason: The word 'hypercare' is used correctly in the sentence.)
+iWatch -> Validated as VALID by Groq API (Reason: iWatch appears to be a valid term or product name, likely related to the Apple Watch, and the suggestion list does not provide a clear correction.)
+kickstart -> Validated as VALID by Groq API (Reason: Kickstart is a valid word, and the context suggests it refers to initiating or starting a project, consistent with its common usage.)
+kubenet -> Validated as VALID by Groq API (Reason: kubenet appears to be a valid term or brand name and is used correctly in the sentence.)
+long‑term -> Validated as VALID by Groq API (Reason: The word 'long‑term' is a valid term with a hyphen, indicating a compound adjective.)
+mHealth -> Validated as VALID by Groq API (Reason: The word 'mHealth' is a valid term in the context of mobile healthcare applications.)
+mPOS -> Validated as VALID by Groq API (Reason: The word 'mPOS' is a valid term in the context of mobile point-of-sale solutions.)
+materialised -> Validated as VALID by Groq API (Reason: Materialised is a valid word, commonly used in British English, and is consistent with the sentence context.)
+microservices -> Validated as VALID by Groq API (Reason: Microservices is a valid term in the context of software development and architecture, and the suggestion list does not provide a clear correction.)
+mobilise -> Validated as VALID by Groq API (Reason: Mobilise is a valid word, commonly used in British English, and is consistent with the sentence context.)
+modernise -> Validated as VALID by Groq API (Reason: Modernise is a valid word, commonly used in British English, and is consistent with the sentence context.)
+modernising -> Validated as VALID by Groq API (Reason: The word 'modernising' is used correctly in the sentence, although 'modernizing' is also an accepted variant.)
+monetisation -> Validated as VALID by Groq API (Reason: Monetisation is a valid word, commonly used in British English, and is consistent with the sentence context.)
+navigations -> Validated as VALID by Groq API (Reason: Navigations is a valid word, and the context suggests it refers to the act of navigating or controlling the direction of something, consistent with its common usage.)
+optimise -> Validated as VALID by Groq API (Reason: Optimise is a valid word, commonly used in British English, and is consistent with the sentence context.)
+organisation -> Validated as VALID by Groq API (Reason: Organisation is a valid word, commonly used in British English, and is consistent with the sentence context.)
+organisations -> Validated as VALID by Groq API (Reason: Organisations is a valid word, commonly used in British English, and is consistent with the sentence context.)
+otw -> Validated as VALID by Groq API (Reason: Appears to be a domain-specific term or acronym)
+otw-sc-quote -> Validated as VALID by Groq API (Reason: Contains characteristics of a product or module identifier)
+overprovisioned -> Validated as VALID by Groq API (Reason: Overprovisioned is a valid word in the context of cloud computing and resource allocation, and no suggestion is provided for correction.)
+overprovisioning -> Validated as VALID by Groq API (Reason: The word 'overprovisioning' is used correctly in the sentence.)
+part‑time -> Validated as VALID by Groq API (Reason: The word 'part‑time' is a valid term with a hyphen, indicating a compound adjective.)
+popularised -> Validated as VALID by Groq API (Reason: Different spelling variant, but context supports British English)
+preemptible -> Validated as VALID by Groq API (Reason: Preemptible is a valid word in the context of cloud computing and instance configuration, and the suggestion list does not provide a clear correction.)
+prioritised -> Validated as VALID by Groq API (Reason: Prioritised is a valid word, commonly used in British English, and is consistent with the sentence context.)
+realised -> Validated as VALID by Groq API (Reason: Realised is a valid word, commonly used in British English, and is consistent with the sentence context.)
+rehost -> Validated as VALID by Groq API (Reason: The word 'rehost' is used correctly in the sentence.)
+replatform -> Validated as VALID by Groq API (Reason: The word 'replatform' is used correctly in the sentence.)
+replatforming -> Validated as VALID by Groq API (Reason: Replatforming is a valid word in the context of cloud migration strategies, and the suggestion list does not provide a clear correction.)
+round‑the‑clock -> Validated as VALID by Groq API (Reason: The word 'round‑the‑clock' is a valid term with hyphens, indicating a compound adjective.)
+softwares -> Validated as VALID by Groq API (Reason: The word 'softwares' is a valid term, although 'software' is more commonly used as an uncountable noun.)
+solutions -> Validated as VALID by Groq API (Reason: The word 'solutions' is used correctly in the sentence.)
+specialise -> Validated as VALID by Groq API (Reason: The word 'specialise' is a valid British English spelling of 'specialize'.)
+speciality -> Validated as VALID by Groq API (Reason: Different spelling variant, but context supports British English)
+top‑tier -> Validated as VALID by Groq API (Reason: The word 'top‑tier' is a valid term with a hyphen, indicating a compound adjective.)
+utilisation -> Validated as VALID by Groq API (Reason: Utilisation is a valid word, commonly used in British English, and is consistent with the sentence context.)
+wp-content -> Validated as VALID by Groq API (Reason: The word 'wp-content' is a valid term in the context of WordPress file structures.)
+
+==================================================
+3. WORDS REPORTED AS TYPOS (23)
+==================================================
+Ap
+Coroprate
+Delievery
+Dones
+Feild
+Hourss
+Its
+Kubernets
+NavtiveScript
+Reschedual
+Roofng
+Sunt
+enterprice
+expertized
+flawy
+hghg
+lify
+ofter
+preta
+reshift
+unappropriate
+whichng
+who's spin

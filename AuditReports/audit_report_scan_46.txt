@@ -1,0 +1,23 @@
+==================================================
+AUDIT REPORT FOR SCAN SESSION #46
+Generated: 2026-06-09T13:33:09.047821100
+==================================================
+
+SUMMARY STATS:
+--------------------------------------------------
+Words Ignored by Static Dictionaries: 0
+Words Ignored by Dynamic Entity Layers: 0
+Words Reported as Spelling Mistakes: 1
+
+==================================================
+1. WORDS IGNORED BY STATIC DICTIONARIES (0)
+==================================================
+
+==================================================
+2. WORDS IGNORED BY DYNAMIC ENTITY LAYERS (0)
+==================================================
+
+==================================================
+3. WORDS REPORTED AS TYPOS (1)
+==================================================
+Posiv
