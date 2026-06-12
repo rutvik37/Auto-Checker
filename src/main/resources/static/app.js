@@ -11,10 +11,45 @@ let dialogResolve = null;
 
 // On Page Load
 document.addEventListener('DOMContentLoaded', () => {
+    initTheme();
     loadProjects().then(() => {
         checkForActiveScan();
     });
 });
+
+// Theme Management for Main Scanner Frontend
+function initTheme() {
+    const themeBtn = document.getElementById('theme-switch');
+    if (!themeBtn) return;
+    
+    const body = document.body;
+    
+    // Restore preference
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light') {
+        body.classList.remove('dark-mode');
+        body.classList.add('light-mode');
+        themeBtn.innerHTML = '<i class="fa-solid fa-moon"></i>';
+    } else {
+        body.classList.add('dark-mode');
+        body.classList.remove('light-mode');
+        themeBtn.innerHTML = '<i class="fa-solid fa-sun"></i>';
+    }
+
+    themeBtn.addEventListener('click', () => {
+        if (body.classList.contains('light-mode')) {
+            body.classList.remove('light-mode');
+            body.classList.add('dark-mode');
+            themeBtn.innerHTML = '<i class="fa-solid fa-sun"></i>';
+            localStorage.setItem('theme', 'dark');
+        } else {
+            body.classList.remove('dark-mode');
+            body.classList.add('light-mode');
+            themeBtn.innerHTML = '<i class="fa-solid fa-moon"></i>';
+            localStorage.setItem('theme', 'light');
+        }
+    });
+}
 
 // Custom Alert & Confirm Modals
 function showCustomAlert(message, title = "Notification") {
@@ -178,49 +213,44 @@ function onProjectChanged() {
 async function startScan(event) {
     event.preventDefault();
 
+    const projectNameInput = document.getElementById('scan-project-name');
+    const projectName = projectNameInput ? projectNameInput.value.trim() : '';
+    if (!projectName) {
+        showCustomAlert('Project name is required', 'Form Validation');
+        return;
+    }
+
     const urlInput = document.getElementById('scan-url');
+    const maxPagesInput = document.getElementById('max-pages');
+    const crawlDepthInput = document.getElementById('crawl-depth');
+
     if (urlInput) urlInput.disabled = true;
+    if (projectNameInput) projectNameInput.disabled = true;
+    if (maxPagesInput) maxPagesInput.disabled = true;
+    if (crawlDepthInput) crawlDepthInput.disabled = true;
 
     const btn = document.getElementById('btn-start-scan');
     btn.disabled = true;
     btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Initializing...';
 
     try {
-        // 1. Fetch current projects to determine the next demo name
-        let projects = [];
-        try {
-            const projectsResp = await fetch('/api/projects');
-            if (projectsResp.ok) {
-                projects = await projectsResp.json();
-            }
-        } catch (projErr) {
-            console.error('Failed to load projects list:', projErr);
-        }
-
-        // 2. Determine the next available demo project name (demo1, demo2, etc.)
-        let demoNum = 1;
-        while (projects.some(p => p.name === 'demo' + demoNum)) {
-            demoNum++;
-        }
-        const newProjectName = 'demo' + demoNum;
-
-        // 3. Create the new demo project
+        // Create or load the project
         const createResp = await fetch('/api/projects', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name: newProjectName })
+            body: JSON.stringify({ name: projectName })
         });
 
         if (!createResp.ok) {
             const errText = await createResp.text();
-            throw new Error('Could not create project ' + newProjectName + ': ' + errText);
+            throw new Error('Could not create project ' + projectName + ': ' + errText);
         }
 
         const project = await createResp.json();
         activeProjectId = project.id;
         activeProjectName = project.name;
 
-        // 4. Trigger the scan on the newly created project
+        // Trigger the scan on the project
         const url = document.getElementById('scan-url').value.trim();
         const scanName = document.getElementById('scan-name').value.trim();
         const maxPages = document.getElementById('max-pages').value.trim();
@@ -259,16 +289,20 @@ async function startScan(event) {
             const err = await response.text();
             showCustomAlert('Failed to launch scan: ' + err, 'Launch Error');
             btn.disabled = false;
-            btn.innerHTML = '<i class="fa-solid fa-magnifying-glass"></i> Start Spelling Check';
-            const urlInput = document.getElementById('scan-url');
+            btn.innerHTML = '<i class="fa-solid fa-play"></i> Start Spelling Check';
             if (urlInput) urlInput.disabled = false;
+            if (projectNameInput) projectNameInput.disabled = false;
+            if (maxPagesInput) maxPagesInput.disabled = false;
+            if (crawlDepthInput) crawlDepthInput.disabled = false;
         }
     } catch (e) {
         showCustomAlert('Error initiating scan: ' + e.message, 'Connection Error');
         btn.disabled = false;
-        btn.innerHTML = '<i class="fa-solid fa-magnifying-glass"></i> Start Spelling Check';
-        const urlInput = document.getElementById('scan-url');
+        btn.innerHTML = '<i class="fa-solid fa-play"></i> Start Spelling Check';
         if (urlInput) urlInput.disabled = false;
+        if (projectNameInput) projectNameInput.disabled = false;
+        if (maxPagesInput) maxPagesInput.disabled = false;
+        if (crawlDepthInput) crawlDepthInput.disabled = false;
     }
 }
 
@@ -680,7 +714,25 @@ async function loadLiveIssues(scanId) {
 function resetFormAndOutput() {
     // 1. Clear input
     const urlInput = document.getElementById('scan-url');
-    if (urlInput) urlInput.value = '';
+    if (urlInput) {
+        urlInput.value = '';
+        urlInput.disabled = false;
+    }
+    const projectNameInput = document.getElementById('scan-project-name');
+    if (projectNameInput) {
+        projectNameInput.value = '';
+        projectNameInput.disabled = false;
+    }
+    const maxPagesInput = document.getElementById('max-pages');
+    if (maxPagesInput) {
+        maxPagesInput.value = '100';
+        maxPagesInput.disabled = false;
+    }
+    const crawlDepthInput = document.getElementById('crawl-depth');
+    if (crawlDepthInput) {
+        crawlDepthInput.value = '3';
+        crawlDepthInput.disabled = false;
+    }
 
     // 2. Stop active SSE stream if it exists
     if (sseSource) {
@@ -751,6 +803,21 @@ async function checkForActiveScan() {
             if (urlInput) {
                 urlInput.value = data.url;
                 urlInput.disabled = true;
+            }
+            const projectNameInput = document.getElementById('scan-project-name');
+            if (projectNameInput) {
+                projectNameInput.value = data.projectName;
+                projectNameInput.disabled = true;
+            }
+            const maxPagesInput = document.getElementById('max-pages');
+            if (maxPagesInput) {
+                maxPagesInput.value = data.maxPages || 100;
+                maxPagesInput.disabled = true;
+            }
+            const crawlDepthInput = document.getElementById('crawl-depth');
+            if (crawlDepthInput) {
+                crawlDepthInput.value = data.crawlDepth || 3;
+                crawlDepthInput.disabled = true;
             }
             const btn = document.getElementById('btn-start-scan');
             if (btn) {

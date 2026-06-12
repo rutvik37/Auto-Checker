@@ -12,7 +12,8 @@ public class PerformanceTracker {
 
     public static long stop(String key) {
         Long start = metrics.get().get(key + "_start");
-        if (start == null) return 0;
+        if (start == null)
+            return 0;
         long duration = (System.nanoTime() - start) / 1_000_000; // convert to ms
         metrics.get().put(key, metrics.get().getOrDefault(key, 0L) + duration);
         return duration;

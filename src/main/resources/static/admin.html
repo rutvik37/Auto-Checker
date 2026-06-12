@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auto-Checker Admin Panel</title>
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="admin.css">
+    <!-- Custom Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23a855f7'/%3E%3Cstop offset='100%25' stop-color='%236366f1'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M12 2L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-3z' fill='url(%23g)'/%3E%3Cpath d='M12 15a3 3 0 100-6 3 3 0 000 6z' fill='white'/%3E%3Cpath d='M12 12v3' stroke='white' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E">
+</head>
+<body class="dark-mode">
+    <!-- Login Layout Container -->
+    <div id="login-layout">
+        <div class="login-card glass-panel">
+            <div class="login-header">
+                <i class="fa-solid fa-shield-halved logo-icon"></i>
+                <h2>Auto-Checker Admin Panel</h2>
+                <p>Enter Security PIN</p>
+            </div>
+            <form id="login-form">
+                <div class="pin-input-wrapper">
+                    <input type="password" id="pin-input" placeholder="••••" maxlength="4" required autocomplete="current-password">
+                    <button type="button" id="toggle-pin-btn" class="toggle-pin-btn" title="Show/Hide PIN"><i class="fa-solid fa-eye"></i></button>
+                </div>
+                <div class="login-error-msg" id="login-error" style="display: none;">Invalid PIN</div>
+                <button type="submit" class="btn btn-primary" id="btn-login">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Authenticated Admin Layout Container -->
+    <div id="admin-layout" style="display: none;">
+        <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <i class="fa-solid fa-shield-halved logo-icon"></i>
+                <div class="logo-text">
+                    <span class="logo-title">Auto-Checker</span>
+                    <span class="logo-subtitle">Admin Panel</span>
+                </div>
+            </div>
+            <nav class="nav-menu">
+                <a href="#dashboard" class="nav-item active" data-pane="dashboard">
+                    <i class="fa-solid fa-chart-pie"></i><span>Dashboard</span>
+                </a>
+                <a href="#projects" class="nav-item" data-pane="projects">
+                    <i class="fa-solid fa-folder"></i><span>Projects</span>
+                </a>
+                <a href="#scans" class="nav-item" data-pane="scans">
+                    <i class="fa-solid fa-clock-rotate-left"></i><span>Scan History</span>
+                </a>
+                <a href="#issues" class="nav-item" data-pane="issues">
+                    <i class="fa-solid fa-circle-exclamation"></i><span>Spelling Issues</span>
+                </a>
+                <a href="#cache" class="nav-item" data-pane="cache">
+                    <i class="fa-solid fa-database"></i><span>Validation Cache</span>
+                </a>
+                <a href="#analytics" class="nav-item" data-pane="analytics">
+                    <i class="fa-solid fa-chart-line"></i><span>Analytics</span>
+                </a>
+                <a href="#performance" class="nav-item" data-pane="performance">
+                    <i class="fa-solid fa-gauge-high"></i><span>Performance</span>
+                </a>
+                <a href="#exports" class="nav-item" data-pane="exports">
+                    <i class="fa-solid fa-download"></i><span>Data Exports</span>
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="server-status">
+                    <span class="status-indicator online"></span>
+                    <span>System Active (Port 5555)</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <header class="top-bar">
+                <div class="page-title-area">
+                    <h1 id="current-page-title">Dashboard</h1>
+                </div>
+                <div class="top-bar-actions">
+                    <div class="theme-toggle">
+                        <button id="theme-switch" title="Toggle theme">
+                            <i class="fa-solid fa-sun"></i>
+                        </button>
+                    </div>
+                    <button id="btn-logout" class="btn btn-secondary btn-sm"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+                </div>
+            </header>
+
+            <!-- Dashboard Pane -->
+            <section id="pane-dashboard" class="pane active">
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="card-icon projects-icon"><i class="fa-solid fa-folder"></i></div>
+                        <div class="card-info">
+                            <h3>Total Projects</h3>
+                            <p class="metric-value" id="stat-projects">-</p>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="card-icon scans-icon"><i class="fa-solid fa-rocket"></i></div>
+                        <div class="card-info">
+                            <h3>Total Scans</h3>
+                            <p class="metric-value" id="stat-scans">-</p>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="card-icon pages-icon"><i class="fa-solid fa-file-lines"></i></div>
+                        <div class="card-info">
+                            <h3>Pages Crawled</h3>
+                            <p class="metric-value" id="stat-pages">-</p>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="card-icon issues-icon"><i class="fa-solid fa-circle-exclamation"></i></div>
+                        <div class="card-info">
+                            <h3>Issues Found</h3>
+                            <p class="metric-value" id="stat-issues">-</p>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="card-icon cache-icon"><i class="fa-solid fa-database"></i></div>
+                        <div class="card-info">
+                            <h3>Total Cached Words</h3>
+                            <p class="metric-value" id="stat-cache-total">-</p>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="card-icon unique-cache-icon"><i class="fa-solid fa-fingerprint"></i></div>
+                        <div class="card-info">
+                            <h3>Unique Cached Words</h3>
+                            <p class="metric-value" id="stat-cache-unique">-</p>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="card-icon active-cache-icon"><i class="fa-solid fa-bolt"></i></div>
+                        <div class="card-info">
+                            <h3>Active Cache Entries</h3>
+                            <p class="metric-value" id="stat-cache-active">-</p>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="card-icon status-icon"><i class="fa-solid fa-circle-nodes"></i></div>
+                        <div class="card-info">
+                            <h3>Latest Scan Status</h3>
+                            <p class="metric-value status-badge" id="stat-latest-status">-</p>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="card-icon duration-icon"><i class="fa-solid fa-hourglass-half"></i></div>
+                        <div class="card-info">
+                            <h3>Latest Scan Duration</h3>
+                            <p class="metric-value" id="stat-latest-duration">-</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-secondary-grid">
+                    <div class="recent-scans-panel glass-panel">
+                        <h2>Recent Scans Activity</h2>
+                        <div class="table-wrapper">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Name</th>
+                                        <th>URL</th>
+                                        <th>Status</th>
+                                        <th>Issues</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="dashboard-scans-table">
+                                    <!-- Dynamic rows -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Projects Pane -->
+            <section id="pane-projects" class="pane">
+                <div class="filter-bar glass-panel">
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="projects-search" placeholder="Search projects by name...">
+                    </div>
+                </div>
+                <div class="glass-panel main-panel">
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th class="sortable" data-sort="id">Project ID <i class="fa-solid fa-sort"></i></th>
+                                    <th class="sortable" data-sort="name">Project Name <i class="fa-solid fa-sort"></i></th>
+                                    <th>Website URL</th>
+                                    <th class="sortable" data-sort="createdAt">Created Date & Time <i class="fa-solid fa-sort"></i></th>
+                                </tr>
+                            </thead>
+                            <tbody id="projects-table-body">
+                                <!-- Dynamic rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="pagination" id="projects-pagination"></div>
+                </div>
+            </section>
+
+            <!-- Scan History Pane -->
+            <section id="pane-scans" class="pane">
+                <div class="filter-bar glass-panel">
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="scans-search" placeholder="Search scans by name or URL...">
+                    </div>
+                    <div class="select-box">
+                        <select id="scans-status-filter">
+                            <option value="">All Statuses</option>
+                            <option value="COMPLETED">Completed</option>
+                            <option value="RUNNING">Running</option>
+                            <option value="FAILED">Failed</option>
+                            <option value="STOPPED">Stopped</option>
+                            <option value="PENDING">Pending</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="glass-panel main-panel">
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th class="sortable" data-sort="id">Scan ID <i class="fa-solid fa-sort"></i></th>
+                                    <th class="sortable" data-sort="url">URL <i class="fa-solid fa-sort"></i></th>
+                                    <th class="sortable" data-sort="status">Status <i class="fa-solid fa-sort"></i></th>
+                                    <th class="sortable" data-sort="pagesScanned">Pages Scanned <i class="fa-solid fa-sort"></i></th>
+                                    <th class="sortable" data-sort="wordsChecked">Words Checked <i class="fa-solid fa-sort"></i></th>
+                                    <th class="sortable" data-sort="totalIssues">Issues Found <i class="fa-solid fa-sort"></i></th>
+                                    <th class="sortable" data-sort="startedAt">Started <i class="fa-solid fa-sort"></i></th>
+                                    <th class="sortable" data-sort="endedAt">Ended <i class="fa-solid fa-sort"></i></th>
+                                    <th>Duration</th>
+                                </tr>
+                            </thead>
+                            <tbody id="scans-table-body">
+                                <!-- Dynamic rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="pagination" id="scans-pagination"></div>
+                </div>
+            </section>
+
+            <!-- Scan Details Pane -->
+            <section id="pane-scan-details" class="pane">
+                <div class="back-link-wrapper">
+                    <button class="btn btn-secondary" id="btn-back-to-scans"><i class="fa-solid fa-arrow-left"></i> Back to Scan History</button>
+                </div>
+                <div class="scan-details-grid">
+                    <div class="glass-panel scan-meta-panel">
+                        <h2>Scan Information</h2>
+                        <div class="meta-item"><strong>Scan ID:</strong> <span id="det-scan-id">-</span></div>
+                        <div class="meta-item"><strong>Project:</strong> <span id="det-project-name">-</span></div>
+                        <div class="meta-item"><strong>Name:</strong> <span id="det-scan-name">-</span></div>
+                        <div class="meta-item"><strong>URL:</strong> <span id="det-scan-url">-</span></div>
+                        <div class="meta-item"><strong>Status:</strong> <span id="det-scan-status" class="status-badge">-</span></div>
+                        <div class="meta-item"><strong>Max Pages Limit:</strong> <span id="det-scan-max-pages">-</span></div>
+                        <div class="meta-item"><strong>Crawl Depth Limit:</strong> <span id="det-scan-depth">-</span></div>
+                        <div class="meta-item"><strong>Pages Scanned:</strong> <span id="det-pages-scanned">-</span></div>
+                        <div class="meta-item"><strong>Words Checked:</strong> <span id="det-words-checked">-</span></div>
+                        <div class="meta-item"><strong>Total Issues:</strong> <span id="det-total-issues">-</span></div>
+                        <div class="meta-item"><strong>Duration:</strong> <span id="det-duration">-</span></div>
+                        <div class="meta-item"><strong>Started At:</strong> <span id="det-started-at">-</span></div>
+                        <div class="meta-item"><strong>Ended At:</strong> <span id="det-ended-at">-</span></div>
+                    </div>
+                    <div class="glass-panel scan-breakdown-panel">
+                        <h2>Issue Breakdown by Detection Source</h2>
+                        <div class="breakdown-list" id="det-breakdown-list">
+                            <!-- Breakdown bars -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="details-tab-bar">
+                    <button class="tab-btn active" data-tab="pages">Crawled Pages</button>
+                    <button class="tab-btn" data-tab="issues">Detected Issues</button>
+                </div>
+
+                <!-- Nested Tab: Crawled Pages -->
+                <div id="scan-tab-pages" class="tab-content active glass-panel">
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>URL</th>
+                                    <th>Page Title</th>
+                                    <th>Status Code</th>
+                                    <th>Timestamp</th>
+                                </tr>
+                            </thead>
+                            <tbody id="det-pages-table-body">
+                                <!-- Dynamic rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="pagination" id="det-pages-pagination"></div>
+                </div>
+
+                <!-- Nested Tab: Detected Issues -->
+                <div id="scan-tab-issues" class="tab-content glass-panel">
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Flagged Word</th>
+                                    <th>Suggested Correction</th>
+                                    <th>Page URL</th>
+                                    <th>Page Title</th>
+                                    <th>Tag</th>
+                                    <th>Source</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="det-issues-table-body">
+                                <!-- Dynamic rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="pagination" id="det-issues-pagination"></div>
+                </div>
+            </section>
+
+
+            <!-- Spelling Issues Pane -->
+            <section id="pane-issues" class="pane">
+                <div class="filter-bar glass-panel">
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="issues-search" placeholder="Search by word, URL, or Title...">
+                    </div>
+                    <div class="select-box">
+                        <select id="issues-source-filter">
+                            <option value="">All Detection Sources</option>
+                            <option value="LanguageTool">LanguageTool</option>
+                            <option value="Groq">Groq</option>
+                            <option value="Unknown Word">Unknown Word</option>
+                        </select>
+                    </div>
+                    <div class="select-box">
+                        <select id="issues-removed-filter">
+                            <option value="false">Active Issues Only</option>
+                            <option value="true">Removed Issues Only</option>
+                            <option value="">All Issues</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="glass-panel main-panel">
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th class="sortable" data-sort="id">Issue ID <i class="fa-solid fa-sort"></i></th>
+                                    <th class="sortable" data-sort="word">Word <i class="fa-solid fa-sort"></i></th>
+                                    <th class="sortable" data-sort="suggestedText">Suggested Text <i class="fa-solid fa-sort"></i></th>
+                                    <th class="sortable" data-sort="pageUrl">Page URL <i class="fa-solid fa-sort"></i></th>
+                                    <th class="sortable" data-sort="pageTitle">Page Title <i class="fa-solid fa-sort"></i></th>
+                                    <th>Full Sentence</th>
+                                    <th class="sortable" data-sort="timestamp">Date Found <i class="fa-solid fa-sort"></i></th>
+                                </tr>
+                            </thead>
+                            <tbody id="issues-table-body">
+                                <!-- Dynamic rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="pagination" id="issues-pagination"></div>
+                </div>
+            </section>
+
+            <!-- Validation Cache Pane -->
+            <section id="pane-cache" class="pane">
+                <div class="cache-top-stats glass-panel">
+                    <div class="cache-stat-card">
+                        <h3>Total Entries</h3>
+                        <p id="cache-stat-total">-</p>
+                    </div>
+                    <div class="cache-stat-card border-left">
+                        <h3>Valid Decisions</h3>
+                        <p id="cache-stat-valid">-</p>
+                    </div>
+                    <div class="cache-stat-card border-left">
+                        <h3>Typo Decisions</h3>
+                        <p id="cache-stat-typos">-</p>
+                    </div>
+                </div>
+
+                <div class="filter-bar glass-panel">
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="cache-search" placeholder="Search cache by word, suggestion, reason...">
+                    </div>
+                    <div class="select-box">
+                        <select id="cache-decision-filter">
+                            <option value="">All Decisions</option>
+                            <option value="VALID">Valid Word</option>
+                            <option value="TYPO">Typo</option>
+                            <option value="PENDING">Pending</option>
+                        </select>
+                    </div>
+                    <div class="action-buttons-group">
+                        <button class="btn btn-secondary" id="btn-refresh-cache"><i class="fa-solid fa-arrows-rotate"></i> Refresh View</button>
+                        <button class="btn btn-danger" id="btn-clear-cache"><i class="fa-solid fa-trash-can"></i> Clear Entire Cache</button>
+                    </div>
+                </div>
+                <div class="glass-panel main-panel">
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th class="sortable" data-sort="word">Word <i class="fa-solid fa-sort"></i></th>
+                                    <th class="sortable" data-sort="suggestion">Suggestion <i class="fa-solid fa-sort"></i></th>
+                                    <th class="sortable" data-sort="decision">Decision <i class="fa-solid fa-sort"></i></th>
+                                    <th class="sortable" data-sort="reason">Reason <i class="fa-solid fa-sort"></i></th>
+                                    <th class="sortable" data-sort="createdAt">Created Date <i class="fa-solid fa-sort"></i></th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cache-table-body">
+                                <!-- Dynamic rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="pagination" id="cache-pagination"></div>
+                </div>
+            </section>
+
+            <!-- Analytics Pane -->
+            <section id="pane-analytics" class="pane">
+                <div class="charts-grid">
+                    <div class="glass-panel chart-card">
+                        <h3>Issues Per Scan</h3>
+                        <div class="canvas-container">
+                            <canvas id="chart-issues-per-scan"></canvas>
+                        </div>
+                    </div>
+                    <div class="glass-panel chart-card">
+                        <h3>Pages Crawled Per Scan</h3>
+                        <div class="canvas-container">
+                            <canvas id="chart-pages-per-scan"></canvas>
+                        </div>
+                    </div>
+                    <div class="glass-panel chart-card">
+                        <h3>Words Checked Per Scan</h3>
+                        <div class="canvas-container">
+                            <canvas id="chart-words-per-scan"></canvas>
+                        </div>
+                    </div>
+                    <div class="glass-panel chart-card">
+                        <h3>Cache Growth Over Time (Daily)</h3>
+                        <div class="canvas-container">
+                            <canvas id="chart-cache-growth"></canvas>
+                        </div>
+                    </div>
+                    <div class="glass-panel chart-card">
+                        <h3>Top Repeated Misspellings</h3>
+                        <div class="canvas-container">
+                            <canvas id="chart-top-misspellings"></canvas>
+                        </div>
+                    </div>
+                    <div class="glass-panel chart-card">
+                        <h3>Most Frequently Flagged Words</h3>
+                        <div class="canvas-container">
+                            <canvas id="chart-top-flagged"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Performance Pane -->
+            <section id="pane-performance" class="pane">
+                <div class="glass-panel main-panel">
+                    <h2>Scan Executions Performance History</h2>
+                    <p class="section-description">Using currently available scan records. New performance history tables will be introduced in a future update.</p>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Scan ID</th>
+                                    <th>Scan Name</th>
+                                    <th>Started Time</th>
+                                    <th>Ended Time</th>
+                                    <th>Calculated Duration</th>
+                                    <th>Pages Scanned</th>
+                                    <th>Total Issues Found</th>
+                                </tr>
+                            </thead>
+                            <tbody id="performance-table-body">
+                                <!-- Dynamic rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="pagination" id="performance-pagination"></div>
+                </div>
+            </section>
+
+            <!-- Exports Pane -->
+            <section id="pane-exports" class="pane">
+                <div class="exports-grid">
+                    <!-- Export Card: Scans -->
+                    <div class="glass-panel export-card">
+                        <div class="export-header">
+                            <i class="fa-solid fa-clock-rotate-left export-icon font-scans"></i>
+                            <h3>Scans Export</h3>
+                        </div>
+                        <p class="export-desc">Download complete scan history metrics, projects association, crawled pages counts, words checked, and duration.</p>
+                        <div class="export-actions">
+                            <a href="/api/admin/export/scans/csv" class="btn btn-export csv-btn" download><i class="fa-solid fa-file-csv"></i> CSV</a>
+                            <a href="/api/admin/export/scans/excel" class="btn btn-export excel-btn" download><i class="fa-solid fa-file-excel"></i> Excel</a>
+                            <a href="/api/admin/export/scans/json" class="btn btn-export json-btn" target="_blank"><i class="fa-solid fa-file-code"></i> JSON</a>
+                        </div>
+                    </div>
+
+                    <!-- Export Card: Issues -->
+                    <div class="glass-panel export-card">
+                        <div class="export-header">
+                            <i class="fa-solid fa-circle-exclamation export-icon font-issues"></i>
+                            <h3>Spelling Issues Export</h3>
+                        </div>
+                        <p class="export-desc">Download log of detected spelling and grammar errors, sentence contexts, DOM elements, and status flags.</p>
+                        <div class="export-actions">
+                            <a href="/api/admin/export/issues/csv" class="btn btn-export csv-btn" download><i class="fa-solid fa-file-csv"></i> CSV</a>
+                            <a href="/api/admin/export/issues/excel" class="btn btn-export excel-btn" download><i class="fa-solid fa-file-excel"></i> Excel</a>
+                            <a href="/api/admin/export/issues/json" class="btn btn-export json-btn" target="_blank"><i class="fa-solid fa-file-code"></i> JSON</a>
+                        </div>
+                    </div>
+
+                    <!-- Export Card: Cache -->
+                    <div class="glass-panel export-card">
+                        <div class="export-header">
+                            <i class="fa-solid fa-database export-icon font-cache"></i>
+                            <h3>Validation Cache Export</h3>
+                        </div>
+                        <p class="export-desc">Download spelling decisions cache containing verified words, recommended corrections, decisions, and reasoning.</p>
+                        <div class="export-actions">
+                            <a href="/api/admin/export/cache/csv" class="btn btn-export csv-btn" download><i class="fa-solid fa-file-csv"></i> CSV</a>
+                            <a href="/api/admin/export/cache/excel" class="btn btn-export excel-btn" download><i class="fa-solid fa-file-excel"></i> Excel</a>
+                            <a href="/api/admin/export/cache/json" class="btn btn-export json-btn" target="_blank"><i class="fa-solid fa-file-code"></i> JSON</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+        </div>
+    </div>
+
+    <!-- Logout Confirmation Modal -->
+    <div class="modal" id="logout-confirm-modal">
+        <div class="modal-content glass-panel">
+            <div class="modal-header">
+                <h2>Confirm Logout</h2>
+                <button class="modal-close-btn" id="logout-close-btn">&times;</button>
+            </div>
+            <div style="margin-top: 10px; margin-bottom: 10px;">
+                <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.5;">Are you sure you want to logout? This will terminate your current session.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" id="logout-cancel-btn">Cancel</button>
+                <button type="button" class="btn btn-danger btn-sm" id="logout-confirm-btn">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>

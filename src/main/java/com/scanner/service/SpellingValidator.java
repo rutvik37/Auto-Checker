@@ -26,12 +26,16 @@ public class SpellingValidator {
     private final ValidationCacheRepository validationCacheRepository;
     private final HttpClient httpClient;
     private final ObjectMapper objectMapper;
+    private final Map<String, String> memoryCache = new java.util.concurrent.ConcurrentHashMap<>();
 
     @Value("${groq.api.key:}")
     private String groqApiKey;
 
     @Value("${groq.model:llama-3.3-70b-versatile}")
     private String groqModel;
+
+    @Value("${groq.batch.size:50}")
+    private int batchSize;
 
     @Autowired
     public SpellingValidator(ValidationCacheRepository validationCacheRepository) {
@@ -91,14 +95,29 @@ public class SpellingValidator {
         }
         String w = word.trim().toLowerCase(Locale.ROOT);
         String s = suggestion.trim().toLowerCase(Locale.ROOT);
+        String key = w + "|" + s;
+
+        String cachedDecision = memoryCache.get(key);
+        if (cachedDecision != null) {
+            if ("VALID".equals(cachedDecision) || "TYPO".equals(cachedDecision)) {
+                return Optional.of(cachedDecision);
+            }
+        }
+
         try {
             long dbStart = System.nanoTime();
             Optional<ValidationCache> result = validationCacheRepository.findByWordAndSuggestion(w, s);
             long dbTime = (System.nanoTime() - dbStart) / 1_000_000;
             DbPerformanceMonitor.recordQuery(dbTime);
-            return result
-                    .map(ValidationCache::getDecision)
-                    .filter(decision -> "VALID".equals(decision) || "TYPO".equals(decision));
+            
+            if (result.isPresent()) {
+                String decision = result.get().getDecision();
+                if ("VALID".equals(decision) || "TYPO".equals(decision)) {
+                    memoryCache.put(key, decision);
+                    return Optional.of(decision);
+                }
+            }
+            return Optional.empty();
         } catch (Exception e) {
             logger.error("Failed to query validation cache for word '{}': {}", word, e.getMessage());
             return Optional.empty();
@@ -129,7 +148,6 @@ public class SpellingValidator {
             return;
         }
 
-        int batchSize = 50;
         int[] requestsSent = new int[1];
 
         for (int i = 0; i < candidates.size(); i += batchSize) {
@@ -276,8 +294,6 @@ public class SpellingValidator {
         long prepEnd = System.nanoTime();
         long prepTime = (prepEnd - prepStart) / 1_000_000;
         PerformanceTracker.add("groq_prep", prepTime);
-        System.out.println("[PERF] Groq Request Preparation Time = " + prepTime + " ms");
-        logInfo(scanId, "[PERF] Groq Request Preparation Time = " + prepTime + " ms", logWriter);
 
         long apiStart = System.nanoTime();
         logInfo(scanId, "Sending " + batch.size() + " candidates to Groq...", logWriter);
@@ -285,8 +301,6 @@ public class SpellingValidator {
         long apiEnd = System.nanoTime();
         long apiTime = (apiEnd - apiStart) / 1_000_000;
         PerformanceTracker.add("groq_api", apiTime);
-        System.out.println("[PERF] Groq API Time = " + apiTime + " ms");
-        logInfo(scanId, "[PERF] Groq API Time = " + apiTime + " ms", logWriter);
 
         long parseStart = System.nanoTime();
         if (response.statusCode() != 200) {
@@ -364,8 +378,6 @@ public class SpellingValidator {
         long parseEnd = System.nanoTime();
         long parseTime = (parseEnd - parseStart) / 1_000_000;
         PerformanceTracker.add("groq_parse", parseTime);
-        System.out.println("[PERF] Groq Response Parsing Time = " + parseTime + " ms");
-        logInfo(scanId, "[PERF] Groq Response Parsing Time = " + parseTime + " ms", logWriter);
     }
 
     private String cleanJson(String response) {
@@ -387,6 +399,11 @@ public class SpellingValidator {
         try {
             String w = word.trim().toLowerCase(Locale.ROOT);
             String s = suggestion.trim().toLowerCase(Locale.ROOT);
+            String key = w + "|" + s;
+
+            if ("VALID".equals(decision) || "TYPO".equals(decision)) {
+                memoryCache.put(key, decision);
+            }
 
             long queryStart = System.nanoTime();
             Optional<ValidationCache> existing = validationCacheRepository.findByWordAndSuggestion(w, s);
@@ -414,10 +431,17 @@ public class SpellingValidator {
             }
 
             PerformanceTracker.add("db_save", dbTime);
-            System.out.println("[PERF] Database Save Time = " + dbTime + " ms");
         } catch (Exception e) {
             logger.error("Failed to save validation cache entry for word '{}': {}", word, e.getMessage());
         }
+    }
+
+    public void clearMemoryCache() {
+        memoryCache.clear();
+    }
+
+    public int getMemoryCacheSize() {
+        return memoryCache.size();
     }
 
     private void logInfo(Long scanId, String msg, PrintWriter writer) {

@@ -13,6 +13,8 @@
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="styles.css">
+    <!-- Custom Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%236366f1'/%3E%3Cstop offset='100%25' stop-color='%233b82f6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M12 2L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-3z' fill='url(%23g)'/%3E%3Cpath d='M9 11l2 2 4-4' stroke='white' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 </head>
 <body>
     <div class="glow-bg"></div>
@@ -26,15 +28,22 @@
         <!-- Main Workspace -->
         <main class="workspace">
             <!-- Header -->
-            <header class="workspace-header">
+            <header class="workspace-header" style="display: flex; justify-content: space-between; align-items: center;">
                 <div>
                     <h1 style="font-family: var(--font-header); font-weight: 800; font-size: 32px; background: linear-gradient(135deg, #a855f7, #6366f1); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">QA Spelling Auto-Checker</h1>
                     <p style="color: var(--text-secondary); margin-top: 4px; font-size: 14px;">Verify spelling issues on any website instantly</p>
                 </div>
-                <div class="project-selector-wrapper" style="display: none;">
-                    <select id="global-project-select">
-                        <option value="1">Default</option>
-                    </select>
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <div class="theme-toggle">
+                        <button id="theme-switch" title="Toggle theme">
+                            <i class="fa-solid fa-sun"></i>
+                        </button>
+                    </div>
+                    <div class="project-selector-wrapper" style="display: none;">
+                        <select id="global-project-select">
+                            <option value="1">Default</option>
+                        </select>
+                    </div>
                 </div>
             </header>
 
@@ -48,20 +57,35 @@
                             <h2><i class="fa-solid fa-magnifying-glass"></i> Website Spell Check</h2>
                         </div>
                         <form id="scan-form" onsubmit="startScan(event)">
-                            <div class="form-group">
-                                <label for="scan-url" style="font-size: 14px; font-weight: 600;">Website URL to Scan <span class="required">*</span></label>
-                                <input type="url" id="scan-url" placeholder="https://example.com" required style="padding: 14px; font-size: 15px;">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="scan-project-name" style="font-size: 14px; font-weight: 600;">Project Name <span class="required">*</span></label>
+                                    <input type="text" id="scan-project-name" placeholder="Enter project name" required style="padding: 14px; font-size: 15px;">
+                                </div>
+                                <div class="form-group">
+                                    <label for="scan-url" style="font-size: 14px; font-weight: 600;">Website URL to Scan <span class="required">*</span></label>
+                                    <input type="url" id="scan-url" placeholder="https://example.com" required style="padding: 14px; font-size: 15px;">
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="max-pages" style="font-size: 14px; font-weight: 600;">Max Pages</label>
+                                    <input type="number" id="max-pages" placeholder="Enter maximum pages to scan" value="100" style="padding: 14px; font-size: 15px;">
+                                </div>
+                                <div class="form-group">
+                                    <label for="crawl-depth" style="font-size: 14px; font-weight: 600;">Crawl Depth</label>
+                                    <input type="number" id="crawl-depth" placeholder="Enter crawl depth" value="3" style="padding: 14px; font-size: 15px;">
+                                </div>
                             </div>
                             
                             <!-- Hidden inputs for compatibility with app.js -->
                             <div style="display: none;">
                                 <input type="text" id="scan-name" value="Auto-Scan">
-                                <input type="number" id="max-pages" value="100">
-                                <input type="number" id="crawl-depth" value="3">
                                 <input type="checkbox" id="respect-robots" checked>
                             </div>
                             
-                            <div style="display: flex; gap: 15px;">
+                            <div style="display: flex; gap: 15px; margin-top: 10px;">
                                 <button type="submit" class="btn btn-primary" id="btn-start-scan" style="flex: 2; padding: 14px; font-size: 16px;">
                                     <i class="fa-solid fa-play"></i> Start Spelling Check
                                 </button>

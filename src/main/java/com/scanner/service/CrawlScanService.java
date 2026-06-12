@@ -322,13 +322,11 @@ public class CrawlScanService {
                                     org.jsoup.Connection.Response response = conn.execute();
                                     long fetchTime = (System.nanoTime() - fetchStart) / 1_000_000;
                                     PerformanceTracker.add("page_download", fetchTime);
-                                    System.out.println("[PERF] Page Download = " + fetchTime + " ms");
 
                                     long parseStart = System.nanoTime();
                                     Document doc = response.parse();
                                     long parseTime = (System.nanoTime() - parseStart) / 1_000_000;
                                     PerformanceTracker.add("html_parse", parseTime);
-                                    System.out.println("[PERF] HTML Parsing = " + parseTime + " ms");
 
                                     long textExtractStart = System.nanoTime();
                                     String title = doc.title();
@@ -339,7 +337,6 @@ public class CrawlScanService {
                                     long wordCount = countWords(extractedText);
                                     long textExtractTime = (System.nanoTime() - textExtractStart) / 1_000_000;
                                     PerformanceTracker.add("text_extract", textExtractTime);
-                                    System.out.println("[PERF] Text Extraction = " + textExtractTime + " ms");
 
                                     wordsCheckedCount.addAndGet(wordCount);
 
@@ -480,16 +477,12 @@ public class CrawlScanService {
                         long fetchEnd = System.nanoTime();
                         long fetchTime = (fetchEnd - fetchStart) / 1_000_000;
                         PerformanceTracker.add("page_download", fetchTime);
-                        System.out.println("[PERF] Page Download = " + fetchTime + " ms");
-                        logInfo(scanId, "[PERF] Page Download = " + fetchTime + " ms", finalLogWriter);
 
                         long parseStart = System.nanoTime();
                         Document doc = response.parse();
                         long parseEnd = System.nanoTime();
                         long parseTime = (parseEnd - parseStart) / 1_000_000;
                         PerformanceTracker.add("html_parse", parseTime);
-                        System.out.println("[PERF] HTML Parsing = " + parseTime + " ms");
-                        logInfo(scanId, "[PERF] HTML Parsing = " + parseTime + " ms", finalLogWriter);
 
                         long textExtractStart = System.nanoTime();
                         String title = doc.title();
@@ -500,8 +493,6 @@ public class CrawlScanService {
                         long wordCount = countWords(extractedText);
                         long textExtractTime = (System.nanoTime() - textExtractStart) / 1_000_000;
                         PerformanceTracker.add("text_extract", textExtractTime);
-                        System.out.println("[PERF] Text Extraction = " + textExtractTime + " ms");
-                        logInfo(scanId, "[PERF] Text Extraction = " + textExtractTime + " ms", finalLogWriter);
                         
                         wordsCheckedCount.addAndGet(wordCount);
 
@@ -1056,7 +1047,6 @@ public class CrawlScanService {
             long dbTime = (System.nanoTime() - dbStart) / 1_000_000;
             DbPerformanceMonitor.recordInsert(dbTime);
             PerformanceTracker.add("db_save", dbTime);
-            System.out.println("[PERF] Database Save Time = " + dbTime + " ms");
         } catch (Exception e) {
             logger.error("Failed to save scanned page {}: {}", url, e.getMessage());
         }
@@ -1097,8 +1087,6 @@ public class CrawlScanService {
             long ltEnd = System.nanoTime();
             long ltTime = (ltEnd - ltStart) / 1_000_000;
             PerformanceTracker.add("languagetool_processing", ltTime);
-            System.out.println("[PERF] LanguageTool Processing = " + ltTime + " ms");
-            logInfo(scanId, "[PERF] LanguageTool Processing = " + ltTime + " ms", logWriter);
 
             int languageToolCandidatesCount = 0;
 
@@ -1148,18 +1136,6 @@ public class CrawlScanService {
             long extractEnd = System.nanoTime();
             long extractTime = (extractEnd - extractStart) / 1_000_000;
             PerformanceTracker.add("candidate_extract", extractTime);
-            System.out.println("[PERF] Candidate Extraction Time = " + extractTime + " ms");
-            logInfo(scanId, "[PERF] Candidate Extraction Time = " + extractTime + " ms", logWriter);
-
-            System.out.println("[PERF] Raw Text Tokens = " + rawTokensCount);
-            System.out.println("[PERF] Pre-Filtered Tokens = " + preFilteredTokensCount);
-            System.out.println("[PERF] LanguageTool Candidates = " + languageToolCandidatesCount);
-            System.out.println("[PERF] Tokens Removed Before LanguageTool = " + tokensRemovedCount);
-
-            logInfo(scanId, "[PERF] Raw Text Tokens = " + rawTokensCount, logWriter);
-            logInfo(scanId, "[PERF] Pre-Filtered Tokens = " + preFilteredTokensCount, logWriter);
-            logInfo(scanId, "[PERF] LanguageTool Candidates = " + languageToolCandidatesCount, logWriter);
-            logInfo(scanId, "[PERF] Tokens Removed Before LanguageTool = " + tokensRemovedCount, logWriter);
         } catch (Exception e) {
             logger.error("Spell-check error on {}: {}", pageUrl, e.getMessage());
         }
@@ -1572,10 +1548,11 @@ public class CrawlScanService {
     public void clearInMemoryCaches() {
         scanCancellationTokens.clear();
         scanAuditCollectors.clear();
+        spellingValidator.clearMemoryCache();
     }
 
     public int getInMemoryCacheSize() {
-        return scanCancellationTokens.size() + scanAuditCollectors.size();
+        return scanCancellationTokens.size() + scanAuditCollectors.size() + spellingValidator.getMemoryCacheSize();
     }
 
     public static class AuditReportCollector {
