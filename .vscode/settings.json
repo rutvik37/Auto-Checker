@@ -1,4 +1,13 @@
 {
     "java.configuration.updateBuildConfiguration": "interactive",
-    "java.compile.nullAnalysis.mode": "automatic"
+    "java.compile.nullAnalysis.mode": "automatic",
+    "java.configuration.maven.userSettings": "c:\\Users\\suppo\\Auto-Checker\\.vscode\\settings.xml",
+    "java.jdt.ls.java.home": "c:\\Users\\suppo\\Auto-Checker\\.tools\\jdk21",
+    "java.configuration.runtimes": [
+        {
+            "name": "JavaSE-21",
+            "path": "c:\\Users\\suppo\\Auto-Checker\\.tools\\jdk21",
+            "default": true
+        }
+    ]
 }

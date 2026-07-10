@@ -28,7 +28,8 @@ public class ScannedPage {
     private LocalDateTime timestamp = LocalDateTime.now();
 
     // Constructors
-    public ScannedPage() {}
+    public ScannedPage() {
+    }
 
     public ScannedPage(Scan scan, String url, String title, Integer statusCode) {
         this.scan = scan;
@@ -38,21 +39,51 @@ public class ScannedPage {
     }
 
     // Getters and Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Long getId() {
+        return id;
+    }
 
-    public Scan getScan() { return scan; }
-    public void setScan(Scan scan) { this.scan = scan; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public String getUrl() { return url; }
-    public void setUrl(String url) { this.url = url; }
+    public Scan getScan() {
+        return scan;
+    }
 
-    public String getTitle() { return title; }
-    public void setTitle(String title) { this.title = title; }
+    public void setScan(Scan scan) {
+        this.scan = scan;
+    }
 
-    public Integer getStatusCode() { return statusCode; }
-    public void setStatusCode(Integer statusCode) { this.statusCode = statusCode; }
+    public String getUrl() {
+        return url;
+    }
 
-    public LocalDateTime getTimestamp() { return timestamp; }
-    public void setTimestamp(LocalDateTime timestamp) { this.timestamp = timestamp; }
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public Integer getStatusCode() {
+        return statusCode;
+    }
+
+    public void setStatusCode(Integer statusCode) {
+        this.statusCode = statusCode;
+    }
+
+    public LocalDateTime getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(LocalDateTime timestamp) {
+        this.timestamp = timestamp;
+    }
 }
