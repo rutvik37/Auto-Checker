@@ -1,0 +1,36 @@
+==================================================
+AUDIT REPORT FOR SCAN SESSION #20
+Generated: 2026-07-14T12:33:29.856812
+==================================================
+
+SUMMARY STATS:
+--------------------------------------------------
+Words Ignored by Static Dictionaries: 0
+Words Ignored by Dynamic Entity Layers: 14
+Words Reported as Spelling Mistakes: 0
+
+==================================================
+1. WORDS IGNORED BY STATIC DICTIONARIES (0)
+==================================================
+
+==================================================
+2. WORDS IGNORED BY DYNAMIC ENTITY LAYERS (14)
+==================================================
+Aluminium -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+Defence -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+Docusafe -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+EPDM -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+EPE -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+Enquiry -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+Fabcon -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+Ipsum -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+Kaizen -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+Lorem -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+Ranoli -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+Satkar -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+XLPE -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+gasketing -> Validated as VALID by SQLite Cache/Space Normalization (Reason: )
+
+==================================================
+3. WORDS REPORTED AS TYPOS (0)
+==================================================

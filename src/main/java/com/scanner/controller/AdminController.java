@@ -19,6 +19,13 @@ import java.util.stream.Collectors;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import com.scanner.service.ProjectService;
+import com.scanner.service.SettingsService;
+import com.scanner.service.LiveLogService;
+import com.scanner.service.CrawlScanService;
+import com.scanner.service.GroqMetricsService;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+
 @RestController
 @RequestMapping("/api/admin")
 @CrossOrigin(origins = "*")
@@ -30,6 +37,11 @@ public class AdminController {
     private final IssueRepository issueRepository;
     private final ValidationCacheRepository validationCacheRepository;
     private final SpellingValidator spellingValidator;
+    private final ProjectService projectService;
+    private final SettingsService settingsService;
+    private final LiveLogService liveLogService;
+    private final CrawlScanService crawlScanService;
+    private final GroqMetricsService groqMetricsService;
 
     @org.springframework.beans.factory.annotation.Value("${admin.security.pin:5555}")
     private String securityPin;
@@ -40,13 +52,23 @@ public class AdminController {
                            ScannedPageRepository scannedPageRepository,
                            IssueRepository issueRepository,
                            ValidationCacheRepository validationCacheRepository,
-                           SpellingValidator spellingValidator) {
+                           SpellingValidator spellingValidator,
+                           ProjectService projectService,
+                           SettingsService settingsService,
+                           LiveLogService liveLogService,
+                           CrawlScanService crawlScanService,
+                           GroqMetricsService groqMetricsService) {
         this.projectRepository = projectRepository;
         this.scanRepository = scanRepository;
         this.scannedPageRepository = scannedPageRepository;
         this.issueRepository = issueRepository;
         this.validationCacheRepository = validationCacheRepository;
         this.spellingValidator = spellingValidator;
+        this.projectService = projectService;
+        this.settingsService = settingsService;
+        this.liveLogService = liveLogService;
+        this.crawlScanService = crawlScanService;
+        this.groqMetricsService = groqMetricsService;
     }
 
     // 0. Security Endpoints
@@ -84,6 +106,31 @@ public class AdminController {
         Map<String, Object> resp = new HashMap<>();
         resp.put("authenticated", authenticated);
         return ResponseEntity.ok(resp);
+    }
+
+    @GetMapping("/profile/image")
+    public void getProfileImage(HttpServletResponse response) throws IOException {
+        java.io.File file = new java.io.File("profile-image.png");
+        if (!file.exists()) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+        response.setContentType("image/png");
+        java.nio.file.Files.copy(file.toPath(), response.getOutputStream());
+    }
+
+    @PostMapping("/profile/image")
+    public ResponseEntity<?> uploadProfileImage(@RequestParam("file") org.springframework.web.multipart.MultipartFile file) {
+        if (file == null || file.isEmpty()) {
+            return ResponseEntity.badRequest().body("File is empty");
+        }
+        try {
+            java.io.File dest = new java.io.File("profile-image.png");
+            file.transferTo(dest.getAbsoluteFile());
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
     }
 
     private Pageable createPageable(int page, int size, String sort) {
@@ -145,9 +192,47 @@ public class AdminController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "id,desc") String sort,
-            @RequestParam(required = false) String search) {
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) String fromDate,
+            @RequestParam(required = false) String toDate) {
         Pageable pageable = createPageable(page, size, sort);
-        return ResponseEntity.ok(projectRepository.searchProjects(search, pageable));
+        
+        java.time.LocalDateTime from = null;
+        java.time.LocalDateTime to = null;
+        
+        if (fromDate != null && !fromDate.trim().isEmpty()) {
+            try {
+                if (fromDate.length() == 10) {
+                    from = java.time.LocalDate.parse(fromDate).atStartOfDay();
+                } else {
+                    from = java.time.LocalDateTime.parse(fromDate);
+                }
+            } catch (Exception e) {
+                // Ignore parse errors
+            }
+        }
+        if (toDate != null && !toDate.trim().isEmpty()) {
+            try {
+                if (toDate.length() == 10) {
+                    to = java.time.LocalDate.parse(toDate).atTime(23, 59, 59, 999999999);
+                } else {
+                    to = java.time.LocalDateTime.parse(toDate);
+                }
+            } catch (Exception e) {
+                // Ignore parse errors
+            }
+        }
+        
+        return ResponseEntity.ok(projectRepository.searchProjects(search, from, to, pageable));
+    }
+
+    @DeleteMapping("/projects/{id}")
+    public ResponseEntity<?> deleteProject(@PathVariable Long id) {
+        if (projectRepository.existsById(id)) {
+            projectService.deleteProject(id);
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.notFound().build();
     }
 
     // 3. Scan History Page
@@ -541,5 +626,108 @@ public class AdminController {
     @GetMapping("/export/cache/json")
     public ResponseEntity<List<ValidationCache>> exportCacheJson() {
         return ResponseEntity.ok(validationCacheRepository.findAll(Sort.by(Sort.Direction.DESC, "id")));
+    }
+
+    // 10. Settings Management
+    @GetMapping("/settings")
+    public ResponseEntity<?> getSettings() {
+        Map<String, Object> settings = new HashMap<>();
+        String key = settingsService.getGroqApiKey();
+        String maskedKey = "";
+        if (key != null && !key.trim().isEmpty()) {
+            key = key.trim();
+            if (key.length() > 4) {
+                maskedKey = "••••••••••••••••" + key.substring(key.length() - 4);
+            } else {
+                maskedKey = "••••••••••••••••";
+            }
+        }
+        settings.put("groqApiKey", maskedKey);
+        settings.put("groqModel", settingsService.getGroqModel());
+        settings.put("groqBatchSize", settingsService.getGroqBatchSize());
+        settings.put("crawlerParallelEnabled", settingsService.isCrawlerParallelEnabled());
+        settings.put("crawlerParallelWorkers", settingsService.getCrawlerParallelWorkers());
+        return ResponseEntity.ok(settings);
+    }
+
+    @PostMapping("/settings")
+    public ResponseEntity<?> updateSettings(@RequestBody Map<String, Object> body) {
+        String newKey = (String) body.get("groqApiKey");
+        if (newKey != null && !newKey.isEmpty() && !newKey.equals("••••••••••••••••") && !newKey.startsWith("••••••••••••••••")) {
+            String specialKey = (String) body.get("specialKey");
+            if (specialKey == null || !securityPin.equals(specialKey.trim())) {
+                return ResponseEntity.status(403).body("Unauthorized: Invalid Security PIN (Special Key)");
+            }
+        }
+        settingsService.updateSettings(body);
+        return ResponseEntity.ok().build();
+    }
+
+    // 10.5. Groq Metrics Dashboard
+    @GetMapping("/metrics/groq")
+    public ResponseEntity<?> getGroqMetrics() {
+        String currentModel = settingsService.getGroqModel();
+        return ResponseEntity.ok(groqMetricsService.getMetricsReport(currentModel));
+    }
+
+    @PostMapping("/metrics/groq/reset")
+    public ResponseEntity<?> resetGroqMetrics(@RequestBody Map<String, String> body) {
+        String pin = body != null ? body.get("specialKey") : null;
+        if (pin == null || !securityPin.equals(pin.trim())) {
+            return ResponseEntity.status(403).body("Unauthorized: Invalid Security PIN (Special Key)");
+        }
+        groqMetricsService.resetMetrics();
+        return ResponseEntity.ok().build();
+    }
+
+    // 11. Dictionary Management
+    @GetMapping("/dictionaries")
+    public ResponseEntity<?> getDictionaries() {
+        Map<String, Object> dicts = new HashMap<>();
+        dicts.put("global", spellingValidator.getDictionaryWords("global"));
+        dicts.put("user", spellingValidator.getDictionaryWords("user"));
+        return ResponseEntity.ok(dicts);
+    }
+
+    @PostMapping("/dictionaries/add")
+    public ResponseEntity<?> addDictionaryWord(@RequestBody Map<String, String> body) {
+        String dict = body.get("dictionary");
+        String word = body.get("word");
+        if (dict == null || word == null) {
+            return ResponseEntity.badRequest().body("dictionary and word parameters are required");
+        }
+        try {
+            spellingValidator.addWordToDictionary(dict, word);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/dictionaries/remove")
+    public ResponseEntity<?> removeDictionaryWord(@RequestBody Map<String, String> body) {
+        String dict = body.get("dictionary");
+        String word = body.get("word");
+        if (dict == null || word == null) {
+            return ResponseEntity.badRequest().body("dictionary and word parameters are required");
+        }
+        try {
+            spellingValidator.removeWordFromDictionary(dict, word);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
+    }
+
+    // 12. Active Scan Controls (Port 5555 routing bypass)
+    @GetMapping(value = "/scans/{scanId}/stream", produces = "text/event-stream")
+    public SseEmitter streamScanProgressAdmin(@PathVariable Long scanId) {
+        return liveLogService.register(scanId);
+    }
+
+    @PostMapping("/scans/{scanId}/cancel")
+    public ResponseEntity<?> cancelScanAdmin(@PathVariable Long scanId) {
+        crawlScanService.cancelScan(scanId);
+        return ResponseEntity.ok().build();
     }
 }

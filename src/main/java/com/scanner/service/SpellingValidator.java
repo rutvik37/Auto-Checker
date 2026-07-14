@@ -27,19 +27,114 @@ public class SpellingValidator {
     private final HttpClient httpClient;
     private final ObjectMapper objectMapper;
     private final Map<String, String> memoryCache = new java.util.concurrent.ConcurrentHashMap<>();
+    
+    private final SettingsService settingsService;
+    private final Set<String> customDictionaryWords = java.util.concurrent.ConcurrentHashMap.newKeySet();
+    private final GroqMetricsService groqMetricsService;
 
-    @Value("${groq.api.key:}")
-    private String groqApiKey;
+    @jakarta.annotation.PostConstruct
+    public void init() {
+        loadCustomDictionaries();
+    }
 
-    @Value("${groq.model:llama-3.3-70b-versatile}")
-    private String groqModel;
+    public synchronized void loadCustomDictionaries() {
+        customDictionaryWords.clear();
+        loadDictionaryFile(new java.io.File("CustomDictionaries/global.txt"));
+        loadDictionaryFile(new java.io.File("CustomDictionaries/user.txt"));
+        logger.info("Loaded {} custom dictionary words.", customDictionaryWords.size());
+    }
 
-    @Value("${groq.batch.size:50}")
-    private int batchSize;
+    private void loadDictionaryFile(java.io.File file) {
+        if (!file.exists()) {
+            try {
+                file.getParentFile().mkdirs();
+                java.nio.file.Files.write(file.toPath(), Arrays.asList("# Custom Dictionary - Add one word per line"));
+            } catch (java.io.IOException e) {
+                logger.error("Failed to create dictionary file {}: {}", file.getName(), e.getMessage());
+            }
+            return;
+        }
+        try {
+            List<String> lines = java.nio.file.Files.readAllLines(file.toPath());
+            for (String line : lines) {
+                line = line.trim();
+                if (line.isEmpty() || line.startsWith("#")) {
+                    continue;
+                }
+                customDictionaryWords.add(line.toLowerCase(Locale.ROOT));
+            }
+        } catch (java.io.IOException e) {
+            logger.error("Failed to read dictionary file {}: {}", file.getName(), e.getMessage());
+        }
+    }
+
+    public boolean isCustomDictionaryWord(String word) {
+        if (word == null) return false;
+        return customDictionaryWords.contains(word.trim().toLowerCase(Locale.ROOT));
+    }
+
+    public List<String> getDictionaryWords(String type) {
+        java.io.File file = new java.io.File("CustomDictionaries/" + type + ".txt");
+        List<String> words = new ArrayList<>();
+        if (!file.exists()) return words;
+        try {
+            List<String> lines = java.nio.file.Files.readAllLines(file.toPath());
+            for (String line : lines) {
+                line = line.trim();
+                if (line.isEmpty() || line.startsWith("#")) continue;
+                words.add(line);
+            }
+        } catch (java.io.IOException e) {
+            logger.error("Failed to read {} dictionary: {}", type, e.getMessage());
+        }
+        Collections.sort(words);
+        return words;
+    }
+
+    public synchronized void addWordToDictionary(String type, String word) throws java.io.IOException {
+        if (word == null || word.trim().isEmpty()) return;
+        String normalized = word.trim();
+        List<String> words = getDictionaryWords(type);
+        if (words.stream().anyMatch(w -> w.equalsIgnoreCase(normalized))) {
+            return; // Already exists
+        }
+        
+        java.io.File file = new java.io.File("CustomDictionaries/" + type + ".txt");
+        List<String> lines = new ArrayList<>();
+        if (file.exists()) {
+            lines = java.nio.file.Files.readAllLines(file.toPath());
+        } else {
+            lines.add("# " + type.substring(0, 1).toUpperCase() + type.substring(1) + " Custom Dictionary - Add one word per line");
+        }
+        lines.add(normalized);
+        java.nio.file.Files.write(file.toPath(), lines);
+        loadCustomDictionaries();
+    }
+
+    public synchronized void removeWordFromDictionary(String type, String word) throws java.io.IOException {
+        if (word == null || word.trim().isEmpty()) return;
+        String normalized = word.trim();
+        java.io.File file = new java.io.File("CustomDictionaries/" + type + ".txt");
+        if (!file.exists()) return;
+        
+        List<String> lines = java.nio.file.Files.readAllLines(file.toPath());
+        List<String> newLines = new ArrayList<>();
+        for (String line : lines) {
+            String trimmed = line.trim();
+            if (trimmed.equalsIgnoreCase(normalized) && !trimmed.startsWith("#")) {
+                continue; // Remove the word
+            }
+            newLines.add(line);
+        }
+        java.nio.file.Files.write(file.toPath(), newLines);
+        loadCustomDictionaries();
+    }
 
     @Autowired
-    public SpellingValidator(ValidationCacheRepository validationCacheRepository) {
+    public SpellingValidator(ValidationCacheRepository validationCacheRepository, SettingsService settingsService, GroqMetricsService groqMetricsService) {
         this.validationCacheRepository = validationCacheRepository;
+        this.settingsService = settingsService;
+        this.groqMetricsService = groqMetricsService;
         this.httpClient = HttpClient.newBuilder()
                 .followRedirects(HttpClient.Redirect.ALWAYS)
                 .connectTimeout(Duration.ofSeconds(10))
@@ -100,6 +195,7 @@ public class SpellingValidator {
         String cachedDecision = memoryCache.get(key);
         if (cachedDecision != null) {
             if ("VALID".equals(cachedDecision) || "TYPO".equals(cachedDecision)) {
+                groqMetricsService.incrementCacheHits();
                 return Optional.of(cachedDecision);
             }
         }
@@ -114,6 +210,7 @@ public class SpellingValidator {
                 String decision = result.get().getDecision();
                 if ("VALID".equals(decision) || "TYPO".equals(decision)) {
                     memoryCache.put(key, decision);
+                    groqMetricsService.incrementCacheHits();
                     return Optional.of(decision);
                 }
             }
@@ -134,7 +231,7 @@ public class SpellingValidator {
         // Get API key
         String apiKey = System.getenv("GROQ_API_KEY");
         if (apiKey == null || apiKey.trim().isEmpty()) {
-            apiKey = groqApiKey;
+            apiKey = settingsService.getGroqApiKey();
         }
 
         if (apiKey == null || apiKey.trim().isEmpty()) {
@@ -148,16 +245,42 @@ public class SpellingValidator {
             return;
         }
 
-        int[] requestsSent = new int[1];
+        java.util.concurrent.atomic.AtomicInteger requestsSent = new java.util.concurrent.atomic.AtomicInteger(0);
+        int currentBatchSize = settingsService.getGroqBatchSize();
 
-        for (int i = 0; i < candidates.size(); i += batchSize) {
-            List<SpellingCandidate> batch = candidates.subList(i, Math.min(i + batchSize, candidates.size()));
-            validateWithFallback(batch, apiKey, scanId, logWriter, requestsSent);
+        java.util.concurrent.atomic.AtomicLong parallelPrepTime = new java.util.concurrent.atomic.AtomicLong(0);
+        java.util.concurrent.atomic.AtomicLong parallelApiTime = new java.util.concurrent.atomic.AtomicLong(0);
+        java.util.concurrent.atomic.AtomicLong parallelParseTime = new java.util.concurrent.atomic.AtomicLong(0);
+
+        int numBatches = (candidates.size() + currentBatchSize - 1) / currentBatchSize;
+        java.util.concurrent.ExecutorService validationExecutor = java.util.concurrent.Executors.newFixedThreadPool(
+                Math.min(10, Math.max(1, numBatches))
+        );
+
+        List<java.util.concurrent.CompletableFuture<Void>> futures = new ArrayList<>();
+
+        for (int i = 0; i < candidates.size(); i += currentBatchSize) {
+            final List<SpellingCandidate> batch = candidates.subList(i, Math.min(i + currentBatchSize, candidates.size()));
+            final String finalApiKey = apiKey;
+            futures.add(java.util.concurrent.CompletableFuture.runAsync(() -> {
+                validateWithFallback(batch, finalApiKey, scanId, logWriter, requestsSent, parallelPrepTime, parallelApiTime, parallelParseTime);
+            }, validationExecutor));
         }
 
+        try {
+            java.util.concurrent.CompletableFuture.allOf(futures.toArray(new java.util.concurrent.CompletableFuture[0])).join();
+        } finally {
+            validationExecutor.shutdown();
+        }
+
+        // Add accumulated parallel timing metrics to the main thread's PerformanceTracker
+        PerformanceTracker.add("groq_prep", parallelPrepTime.get());
+        PerformanceTracker.add("groq_api", parallelApiTime.get());
+        PerformanceTracker.add("groq_parse", parallelParseTime.get());
+
         int totalCandidates = candidates.size();
-        int totalRequestsSent = requestsSent[0];
-        int loggedBatchSize = Math.min(batchSize, totalCandidates);
+        int totalRequestsSent = requestsSent.get();
+        int loggedBatchSize = Math.min(currentBatchSize, totalCandidates);
         int candidatesPerRequest = totalRequestsSent > 0
                 ? (int) Math.round((double) totalCandidates / totalRequestsSent)
                 : 0;
@@ -174,13 +297,16 @@ public class SpellingValidator {
     }
 
     private void validateWithFallback(List<SpellingCandidate> batch, String apiKey, Long scanId, PrintWriter logWriter,
-            int[] requestsSent) {
+            java.util.concurrent.atomic.AtomicInteger requestsSent,
+            java.util.concurrent.atomic.AtomicLong parallelPrepTime,
+            java.util.concurrent.atomic.AtomicLong parallelApiTime,
+            java.util.concurrent.atomic.AtomicLong parallelParseTime) {
         if (batch.isEmpty()) {
             return;
         }
         try {
-            requestsSent[0]++;
-            callGroqForBatch(batch, apiKey, scanId, logWriter);
+            requestsSent.incrementAndGet();
+            callGroqForBatch(batch, apiKey, scanId, logWriter, parallelPrepTime, parallelApiTime, parallelParseTime);
         } catch (Exception e) {
             logger.warn("Groq validation failed for batch of size {}: {}. Retrying with fallback...", batch.size(),
                     e.getMessage());
@@ -201,12 +327,15 @@ public class SpellingValidator {
             List<SpellingCandidate> batch1 = batch.subList(0, half);
             List<SpellingCandidate> batch2 = batch.subList(half, batch.size());
 
-            validateWithFallback(batch1, apiKey, scanId, logWriter, requestsSent);
-            validateWithFallback(batch2, apiKey, scanId, logWriter, requestsSent);
+            validateWithFallback(batch1, apiKey, scanId, logWriter, requestsSent, parallelPrepTime, parallelApiTime, parallelParseTime);
+            validateWithFallback(batch2, apiKey, scanId, logWriter, requestsSent, parallelPrepTime, parallelApiTime, parallelParseTime);
         }
     }
 
-    private void callGroqForBatch(List<SpellingCandidate> batch, String apiKey, Long scanId, PrintWriter logWriter)
+    private void callGroqForBatch(List<SpellingCandidate> batch, String apiKey, Long scanId, PrintWriter logWriter,
+            java.util.concurrent.atomic.AtomicLong parallelPrepTime,
+            java.util.concurrent.atomic.AtomicLong parallelApiTime,
+            java.util.concurrent.atomic.AtomicLong parallelParseTime)
             throws Exception {
         long prepStart = System.nanoTime();
         // Build payload
@@ -274,7 +403,7 @@ public class SpellingValidator {
         messages.add(userMsg);
 
         Map<String, Object> payload = new HashMap<>();
-        payload.put("model", groqModel);
+        payload.put("model", settingsService.getGroqModel());
         payload.put("messages", messages);
 
         Map<String, Object> responseFormat = new HashMap<>();
@@ -293,20 +422,56 @@ public class SpellingValidator {
 
         long prepEnd = System.nanoTime();
         long prepTime = (prepEnd - prepStart) / 1_000_000;
-        PerformanceTracker.add("groq_prep", prepTime);
+        parallelPrepTime.addAndGet(prepTime);
 
         long apiStart = System.nanoTime();
         logInfo(scanId, "Sending " + batch.size() + " candidates to Groq...", logWriter);
-        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        long apiEnd = System.nanoTime();
-        long apiTime = (apiEnd - apiStart) / 1_000_000;
-        PerformanceTracker.add("groq_api", apiTime);
+        HttpResponse<String> response = null;
+        long apiTime = 0;
+        try {
+            response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            long apiEnd = System.nanoTime();
+            apiTime = (apiEnd - apiStart) / 1_000_000;
+            parallelApiTime.addAndGet(apiTime);
+        } catch (Exception e) {
+            long apiEnd = System.nanoTime();
+            apiTime = (apiEnd - apiStart) / 1_000_000;
+            groqMetricsService.recordApiCall(false, 0, 0, apiTime);
+            groqMetricsService.incrementCacheMisses();
+            throw e;
+        }
 
         long parseStart = System.nanoTime();
         if (response.statusCode() != 200) {
+            groqMetricsService.recordApiCall(false, 0, 0, apiTime);
+            groqMetricsService.incrementCacheMisses();
             throw new RuntimeException(
                     "Groq API returned HTTP status code " + response.statusCode() + ": " + response.body());
         }
+
+        long promptTokens = 0;
+        long completionTokens = 0;
+        try {
+            JsonNode responseJson = objectMapper.readTree(response.body());
+            JsonNode usageNode = responseJson.path("usage");
+            if (!usageNode.isMissingNode()) {
+                promptTokens = usageNode.path("prompt_tokens").asLong(0);
+                completionTokens = usageNode.path("completion_tokens").asLong(0);
+            }
+        } catch (Exception e) {
+            logger.warn("Failed to parse token usage from Groq response: {}", e.getMessage());
+        }
+
+        try {
+            long remReq = response.headers().firstValueAsLong("x-ratelimit-remaining-requests").orElse(-1);
+            long remTok = response.headers().firstValueAsLong("x-ratelimit-remaining-tokens").orElse(-1);
+            groqMetricsService.updateRateLimits(remReq, remTok);
+        } catch (Exception e) {
+            logger.warn("Failed to parse rate limit headers from Groq response: {}", e.getMessage());
+        }
+
+        groqMetricsService.recordApiCall(true, promptTokens, completionTokens, apiTime);
+        groqMetricsService.incrementCacheMisses();
 
         JsonNode responseJson = objectMapper.readTree(response.body());
         JsonNode choicesNode = responseJson.path("choices");
@@ -377,7 +542,7 @@ public class SpellingValidator {
         }
         long parseEnd = System.nanoTime();
         long parseTime = (parseEnd - parseStart) / 1_000_000;
-        PerformanceTracker.add("groq_parse", parseTime);
+        parallelParseTime.addAndGet(parseTime);
     }
 
     private String cleanJson(String response) {
@@ -392,7 +557,7 @@ public class SpellingValidator {
         return response;
     }
 
-    public void saveToCache(String word, String suggestion, String decision, String reason) {
+    public synchronized void saveToCache(String word, String suggestion, String decision, String reason) {
         if (word == null || suggestion == null) {
             return;
         }
@@ -468,7 +633,7 @@ public class SpellingValidator {
         try {
             String apiKey = System.getenv("GROQ_API_KEY");
             if (apiKey == null || apiKey.trim().isEmpty()) {
-                apiKey = groqApiKey;
+                apiKey = settingsService.getGroqApiKey();
             }
             if (apiKey == null || apiKey.trim().isEmpty()) {
                 throw new RuntimeException("Groq API Key is missing!");
@@ -479,7 +644,7 @@ public class SpellingValidator {
             message.put("content", "Validate the word: " + word);
 
             Map<String, Object> payload = new HashMap<>();
-            payload.put("model", groqModel);
+            payload.put("model", settingsService.getGroqModel());
             payload.put("messages", Collections.singletonList(message));
 
             String requestBody = objectMapper.writeValueAsString(payload);
@@ -496,6 +661,12 @@ public class SpellingValidator {
             return response.body();
         } catch (Exception e) {
             throw new RuntimeException("Error during Groq test call: " + e.getMessage(), e);
+        }
+    }
+
+    public void incrementCacheHits() {
+        if (groqMetricsService != null) {
+            groqMetricsService.incrementCacheHits();
         }
     }
 }

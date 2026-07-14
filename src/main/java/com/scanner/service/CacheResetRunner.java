@@ -66,7 +66,7 @@ public class CacheResetRunner implements ApplicationRunner {
 
         // 3. Clear Disk-Based Temporary Storage
         try {
-            File tmpDir = new File("C:\\Users\\suppo\\Auto-Checker\\tmp");
+            File tmpDir = new File("tmp");
             if (tmpDir.exists() && tmpDir.isDirectory()) {
                 File[] files = tmpDir.listFiles();
                 if (files != null) {
@@ -80,7 +80,7 @@ public class CacheResetRunner implements ApplicationRunner {
                 }
             }
             System.out.println("[CACHE] Cache type found: Disk-Based Temporary Storage");
-            System.out.println("[CACHE] Cache location: C:\\Users\\suppo\\Auto-Checker\\tmp");
+            System.out.println("[CACHE] Cache location: tmp");
             System.out.println("[CACHE] Number of entries removed: " + tmpRemovedCount);
             System.out.println("[CACHE] Cache reset status: SUCCESS");
         } catch (Exception e) {

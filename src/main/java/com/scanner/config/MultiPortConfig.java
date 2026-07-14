@@ -9,10 +9,15 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class MultiPortConfig {
 
+    @org.springframework.beans.factory.annotation.Value("${app.single-port:false}")
+    private boolean singlePort;
+
     @Bean
     public ServletWebServerFactory servletContainer() {
         TomcatServletWebServerFactory tomcat = new TomcatServletWebServerFactory();
-        tomcat.addAdditionalTomcatConnectors(createAdditionalConnector());
+        if (!singlePort) {
+            tomcat.addAdditionalTomcatConnectors(createAdditionalConnector());
+        }
         return tomcat;
     }
 

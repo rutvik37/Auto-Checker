@@ -1,0 +1,55 @@
+==================================================
+AUDIT REPORT FOR SCAN SESSION #12
+Generated: 2026-07-13T16:53:27.976442
+==================================================
+
+SUMMARY STATS:
+--------------------------------------------------
+Words Ignored by Static Dictionaries: 0
+Words Ignored by Dynamic Entity Layers: 32
+Words Reported as Spelling Mistakes: 1
+
+==================================================
+1. WORDS IGNORED BY STATIC DICTIONARIES (0)
+==================================================
+
+==================================================
+2. WORDS IGNORED BY DYNAMIC ENTITY LAYERS (32)
+==================================================
+Armbrister -> Validated as VALID by Groq API (Reason: Armbrister appears to be a proper noun or surname.)
+CabsOn -> Validated as VALID by Groq API (Reason: CabsOn appears to be a valid identifier or title.)
+Chandrashekar -> Validated as VALID by Groq API (Reason: Chandrashekar appears to be a proper noun or name.)
+DApps -> Validated as VALID by Groq API (Reason: DApps is a valid abbreviation for Decentralized Applications.)
+Derema -> Validated as VALID by Groq API (Reason: Derema appears to be a company or brand name.)
+EmberJs -> Validated as VALID by Groq API (Reason: Ember.js is a valid JavaScript framework.)
+Farrer -> Validated as VALID by Groq API (Reason: Farrer appears to be a proper noun or name.)
+Fratney -> Validated as VALID by Groq API (Reason: Fratney appears to be a proper noun or name.)
+Garyson -> Validated as VALID by Groq API (Reason: Garyson appears to be a proper noun or surname.)
+Hayabuchi -> Validated as VALID by Groq API (Reason: Hayabuchi appears to be a proper noun or name.)
+Jatin -> Validated as VALID by Groq API (Reason: Jatin appears to be a proper noun or name.)
+Kew -> Validated as VALID by Groq API (Reason: Kew appears to be a proper noun or name.)
+Lonc -> Validated as VALID by Groq API (Reason: Lonc appears to be a proper noun or surname.)
+MEVN -> Validated as VALID by Groq API (Reason: MEVN is a valid software stack (MongoDB, Express.js, Vue.js, Node.js).)
+Moffett -> Validated as VALID by Groq API (Reason: Moffett appears to be a proper noun or surname.)
+Murtaza -> Validated as VALID by Groq API (Reason: Murtaza appears to be a proper noun or name.)
+Musikaa -> Validated as VALID by Groq API (Reason: Musikaa appears to be a proper noun or name.)
+NestJS -> Validated as VALID by Groq API (Reason: NestJS is a valid JavaScript framework.)
+Nuxt -> Validated as VALID by Groq API (Reason: Nuxt is a valid JavaScript framework.)
+Panchal -> Validated as VALID by Groq API (Reason: Panchal appears to be a proper noun or surname.)
+Rlogical -> Validated as VALID by Groq API (Reason: Rlogical appears to be a company or brand name.)
+Sadia -> Validated as VALID by Groq API (Reason: Sadia appears to be a proper noun or name.)
+Satkar -> Validated as VALID by Groq API (Reason: Satkar appears to be a proper noun or name.)
+Strapi -> Validated as VALID by Groq API (Reason: Strapi is a valid JavaScript framework.)
+Sunt -> Validated as VALID by Groq API (Reason: Sunt is a valid verb or part of a name (e.g., Sunday).)
+Tanishq -> Validated as VALID by Groq API (Reason: Tanishq appears to be a proper noun or name.)
+TicketPickUp -> Validated as VALID by Groq API (Reason: TicketPickUp appears to be a valid identifier or title.)
+Tsuzuki-ku -> Validated as VALID by Groq API (Reason: Tsuzuki-ku appears to be a proper noun or location.)
+Vasant -> Validated as VALID by Groq API (Reason: Vasant appears to be a proper noun or name.)
+Zeev -> Validated as VALID by Groq API (Reason: Zeev appears to be a proper noun or name.)
+Zev -> Validated as VALID by Groq API (Reason: Zev appears to be a proper noun or name.)
+eCom -> Validated as VALID by Groq API (Reason: eCom is a common abbreviation for electronic commerce.)
+
+==================================================
+3. WORDS REPORTED AS TYPOS (1)
+==================================================
+Kubernets

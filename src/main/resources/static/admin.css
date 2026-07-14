@@ -33,7 +33,7 @@
 .light-mode {
     --bg-primary: #f9fafb;
     --bg-secondary: #f3f4f6;
-    --bg-sidebar: #1e293b;
+    --bg-sidebar: #ffffff;
     --panel-bg: rgba(255, 255, 255, 0.85);
     --panel-border: rgba(0, 0, 0, 0.06);
     --panel-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
@@ -854,25 +854,49 @@ tr:hover td {
 #login-layout {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
+    padding-left: 10%;
     min-height: 100vh;
     width: 100vw;
-    background-color: var(--bg-primary);
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.2), rgba(8, 15, 30, 0.35)), url('login-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
     position: fixed;
     top: 0;
     left: 0;
     z-index: 1000;
 }
 
+@media (max-width: 768px) {
+    #login-layout {
+        justify-content: center;
+        padding-left: 0;
+        padding: 20px;
+    }
+}
+
 .login-card {
     width: 100%;
-    max-width: 400px;
-    padding: 40px;
+    max-width: 460px;
+    min-height: 480px;
+    padding: 50px 40px;
     text-align: center;
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    justify-content: center;
+    gap: 28px;
     align-items: center;
+}
+
+#login-layout .profile-avatar-container {
+    width: 110px;
+    height: 110px;
+    margin-bottom: 20px;
+}
+
+#login-layout .profile-avatar-container i {
+    font-size: 72px;
 }
 
 .login-header {
@@ -1053,4 +1077,122 @@ tr:hover td {
     gap: 12px;
     margin-top: 24px;
 }
+
+.table-link {
+    color: var(--accent);
+    text-decoration: none;
+    transition: color var(--transition-speed);
+}
+
+.table-link:hover {
+    color: var(--accent-hover);
+    text-decoration: underline;
+}
+
+.date-filter {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.date-filter label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.date-filter input[type="date"] {
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    padding: 8px 12px;
+    font-family: inherit;
+    font-size: 0.85rem;
+    outline: none;
+    transition: border-color var(--transition-speed);
+}
+
+.date-filter input[type="date"]:focus {
+    border-color: var(--accent);
+}
+
+.profile-avatar-container {
+    width: 90px;
+    height: 90px;
+    margin: 0 auto 16px auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid var(--accent);
+    box-shadow: 0 0 15px rgba(99, 102, 241, 0.3);
+    background: var(--bg-card);
+    position: relative;
+}
+
+.profile-avatar-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile-avatar-container i {
+    font-size: 60px;
+    color: var(--accent);
+}
+
+/* Custom Dictionary Styling */
+.dict-word-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    color: var(--text-primary);
+}
+.light-mode .dict-word-item {
+    background: rgba(0, 0, 0, 0.02);
+    border: 1px solid rgba(0, 0, 0, 0.04);
+}
+.dict-word-item span {
+    font-weight: 500;
+}
+.dict-word-item button {
+    background: none;
+    border: none;
+    color: var(--danger);
+    cursor: pointer;
+    font-size: 0.8rem;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+.dict-word-item button:hover {
+    opacity: 1;
+}
+
+/* Form Helper styling */
+.form-help {
+    margin-top: 2px;
+}
+
+/* Live Logs Console log styling */
+.console-log-line {
+    font-family: 'Courier New', Courier, monospace;
+    white-space: pre-wrap;
+    word-break: break-all;
+    padding: 2px 0;
+}
+.console-log-line.info {
+    color: #a7f3d0;
+}
+.console-log-line.error {
+    color: #fca5a5;
+    font-weight: bold;
+}
+
 

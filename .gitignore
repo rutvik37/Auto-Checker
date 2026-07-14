@@ -29,3 +29,8 @@ task.md
 .classpath
 .metadata/
 bin/
+
+# Cloud persistent exceptions
+tools/
+CustomDictionaries/settings.json
+CustomDictionaries/groq_metrics.json

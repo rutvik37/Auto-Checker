@@ -10,14 +10,36 @@ import java.io.IOException;
 @Component
 public class PortRoutingFilter implements Filter {
 
+    @org.springframework.beans.factory.annotation.Value("${app.single-port:false}")
+    private boolean singlePort;
+
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
 
-        int port = httpRequest.getLocalPort();
         String uri = httpRequest.getRequestURI();
+
+        if (singlePort) {
+            if (uri.startsWith("/api/admin/")) {
+                boolean isAllowedAdminApi = uri.equals("/api/admin/login") || 
+                                            uri.equals("/api/admin/status") ||
+                                            uri.equals("/api/admin/profile/image");
+                if (!isAllowedAdminApi) {
+                    HttpSession session = httpRequest.getSession(false);
+                    boolean authenticated = session != null && Boolean.TRUE.equals(session.getAttribute("admin_authenticated"));
+                    if (!authenticated) {
+                        httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+                        return;
+                    }
+                }
+            }
+            chain.doFilter(request, response);
+            return;
+        }
+
+        int port = httpRequest.getLocalPort();
 
         if (port == 5555) {
             // Admin Port
@@ -33,7 +55,8 @@ public class PortRoutingFilter implements Filter {
                                            uri.equals("/favicon.ico");
                                            
             boolean isAllowedAdminApi = uri.equals("/api/admin/login") || 
-                                        uri.equals("/api/admin/status");
+                                        uri.equals("/api/admin/status") ||
+                                        uri.equals("/api/admin/profile/image");
 
             if (isAllowedAdminStatic || isAllowedAdminApi) {
                 chain.doFilter(request, response);

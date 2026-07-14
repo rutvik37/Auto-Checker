@@ -50,6 +50,13 @@ public class CrawlScanService {
     // Track audit reports for each scan session
     private final Map<Long, AuditReportCollector> scanAuditCollectors = new ConcurrentHashMap<>();
 
+    private static final java.util.concurrent.ExecutorService asyncReportExecutor = 
+        java.util.concurrent.Executors.newSingleThreadExecutor(r -> {
+            Thread t = new Thread(r, "audit-report-writer");
+            t.setDaemon(true);
+            return t;
+        });
+
     @Value("${app.projects-dir:C:/Users/suppo/Auto-Checker/Projects}")
     private String projectsDir;
 
@@ -59,19 +66,23 @@ public class CrawlScanService {
     @Value("${crawler.parallel.workers:5}")
     private int parallelWorkers;
 
+    private final SettingsService settingsService;
+
     @Autowired
     public CrawlScanService(ProjectRepository projectRepository,
             ScanRepository scanRepository,
             ScannedPageRepository scannedPageRepository,
             IssueRepository issueRepository,
             LiveLogService liveLogService,
-            SpellingValidator spellingValidator) {
+            SpellingValidator spellingValidator,
+            SettingsService settingsService) {
         this.projectRepository = projectRepository;
         this.scanRepository = scanRepository;
         this.scannedPageRepository = scannedPageRepository;
         this.issueRepository = issueRepository;
         this.liveLogService = liveLogService;
         this.spellingValidator = spellingValidator;
+        this.settingsService = settingsService;
     }
 
     public static class RawFinding {
@@ -219,8 +230,10 @@ public class CrawlScanService {
             AtomicInteger maxConcurrentWorkers = new AtomicInteger(0);
             AtomicInteger currentRunningWorkers = new AtomicInteger(0);
 
-            if (parallelEnabled) {
-                int workersCount = parallelWorkers > 0 ? parallelWorkers : 5;
+            boolean currentParallelEnabled = settingsService.isCrawlerParallelEnabled();
+            int currentParallelWorkers = settingsService.getCrawlerParallelWorkers();
+            if (currentParallelEnabled) {
+                int workersCount = currentParallelWorkers > 0 ? currentParallelWorkers : 5;
                 logInfo(scanId, "Starting parallel crawler with " + workersCount + " workers.", finalLogWriter);
 
                 // Initialize thread-safe collections
@@ -540,7 +553,7 @@ public class CrawlScanService {
             logInfo(scanId, "[PERF] Total Crawl Time = " + crawlLoopTime + " ms", finalLogWriter);
 
             // Log crawler metrics
-            int workersUsed = parallelEnabled ? (parallelWorkers > 0 ? parallelWorkers : 5) : 1;
+            int workersUsed = currentParallelEnabled ? (currentParallelWorkers > 0 ? currentParallelWorkers : 5) : 1;
             int totalPagesQueued = pagesQueued.get();
             int totalPagesProcessed = pagesScannedCount.get();
             int maxWorkersObserved = maxConcurrentWorkers.get();
@@ -891,12 +904,15 @@ public class CrawlScanService {
 
             // Generate dynamic entity validation audit report
             long reportStart = System.nanoTime();
-            AuditReportCollector scanCollector = scanAuditCollectors.remove(scanId);
+            final AuditReportCollector scanCollector = scanAuditCollectors.remove(scanId);
             if (scanCollector != null) {
-                scanCollector.writeReport("AuditReports");
-                logInfo(scanId,
-                        "Generated Dynamic Entity Audit Report at: AuditReports/audit_report_scan_" + scanId + ".txt",
-                        finalLogWriter);
+                asyncReportExecutor.submit(() -> {
+                    scanCollector.writeReport("AuditReports");
+                    logInfo(scanId,
+                            "Generated Dynamic Entity Audit Report at: AuditReports/audit_report_scan_" + scanId + ".txt",
+                            finalLogWriter);
+                    cleanOldAuditReports("AuditReports");
+                });
             }
             long reportEnd = System.nanoTime();
             long reportTime = (reportEnd - reportStart) / 1_000_000;
@@ -1125,7 +1141,14 @@ public class CrawlScanService {
 
                 // Space-Normalization Filter
                 if (isSpaceNormalizedEqual(word, primarySuggestion) || isSpaceNormalizedEqual(word, suggestions)) {
+                    spellingValidator.incrementCacheHits();
                     continue; // Treat as VALID, skip reporting / Groq validation
+                }
+
+                // Custom Dictionary Filter
+                if (spellingValidator.isCustomDictionaryWord(word)) {
+                    spellingValidator.incrementCacheHits();
+                    continue; // Ignore, treat as VALID and skip reporting / Groq validation
                 }
 
                 // Context sentence (clean HTML tags) - Optimized and truncated
@@ -1349,15 +1372,17 @@ public class CrawlScanService {
                         userAgentApplies = ua.equals("*") || ua.toLowerCase().contains("autochecker");
                     } else if (userAgentApplies && line.toLowerCase().startsWith("disallow:")) {
                         String path = line.substring(9).trim();
-                        if (!path.isEmpty())
-                            disallowedPrefixes.add(path);
+                        if (!path.isEmpty()) {
+                            // Log but do not add to disallowed prefixes (QA spelling tool must crawl staging/UAT environments which typically disallow crawlers)
+                            logInfo(scanId, "robots.txt disallow rule found: '" + path + "' (bypassed for QA spelling scan)", writer);
+                        }
                     } else if (line.toLowerCase().startsWith("sitemap:")) {
                         String sUrl = line.substring(8).trim();
                         if (!sUrl.isEmpty())
                             sitemaps.add(sUrl);
                     }
                 }
-                logInfo(scanId, "robots.txt parsed. Disallowed paths: " + disallowedPrefixes.size(), writer);
+                logInfo(scanId, "robots.txt parsed. Bypassing all disallow rules to allow staging/UAT environment crawling.", writer);
             } else {
                 logInfo(scanId, "robots.txt not found (HTTP " + resp.statusCode() + "). Crawling all paths.", writer);
             }
@@ -1553,6 +1578,26 @@ public class CrawlScanService {
 
     public int getInMemoryCacheSize() {
         return scanCancellationTokens.size() + scanAuditCollectors.size() + spellingValidator.getMemoryCacheSize();
+    }
+
+    private void cleanOldAuditReports(String directory) {
+        try {
+            java.io.File dir = new java.io.File(directory);
+            if (dir.exists() && dir.isDirectory()) {
+                java.io.File[] files = dir.listFiles((d, name) -> name.startsWith("audit_report_scan_") || name.startsWith("validation_debug_report_scan_"));
+                if (files != null && files.length > 10) {
+                    java.util.Arrays.sort(files, java.util.Comparator.comparingLong(java.io.File::lastModified));
+                    int filesToDelete = files.length - 10;
+                    for (int i = 0; i < filesToDelete; i++) {
+                        if (files[i].delete()) {
+                            logger.info("Deleted old redundant audit report: {}", files[i].getName());
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Failed to clean old audit reports: {}", e.getMessage());
+        }
     }
 
     public static class AuditReportCollector {

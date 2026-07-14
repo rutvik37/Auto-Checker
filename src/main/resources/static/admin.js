@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // State Variables
     const state = {
         activePane: 'dashboard',
-        projects: { page: 0, size: 10, sort: 'id,desc', search: '' },
+        projects: { page: 0, size: 10, sort: 'id,desc', search: '', fromDate: '', toDate: '' },
         scans: { page: 0, size: 10, sort: 'id,desc', search: '', status: '' },
         issues: { page: 0, size: 10, sort: 'id,desc', search: '', source: '', removed: 'false' },
         cache: { page: 0, size: 10, sort: 'id,desc', search: '', decision: '' },
@@ -21,7 +21,11 @@ document.addEventListener('DOMContentLoaded', () => {
         currentScanDetailsId: null,
         detPages: { page: 0, size: 5 },
         detIssues: { page: 0, size: 5 },
-        charts: {}
+        charts: {},
+        dictionaries: { global: [], user: [] },
+        settings: {},
+        logEventSource: null,
+        metricsInterval: null
     };
     window.state = state;
 
@@ -202,9 +206,31 @@ function showPane(paneId) {
         'cache': 'QA Validation Cache',
         'analytics': 'Analytical Insights',
         'performance': 'Scans Performance Metrics',
-        'exports': 'System Data Exports'
+        'exports': 'System Data Exports',
+        'dictionaries': 'Custom Whitelist Dictionaries',
+        'settings': 'System Configurations',
+        'profile': 'Edit Profile'
     };
     document.getElementById('current-page-title').textContent = titleMap[paneId] || 'Admin Panel';
+
+    // Teardown log stream when leaving details
+    if (paneId !== 'scan-details') {
+        closeLiveLogStream();
+    }
+
+    // Teardown metrics polling when leaving settings
+    if (paneId !== 'settings') {
+        stopMetricsPolling();
+    } else {
+        // Force reset sub-tab view on enter
+        const btnTabConfig = document.getElementById('btn-tab-config');
+        if (btnTabConfig) {
+            document.querySelectorAll('#pane-settings .tab-btn').forEach(b => b.classList.remove('active'));
+            btnTabConfig.classList.add('active');
+            document.getElementById('settings-tab-config').style.display = 'block';
+            document.getElementById('settings-tab-metrics').style.display = 'none';
+        }
+    }
 
     // Lazy load data for specific panes
     if (paneId === 'dashboard') loadDashboardStats();
@@ -214,6 +240,8 @@ function showPane(paneId) {
     if (paneId === 'cache') { loadCacheStats(); loadCache(); }
     if (paneId === 'analytics') loadAnalytics();
     if (paneId === 'performance') loadPerformance();
+    if (paneId === 'dictionaries') loadDictionaries();
+    if (paneId === 'settings') loadSettings();
 }
 
 // Global Event Listeners (Pagination, Searching, Sorting)
@@ -294,6 +322,30 @@ function initEventListeners() {
         loadCache();
     });
 
+    // Projects Filter Bindings
+    document.getElementById('projects-from-date').addEventListener('change', (e) => {
+        window.state.projects.fromDate = e.target.value;
+        window.state.projects.page = 0;
+        loadProjects();
+    });
+
+    document.getElementById('projects-to-date').addEventListener('change', (e) => {
+        window.state.projects.toDate = e.target.value;
+        window.state.projects.page = 0;
+        loadProjects();
+    });
+
+    document.getElementById('btn-clear-projects-filter').addEventListener('click', () => {
+        document.getElementById('projects-search').value = '';
+        document.getElementById('projects-from-date').value = '';
+        document.getElementById('projects-to-date').value = '';
+        window.state.projects.search = '';
+        window.state.projects.fromDate = '';
+        window.state.projects.toDate = '';
+        window.state.projects.page = 0;
+        loadProjects();
+    });
+
     // Cache actions
     document.getElementById('btn-refresh-cache').addEventListener('click', () => {
         loadCacheStats();
@@ -320,14 +372,35 @@ function initEventListeners() {
     });
 
     // Scan Details Tab bar switches
-    document.querySelectorAll('.tab-btn').forEach(btn => {
+    document.querySelectorAll('#pane-scan-details .tab-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('#pane-scan-details .tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('#pane-scan-details .tab-content').forEach(c => c.classList.remove('active'));
             btn.classList.add('active');
             
             const tabId = btn.getAttribute('data-tab');
             document.getElementById(`scan-tab-${tabId}`).classList.add('active');
+        });
+    });
+
+    // Settings Tab bar switches
+    document.querySelectorAll('#pane-settings .tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('#pane-settings .tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            const tabId = btn.getAttribute('data-tab');
+            document.getElementById(`settings-tab-${tabId}`).style.display = 'block';
+            
+            const otherTab = tabId === 'config' ? 'metrics' : 'config';
+            document.getElementById(`settings-tab-${otherTab}`).style.display = 'none';
+
+            if (tabId === 'metrics') {
+                loadGroqMetrics();
+                startMetricsPolling();
+            } else {
+                stopMetricsPolling();
+            }
         });
     });
 
@@ -356,6 +429,245 @@ function initEventListeners() {
                     window.location.hash = ''; // clear hash
                     showLoginScreen();
                 });
+        });
+    }
+
+    // Profile image upload handling
+    const imgInput = document.getElementById('profile-image-input');
+    if (imgInput) {
+        imgInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            if (file.size > 5 * 1024 * 1024) {
+                alert('File size exceeds 5MB limit.');
+                return;
+            }
+
+            // Local instant preview
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const editImg = document.getElementById('edit-profile-img');
+                const editDefaultIcon = document.getElementById('edit-profile-default-icon');
+                if (editImg) {
+                    editImg.src = event.target.result;
+                    editImg.style.display = 'block';
+                }
+                if (editDefaultIcon) editDefaultIcon.style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+
+            // Upload via fetch
+            const formData = new FormData();
+            formData.append('file', file);
+
+            fetch('/api/admin/profile/image', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => {
+                if (res.ok) {
+                    alert('Profile image updated successfully.');
+                    // Force refresh all profile image instances on page with cache buster
+                    const timestamp = new Date().getTime();
+                    
+                    const loginImg = document.getElementById('login-profile-img');
+                    const loginDefaultIcon = document.getElementById('login-default-icon');
+                    if (loginImg) {
+                        loginImg.src = `/api/admin/profile/image?t=${timestamp}`;
+                        loginImg.style.display = 'block';
+                    }
+                    if (loginDefaultIcon) loginDefaultIcon.style.display = 'none';
+                    
+                    const editImg = document.getElementById('edit-profile-img');
+                    if (editImg) {
+                        editImg.src = `/api/admin/profile/image?t=${timestamp}`;
+                    }
+
+                    const topbarImg = document.getElementById('topbar-profile-img');
+                    const topbarDefaultIcon = document.getElementById('topbar-profile-default-icon');
+                    if (topbarImg) {
+                        topbarImg.src = `/api/admin/profile/image?t=${timestamp}`;
+                        topbarImg.style.display = 'block';
+                    }
+                    if (topbarDefaultIcon) topbarDefaultIcon.style.display = 'none';
+                } else {
+                    alert('Failed to upload profile image.');
+                }
+            })
+            .catch(err => {
+                console.error('Error uploading profile image:', err);
+                alert('Error uploading profile image.');
+            });
+        });
+    }
+
+    // Cancel Scan binding
+    const btnCancelScan = document.getElementById('btn-cancel-scan');
+    if (btnCancelScan) {
+        btnCancelScan.addEventListener('click', () => {
+            const scanId = window.state.currentScanDetailsId;
+            if (!scanId) return;
+            if (confirm(`Are you sure you want to cancel the active scan #${scanId}?`)) {
+                fetch(`/api/admin/scans/${scanId}/cancel`, { method: 'POST' })
+                    .then(res => {
+                        if (res.ok) {
+                            alert('Scan cancellation request sent.');
+                            loadScanDetails(scanId);
+                        } else {
+                            alert('Failed to send cancellation request.');
+                        }
+                    })
+                    .catch(err => {
+                        console.error('Error canceling scan:', err);
+                    });
+            }
+        });
+    }
+
+    // Dictionaries Add buttons binding
+    const btnGlobalAdd = document.getElementById('btn-global-dict-add');
+    const inputGlobal = document.getElementById('global-dict-input');
+    if (btnGlobalAdd && inputGlobal) {
+        btnGlobalAdd.addEventListener('click', () => {
+            const word = inputGlobal.value.trim();
+            if (!word) return;
+            addDictionaryWord('global', word, () => {
+                inputGlobal.value = '';
+                loadDictionaries();
+            });
+        });
+        inputGlobal.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') btnGlobalAdd.click();
+        });
+    }
+
+    const btnUserAdd = document.getElementById('btn-user-dict-add');
+    const inputUser = document.getElementById('user-dict-input');
+    if (btnUserAdd && inputUser) {
+        btnUserAdd.addEventListener('click', () => {
+            const word = inputUser.value.trim();
+            if (!word) return;
+            addDictionaryWord('user', word, () => {
+                inputUser.value = '';
+                loadDictionaries();
+            });
+        });
+        inputUser.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') btnUserAdd.click();
+        });
+    }
+
+    // Settings form controls
+    const settingsForm = document.getElementById('settings-form');
+    if (settingsForm) {
+        settingsForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const apiKeyInput = document.getElementById('settings-groq-key');
+            const specialKeyInput = document.getElementById('settings-special-key');
+            const initialVal = apiKeyInput.dataset.initial || '';
+            const config = {
+                groqApiKey: apiKeyInput.value === initialVal ? '••••••••••••••••' : apiKeyInput.value,
+                specialKey: specialKeyInput ? specialKeyInput.value : '',
+                groqModel: (() => {
+                    const sel = document.getElementById('settings-groq-model-select').value;
+                    return sel === 'custom' ? document.getElementById('settings-groq-model-custom').value.trim() : sel;
+                })(),
+                groqBatchSize: parseInt(document.getElementById('settings-groq-batch').value) || 50,
+                crawlerParallelEnabled: document.getElementById('settings-crawler-parallel').checked,
+                crawlerParallelWorkers: parseInt(document.getElementById('settings-crawler-workers').value) || 15
+            };
+            
+            fetch('/api/admin/settings', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(config)
+            })
+            .then(async res => {
+                if (res.ok) {
+                    alert('Configurations saved successfully.');
+                    loadSettings();
+                } else {
+                    const errMsg = await res.text();
+                    alert(errMsg || 'Failed to save settings.');
+                }
+            })
+            .catch(err => {
+                console.error('Error saving configurations:', err);
+                alert('Error saving configurations.');
+            });
+        });
+    }
+
+    const btnSettingsReset = document.getElementById('btn-settings-reset');
+    if (btnSettingsReset) {
+        btnSettingsReset.addEventListener('click', () => {
+            loadSettings();
+        });
+    }
+
+    const btnMetricsReset = document.getElementById('btn-metrics-reset');
+    if (btnMetricsReset) {
+        btnMetricsReset.addEventListener('click', () => {
+            const pin = prompt('Enter System Security PIN (Special Key) to authorize statistics reset:');
+            if (pin === null) return; // User cancelled
+            
+            if (confirm('Are you sure you want to reset all Groq API metrics and cost statistics back to zero?')) {
+                fetch('/api/admin/metrics/groq/reset', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ specialKey: pin })
+                })
+                .then(async res => {
+                    if (res.ok) {
+                        alert('Statistics reset successfully.');
+                        loadGroqMetrics();
+                    } else {
+                        const errMsg = await res.text();
+                        alert(errMsg || 'Failed to reset statistics.');
+                    }
+                })
+                .catch(err => console.error('Error resetting metrics:', err));
+            }
+        });
+    }
+
+    const checkboxParallel = document.getElementById('settings-crawler-parallel');
+    if (checkboxParallel) {
+        checkboxParallel.addEventListener('change', (e) => {
+            const group = document.getElementById('crawler-workers-group');
+            if (group) {
+                group.style.display = e.target.checked ? 'flex' : 'none';
+            }
+        });
+    }
+
+    const modelSelect = document.getElementById('settings-groq-model-select');
+    if (modelSelect) {
+        modelSelect.addEventListener('change', (e) => {
+            const customInput = document.getElementById('settings-groq-model-custom');
+            if (customInput) {
+                customInput.style.display = e.target.value === 'custom' ? 'block' : 'none';
+                if (e.target.value === 'custom') {
+                    customInput.focus();
+                }
+            }
+        });
+    }
+
+    const groqKeyInput = document.getElementById('settings-groq-key');
+    if (groqKeyInput) {
+        groqKeyInput.addEventListener('input', (e) => {
+            const specGroup = document.getElementById('settings-special-key-group');
+            if (specGroup) {
+                const val = e.target.value;
+                const initialVal = e.target.dataset.initial || '';
+                if (val !== initialVal) {
+                    specGroup.style.display = 'flex';
+                } else {
+                    specGroup.style.display = 'none';
+                }
+            }
         });
     }
 
@@ -423,12 +735,12 @@ function loadDashboardStats() {
 // 2. Projects Loading
 function loadProjects() {
     const p = window.state.projects;
-    fetchApi(`/api/admin/projects?page=${p.page}&size=${p.size}&sort=${p.sort}&search=${encodeURIComponent(p.search)}`)
+    fetchApi(`/api/admin/projects?page=${p.page}&size=${p.size}&sort=${p.sort}&search=${encodeURIComponent(p.search)}&fromDate=${p.fromDate || ''}&toDate=${p.toDate || ''}`)
         .then(page => {
             const tbody = document.getElementById('projects-table-body');
             tbody.innerHTML = '';
             if (page.content.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" class="text-center">No projects found.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center">No projects found.</td></tr>';
             }
             page.content.forEach(proj => {
                 const tr = document.createElement('tr');
@@ -439,7 +751,29 @@ function loadProjects() {
                     <td><strong>${proj.name}</strong></td>
                     <td>${urlDisplay}</td>
                     <td>${formatDate(proj.createdAt)}</td>
+                    <td style="text-align: center;">
+                        <button class="btn-danger btn-delete-project" data-id="${proj.id}" style="padding: 6px 10px; border-radius: var(--radius-sm); font-size: 0.75rem; border: none; cursor: pointer; background: var(--danger); color: white; transition: background 0.2s;"><i class="fa-solid fa-trash"></i> Delete</button>
+                    </td>
                 `;
+
+                tr.querySelector('.btn-delete-project').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (confirm(`Are you sure you want to delete project "${proj.name}"? This will permanently delete all scans and issues for this project.`)) {
+                        fetch(`/api/admin/projects/${proj.id}`, { method: 'DELETE' })
+                            .then(res => {
+                                if (res.ok) {
+                                    loadProjects();
+                                } else {
+                                    alert('Failed to delete project.');
+                                }
+                            })
+                            .catch(err => {
+                                console.error('Error deleting project:', err);
+                                alert('Error deleting project.');
+                            });
+                    }
+                });
+
                 tbody.appendChild(tr);
             });
             renderPagination('projects-pagination', page, 'projects', loadProjects);
@@ -533,6 +867,20 @@ function loadScanDetails(scanId) {
                 });
             }
 
+            // Control cancel button & logs stream visibility
+            const isRunning = scan.status === 'RUNNING' || scan.status === 'PENDING';
+            const btnCancel = document.getElementById('btn-cancel-scan');
+            if (btnCancel) btnCancel.style.display = isRunning ? 'inline-block' : 'none';
+
+            const tabLogs = document.getElementById('tab-btn-live-logs');
+            if (tabLogs) tabLogs.style.display = isRunning ? 'inline-block' : 'none';
+
+            if (isRunning) {
+                startLiveLogStream(scanId);
+            } else {
+                closeLiveLogStream();
+            }
+
             // Load sub tabs
             window.state.detPages.page = 0;
             window.state.detIssues.page = 0;
@@ -554,7 +902,7 @@ function loadScanDetailsPages() {
             page.content.forEach(p => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td><span class="text-secondary">${p.url}</span></td>
+                    <td><a href="${p.url}" target="_blank" class="table-link">${p.url}</a></td>
                     <td><strong>${p.title || 'No Title'}</strong></td>
                     <td><span class="decision-badge valid">${p.statusCode}</span></td>
                     <td>${formatDate(p.timestamp)}</td>
@@ -581,7 +929,7 @@ function loadScanDetailsIssues() {
                     <td>${i.id}</td>
                     <td><span class="status-badge failed">${i.word}</span></td>
                     <td><span class="text-secondary">${i.suggestedText || 'N/A'}</span></td>
-                    <td><span class="text-secondary">${i.pageUrl}</span></td>
+                    <td><a href="${i.pageUrl}" target="_blank" class="table-link">${i.pageUrl}</a></td>
                     <td><strong>${i.pageTitle || 'No Title'}</strong></td>
                     <td><span class="decision-badge pending">${i.htmlTag}</span></td>
                     <td><span class="decision-badge valid">${i.detectionSource}</span></td>
@@ -643,7 +991,7 @@ function loadIssues() {
                     <td>${issue.id}</td>
                     <td><span class="status-badge failed">${issue.word}</span></td>
                     <td><strong>${issue.suggestedText || 'N/A'}</strong></td>
-                    <td><span class="text-secondary">${issue.pageUrl}</span></td>
+                    <td><a href="${issue.pageUrl}" target="_blank" class="table-link">${issue.pageUrl}</a></td>
                     <td><span class="text-secondary">${issue.pageTitle || 'No Title'}</span></td>
                     <td><span class="text-secondary" style="font-style: italic;">"${highlightedSentence}"</span></td>
                     <td>${formatDate(issue.timestamp)}</td>
@@ -1017,4 +1365,298 @@ function formatDuration(seconds) {
         return `${mins}m ${secs}s`;
     }
     return `${seconds}s`;
+}
+
+// 10. Live Logs Stream and Cancellation Controls
+function startLiveLogStream(scanId) {
+    closeLiveLogStream();
+
+    const consoleBody = document.getElementById('console-log-stream');
+    const consoleStatus = document.getElementById('console-stream-status');
+    if (!consoleBody) return;
+
+    // Show logs tab button
+    const tabLogs = document.getElementById('tab-btn-live-logs');
+    if (tabLogs) tabLogs.style.display = 'inline-block';
+
+    consoleBody.innerHTML = '<div class="console-log-line info">Connecting to scan log stream...</div>';
+    consoleStatus.textContent = 'Connecting';
+    consoleStatus.style.background = 'var(--warning)';
+
+    const source = new EventSource(`/api/admin/scans/${scanId}/stream`);
+    window.state.logEventSource = source;
+
+    source.addEventListener('log', (event) => {
+        const msg = event.data;
+        const line = document.createElement('div');
+        line.className = 'console-log-line';
+        if (msg.includes('[ERROR]')) {
+            line.classList.add('error');
+        } else {
+            line.classList.add('info');
+        }
+        line.textContent = msg;
+        consoleBody.appendChild(line);
+        consoleBody.scrollTop = consoleBody.scrollHeight;
+    });
+
+    source.addEventListener('progress', (event) => {
+        try {
+            const data = JSON.parse(event.data);
+            if (data.pagesScanned != null) {
+                document.getElementById('det-pages-scanned').textContent = data.pagesScanned;
+            }
+            if (data.wordsChecked != null) {
+                document.getElementById('det-words-checked').textContent = data.wordsChecked;
+            }
+            if (data.totalIssues != null) {
+                document.getElementById('det-total-issues').textContent = data.totalIssues;
+            }
+            if (data.status != null) {
+                const statusBadge = document.getElementById('det-scan-status');
+                if (statusBadge) {
+                    statusBadge.className = `status-badge ${data.status.toLowerCase()}`;
+                    statusBadge.textContent = data.status;
+                }
+                
+                if (data.status !== 'RUNNING' && data.status !== 'PENDING') {
+                    // Completed, failed, or stopped
+                    const line = document.createElement('div');
+                    line.className = 'console-log-line info';
+                    line.style.fontWeight = 'bold';
+                    line.textContent = `Scan finished with status: ${data.status}`;
+                    consoleBody.appendChild(line);
+                    consoleBody.scrollTop = consoleBody.scrollHeight;
+                    closeLiveLogStream();
+                    
+                    // Reload details view after delay to capture last updates
+                    setTimeout(() => {
+                        if (window.state.currentScanDetailsId == scanId) {
+                            loadScanDetails(scanId);
+                        }
+                    }, 2000);
+                }
+            }
+        } catch (e) {
+            console.error('Error parsing progress SSE event:', e);
+        }
+    });
+
+    source.onopen = () => {
+        consoleStatus.textContent = 'Active';
+        consoleStatus.style.background = 'var(--success)';
+        const line = document.createElement('div');
+        line.className = 'console-log-line info';
+        line.textContent = 'Stream connected. Streaming logs...';
+        consoleBody.appendChild(line);
+    };
+
+    source.onerror = (e) => {
+        consoleStatus.textContent = 'Inactive';
+        consoleStatus.style.background = 'var(--text-muted)';
+        closeLiveLogStream();
+    };
+}
+
+function closeLiveLogStream() {
+    if (window.state.logEventSource) {
+        window.state.logEventSource.close();
+        window.state.logEventSource = null;
+    }
+    const consoleStatus = document.getElementById('console-stream-status');
+    if (consoleStatus && consoleStatus.textContent === 'Active') {
+        consoleStatus.textContent = 'Inactive';
+        consoleStatus.style.background = 'var(--text-muted)';
+    }
+}
+
+// 11. Custom Dictionaries
+function loadDictionaries() {
+    fetchApi('/api/admin/dictionaries')
+        .then(data => {
+            window.state.dictionaries = data;
+            renderDictionaryList('global', data.global);
+            renderDictionaryList('user', data.user);
+        })
+        .catch(err => {
+            console.error('Error loading dictionaries:', err);
+        });
+}
+
+function renderDictionaryList(type, list) {
+    const ul = document.getElementById(`${type}-dict-list`);
+    if (!ul) return;
+    ul.innerHTML = '';
+    
+    if (!list || list.length === 0) {
+        ul.innerHTML = `<li style="color: var(--text-secondary); text-align: center; margin-top: 40px; font-size: 0.85rem;">No words whitelisted.</li>`;
+        return;
+    }
+    
+    list.forEach(word => {
+        const li = document.createElement('li');
+        li.className = 'dict-word-item';
+        li.innerHTML = `
+            <span>${word}</span>
+            <button onclick="removeDictionaryWord('${type}', '${word}')" title="Delete word"><i class="fa-solid fa-trash-can"></i></button>
+        `;
+        ul.appendChild(li);
+    });
+}
+
+function addDictionaryWord(type, word, callback) {
+    fetch('/api/admin/dictionaries/add', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ dictionary: type, word: word })
+    })
+    .then(res => {
+        if (res.ok) {
+            if (callback) callback();
+        } else {
+            alert('Failed to add word to dictionary.');
+        }
+    })
+    .catch(err => {
+        console.error('Error adding dictionary word:', err);
+    });
+}
+
+window.removeDictionaryWord = function(type, word) {
+    if (confirm(`Remove word "${word}" from the ${type} dictionary?`)) {
+        fetch('/api/admin/dictionaries/remove', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ dictionary: type, word: word })
+        })
+        .then(res => {
+            if (res.ok) {
+                loadDictionaries();
+            } else {
+                alert('Failed to remove word.');
+            }
+        })
+        .catch(err => {
+            console.error('Error removing word:', err);
+        });
+    }
+};
+
+// 12. Settings Configuration
+function loadSettings() {
+    fetchApi('/api/admin/settings')
+        .then(settings => {
+            window.state.settings = settings;
+            
+            const loadedKey = settings.groqApiKey || '';
+            const keyInput = document.getElementById('settings-groq-key');
+            if (keyInput) {
+                keyInput.value = loadedKey;
+                keyInput.dataset.initial = loadedKey;
+            }
+            const specialKeyInput = document.getElementById('settings-special-key');
+            if (specialKeyInput) {
+                specialKeyInput.value = '';
+            }
+            const specGroup = document.getElementById('settings-special-key-group');
+            if (specGroup) {
+                specGroup.style.display = 'none';
+            }
+            const model = settings.groqModel || '';
+            const selectEl = document.getElementById('settings-groq-model-select');
+            const customInput = document.getElementById('settings-groq-model-custom');
+            
+            let isPredefined = false;
+            if (selectEl) {
+                for (let i = 0; i < selectEl.options.length; i++) {
+                    if (selectEl.options[i].value === model) {
+                        selectEl.value = model;
+                        isPredefined = true;
+                        break;
+                    }
+                }
+                
+                if (!isPredefined) {
+                    selectEl.value = 'custom';
+                    if (customInput) {
+                        customInput.value = model;
+                        customInput.style.display = 'block';
+                    }
+                } else {
+                    if (customInput) {
+                        customInput.value = '';
+                        customInput.style.display = 'none';
+                    }
+                }
+            }
+            document.getElementById('settings-groq-batch').value = settings.groqBatchSize || 50;
+            
+            const checkbox = document.getElementById('settings-crawler-parallel');
+            checkbox.checked = settings.crawlerParallelEnabled;
+            
+            document.getElementById('settings-crawler-workers').value = settings.crawlerParallelWorkers || 15;
+            
+            const group = document.getElementById('crawler-workers-group');
+            if (group) {
+                group.style.display = settings.crawlerParallelEnabled ? 'flex' : 'none';
+            }
+        })
+        .catch(err => {
+            console.error('Error loading settings:', err);
+        });
+}
+
+// 13. Groq Metrics Configuration & Polling
+function loadGroqMetrics() {
+    fetchApi('/api/admin/metrics/groq')
+        .then(metrics => {
+            document.getElementById('metrics-total-calls').textContent = metrics.totalApiCalls;
+            document.getElementById('metrics-success-calls').textContent = metrics.successfulApiCalls;
+            document.getElementById('metrics-failed-calls').textContent = metrics.failedApiCalls;
+            document.getElementById('metrics-daily-calls').textContent = metrics.dailyApiCallsCount;
+            
+            const totalTokens = metrics.totalPromptTokens + metrics.totalCompletionTokens;
+            document.getElementById('metrics-total-tokens').textContent = totalTokens.toLocaleString();
+            document.getElementById('metrics-prompt-tokens').textContent = metrics.totalPromptTokens.toLocaleString();
+            document.getElementById('metrics-completion-tokens').textContent = metrics.totalCompletionTokens.toLocaleString();
+            
+            document.getElementById('metrics-estimated-cost').textContent = '$' + metrics.estimatedCostUsd.toFixed(4);
+            document.getElementById('metrics-avg-latency').textContent = Math.round(metrics.averageLatencyMs) + ' ms';
+            
+            const relVal = (100 - metrics.errorRatePercentage).toFixed(1) + '%';
+            document.getElementById('metrics-reliability').textContent = relVal;
+            document.getElementById('metrics-error-rate').textContent = metrics.errorRatePercentage.toFixed(1) + '%';
+            
+            document.getElementById('metrics-cache-hit-rate').textContent = metrics.cacheHitRatePercentage.toFixed(1) + '%';
+            document.getElementById('metrics-cache-hits').textContent = metrics.cacheHits.toLocaleString();
+            document.getElementById('metrics-cache-misses').textContent = metrics.cacheMisses.toLocaleString();
+            
+            const remReq = metrics.xRemainingRequests;
+            document.getElementById('metrics-limit-requests').textContent = remReq >= 0 ? remReq.toLocaleString() : 'N/A';
+            
+            const remTok = metrics.xRemainingTokens;
+            document.getElementById('metrics-limit-tokens').textContent = remTok >= 0 ? remTok.toLocaleString() : 'N/A';
+        })
+        .catch(err => {
+            console.error('Error loading Groq metrics:', err);
+        });
+}
+
+function startMetricsPolling() {
+    stopMetricsPolling();
+    window.state.metricsInterval = setInterval(() => {
+        if (window.state.activePane === 'settings') {
+            const metricsTab = document.getElementById('settings-tab-metrics');
+            if (metricsTab && metricsTab.style.display !== 'none') {
+                loadGroqMetrics();
+            }
+        }
+    }, 3000);
+}
+
+function stopMetricsPolling() {
+    if (window.state.metricsInterval) {
+        clearInterval(window.state.metricsInterval);
+        window.state.metricsInterval = null;
+    }
 }
