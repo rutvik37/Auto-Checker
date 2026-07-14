@@ -49,6 +49,13 @@
             <version>6.4.4.Final</version>
         </dependency>
 
+        <!-- PostgreSQL Database (for Live Supabase DB) -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
         <!-- Playwright Java for Crawling & Screenshots
         <dependency>
             <groupId>com.microsoft.playwright</groupId>
