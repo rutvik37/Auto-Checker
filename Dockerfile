@@ -12,8 +12,12 @@ FROM eclipse-temurin:21-jre
 WORKDIR /app
 COPY --from=build /app/target/auto-checker-1.0.0.jar app.jar
 
-# Configure default ports (Render/Koyeb maps this automatically via $PORT)
+# Copy runtime data directories
+COPY CustomDictionaries ./CustomDictionaries
+COPY AuditReports ./AuditReports
+
+# Configure default port
 ENV PORT=8080
 EXPOSE 8080
 
-ENTRYPOINT ["sh", "-c", "java -Dserver.port=${PORT} -jar app.jar"]
+ENTRYPOINT ["sh", "-c", "java -Dserver.port=${PORT} -Dapp.single-port=${APP_SINGLE_PORT:-false} -jar app.jar"]

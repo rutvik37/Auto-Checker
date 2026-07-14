@@ -22,6 +22,11 @@ public class PortRoutingFilter implements Filter {
         String uri = httpRequest.getRequestURI();
 
         if (singlePort) {
+            // Clean URL: /admin and /admin/ forward to /admin.html
+            if (uri.equals("/admin") || uri.equals("/admin/")) {
+                httpRequest.getRequestDispatcher("/admin.html").forward(request, response);
+                return;
+            }
             if (uri.startsWith("/api/admin/")) {
                 boolean isAllowedAdminApi = uri.equals("/api/admin/login") || 
                                             uri.equals("/api/admin/status") ||
