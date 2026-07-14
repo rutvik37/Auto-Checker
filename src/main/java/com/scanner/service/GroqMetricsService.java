@@ -5,12 +5,16 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import org.springframework.stereotype.Service;
 
 import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +40,13 @@ public class GroqMetricsService {
 
     private final AtomicLong xRemainingRequests = new AtomicLong(-1);
     private final AtomicLong xRemainingTokens = new AtomicLong(-1);
+
+    private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(r -> {
+        Thread t = new Thread(r, "groq-metrics-saver");
+        t.setDaemon(true);
+        return t;
+    });
+    private volatile boolean isDirty = false;
 
     public GroqMetricsService() {
         this.objectMapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
@@ -72,6 +83,14 @@ public class GroqMetricsService {
         } else {
             saveToFile();
         }
+
+        // Schedule periodic save every 30 seconds
+        scheduler.scheduleAtFixedRate(() -> {
+            if (isDirty) {
+                isDirty = false;
+                saveToFile();
+            }
+        }, 30, 30, TimeUnit.SECONDS);
     }
 
     private synchronized void checkDailyRollover() {
@@ -116,25 +135,29 @@ public class GroqMetricsService {
         }
         
         totalResponseTimeMs.addAndGet(responseTimeMs);
-        saveToFile();
+        isDirty = true;
     }
 
     public void incrementCacheHits() {
         cacheHits.incrementAndGet();
-        saveToFile();
+        isDirty = true;
     }
 
     public void incrementCacheMisses() {
         cacheMisses.incrementAndGet();
-        saveToFile();
+        isDirty = true;
     }
 
     public void updateRateLimits(long remainingRequests, long remainingTokens) {
-        if (remainingRequests >= 0) {
-            xRemainingRequests.set(remainingRequests);
+        boolean changed = false;
+        if (remainingRequests >= 0 && xRemainingRequests.getAndSet(remainingRequests) != remainingRequests) {
+            changed = true;
         }
-        if (remainingTokens >= 0) {
-            xRemainingTokens.set(remainingTokens);
+        if (remainingTokens >= 0 && xRemainingTokens.getAndSet(remainingTokens) != remainingTokens) {
+            changed = true;
+        }
+        if (changed) {
+            isDirty = true;
         }
     }
 
@@ -152,6 +175,23 @@ public class GroqMetricsService {
         xRemainingTokens.set(-1);
         lastResetDate = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE);
         saveToFile();
+        isDirty = false;
+    }
+
+    @PreDestroy
+    public void shutdown() {
+        scheduler.shutdown();
+        try {
+            if (!scheduler.awaitTermination(2, TimeUnit.SECONDS)) {
+                scheduler.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            scheduler.shutdownNow();
+            Thread.currentThread().interrupt();
+        }
+        if (isDirty) {
+            saveToFile();
+        }
     }
 
     public double calculateEstimatedCost(String model) {

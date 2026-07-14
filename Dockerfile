@@ -23,4 +23,4 @@ RUN mkdir -p AuditReports Projects
 ENV PORT=8080
 EXPOSE 8080
 
-ENTRYPOINT ["sh", "-c", "java -Dserver.port=${PORT} -Dapp.single-port=${APP_SINGLE_PORT:-false} -jar app.jar"]
+ENTRYPOINT ["sh", "-c", "java -Xmx384m -Xms256m -XX:+UseSerialGC -Dserver.port=${PORT} -Dapp.single-port=${APP_SINGLE_PORT:-false} -jar app.jar"]
