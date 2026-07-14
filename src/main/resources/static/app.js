@@ -151,19 +151,6 @@ async function loadProjects() {
         const response = await fetch('/api/projects');
         let projects = await response.json();
         
-        // Auto-create a default project if none exists
-        if (projects.length === 0) {
-            const createResp = await fetch('/api/projects', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name: 'Default' })
-            });
-            if (createResp.ok) {
-                const newProj = await createResp.json();
-                projects = [newProj];
-            }
-        }
-
         const select = document.getElementById('global-project-select');
         if (!select) return;
         
