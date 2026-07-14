@@ -12,9 +12,12 @@ FROM eclipse-temurin:21-jre
 WORKDIR /app
 COPY --from=build /app/target/auto-checker-1.0.0.jar app.jar
 
-# Copy runtime data directories
-COPY CustomDictionaries ./CustomDictionaries
-COPY AuditReports ./AuditReports
+# Copy custom dictionaries (word lists only, settings are generated at runtime)
+COPY CustomDictionaries/user.txt ./CustomDictionaries/user.txt
+COPY CustomDictionaries/global.txt ./CustomDictionaries/global.txt
+
+# Create runtime directories
+RUN mkdir -p AuditReports Projects
 
 # Configure default port
 ENV PORT=8080
