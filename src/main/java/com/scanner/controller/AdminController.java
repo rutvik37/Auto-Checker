@@ -42,6 +42,7 @@ public class AdminController {
     private final LiveLogService liveLogService;
     private final CrawlScanService crawlScanService;
     private final GroqMetricsService groqMetricsService;
+    private final ProfileImageRepository profileImageRepository;
 
     @org.springframework.beans.factory.annotation.Value("${admin.security.pin:5555}")
     private String securityPin;
@@ -57,7 +58,8 @@ public class AdminController {
                            SettingsService settingsService,
                            LiveLogService liveLogService,
                            CrawlScanService crawlScanService,
-                           GroqMetricsService groqMetricsService) {
+                           GroqMetricsService groqMetricsService,
+                           ProfileImageRepository profileImageRepository) {
         this.projectRepository = projectRepository;
         this.scanRepository = scanRepository;
         this.scannedPageRepository = scannedPageRepository;
@@ -69,6 +71,7 @@ public class AdminController {
         this.liveLogService = liveLogService;
         this.crawlScanService = crawlScanService;
         this.groqMetricsService = groqMetricsService;
+        this.profileImageRepository = profileImageRepository;
     }
 
     // 0. Security Endpoints
@@ -110,13 +113,33 @@ public class AdminController {
 
     @GetMapping("/profile/image")
     public void getProfileImage(HttpServletResponse response) throws IOException {
-        java.io.File file = new java.io.File("profile-image.png");
-        if (!file.exists()) {
-            response.sendError(HttpServletResponse.SC_NOT_FOUND);
-            return;
+        try {
+            List<ProfileImage> images = profileImageRepository.findAll();
+            if (!images.isEmpty()) {
+                ProfileImage profileImage = images.get(0);
+                response.setContentType(profileImage.getContentType());
+                response.getOutputStream().write(profileImage.getData());
+                return;
+            }
+        } catch (Exception dbEx) {
+            // Log database lookup error, fall back to file
         }
-        response.setContentType("image/png");
-        java.nio.file.Files.copy(file.toPath(), response.getOutputStream());
+
+        // Fallback to local file to seed database
+        java.io.File file = new java.io.File("profile-image.png");
+        if (file.exists()) {
+            try {
+                byte[] fileBytes = java.nio.file.Files.readAllBytes(file.toPath());
+                ProfileImage dbImage = new ProfileImage("image/png", fileBytes);
+                profileImageRepository.save(dbImage);
+                response.setContentType("image/png");
+                response.getOutputStream().write(fileBytes);
+                return;
+            } catch (Exception ioEx) {
+                // Ignore and return 404
+            }
+        }
+        response.sendError(HttpServletResponse.SC_NOT_FOUND);
     }
 
     @PostMapping("/profile/image")
@@ -125,8 +148,30 @@ public class AdminController {
             return ResponseEntity.badRequest().body("File is empty");
         }
         try {
-            java.io.File dest = new java.io.File("profile-image.png");
-            file.transferTo(dest.getAbsoluteFile());
+            byte[] bytes = file.getBytes();
+            String contentType = file.getContentType();
+            if (contentType == null || contentType.isEmpty()) {
+                contentType = "image/png";
+            }
+            List<ProfileImage> images = profileImageRepository.findAll();
+            ProfileImage profileImage;
+            if (!images.isEmpty()) {
+                profileImage = images.get(0);
+                profileImage.setContentType(contentType);
+                profileImage.setData(bytes);
+            } else {
+                profileImage = new ProfileImage(contentType, bytes);
+            }
+            profileImageRepository.save(profileImage);
+
+            // Backup copy locally, ignoring filesystem write failures
+            try {
+                java.io.File dest = new java.io.File("profile-image.png");
+                file.transferTo(dest.getAbsoluteFile());
+            } catch (Exception fileEx) {
+                // Ignore backup save error (e.g. read-only container filesystem)
+            }
+
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
