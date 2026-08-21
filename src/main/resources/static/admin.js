@@ -2057,8 +2057,14 @@ function saveAdminWidgetSettings() {
         body: JSON.stringify({ widgetSettings: settings })
     }).then(res => {
         showToast('✨ Interactive widget & mode settings saved to server successfully!', 'success', 'Widget Settings Saved');
+        setTimeout(() => {
+            window.location.hash = '#dashboard';
+        }, 600);
     }).catch(err => {
         showToast('✨ Interactive widget & mode settings saved locally!', 'success', 'Widget Settings Saved');
+        setTimeout(() => {
+            window.location.hash = '#dashboard';
+        }, 600);
     });
 }
 
