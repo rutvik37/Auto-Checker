@@ -1066,136 +1066,90 @@ function hideZeroIssuesCelebration() {
 }
 
 // --- Brain Break & Trivia Quiz Mini-Game Engine ---
-// --- Brain Break & Trivia Quiz Mini-Game Engine ---
+// --- Brain Break & Trivia Quiz Mini-Game Engine (10 Modes) ---
 let quizState = {
-    mode: 'math', // 'math' or 'india'
+    mode: 'math',
     score: 0,
-    // Separate independent question state per mode
+    // Per-mode question cache for all 10 modes
     modeData: {
         math: { q: null, answered: false, selectedIndex: -1 },
-        india: { q: null, answered: false, selectedIndex: -1 }
+        india: { q: null, answered: false, selectedIndex: -1 },
+        ai: { q: null, answered: false, selectedIndex: -1 },
+        history: { q: null, answered: false, selectedIndex: -1 },
+        science: { q: null, answered: false, selectedIndex: -1 },
+        cinema: { q: null, answered: false, selectedIndex: -1 },
+        sports: { q: null, answered: false, selectedIndex: -1 },
+        geography: { q: null, answered: false, selectedIndex: -1 },
+        coding: { q: null, answered: false, selectedIndex: -1 },
+        riddles: { q: null, answered: false, selectedIndex: -1 }
     }
 };
 
-const indiaTriviaBank = [
-    // --- India History & Leaders ---
-    {
-        category: "India History & Leaders",
-        question: "Who was the first Prime Minister of independent India?",
-        options: ["Jawaharlal Nehru", "Mahatma Gandhi", "Sardar Vallabhbhai Patel", "Dr. B.R. Ambedkar"],
-        answer: 0,
-        explanation: "Pandit Jawaharlal Nehru served as India's first Prime Minister from 1947 to 1964."
-    },
-    {
-        category: "India History & Leaders",
-        question: "Who is known as the 'Missile Man of India'?",
-        options: ["Dr. A.P.J. Abdul Kalam", "Dr. Homi Bhabha", "Vikram Sarabhai", "C.V. Raman"],
-        answer: 0,
-        explanation: "Dr. A.P.J. Abdul Kalam earned the title for his seminal work on ISRO and defence missile technology."
-    },
-    {
-        category: "India History & Leaders",
-        question: "Who was the chief architect of the Indian Constitution?",
-        options: ["Dr. B.R. Ambedkar", "Dr. Rajendra Prasad", "Subhas Chandra Bose", "Sarojini Naidu"],
-        answer: 0,
-        explanation: "Dr. B.R. Ambedkar served as the Chairman of the Drafting Committee of the Constitution."
-    },
-    {
-        category: "India History & Leaders",
-        question: "In which year did India gain Independence from British rule?",
-        options: ["1947", "1950", "1942", "1945"],
-        answer: 0,
-        explanation: "India achieved independence on August 15, 1947."
-    },
-    {
-        category: "India History & Leaders",
-        question: "Who is popularly known as the 'Iron Man of India'?",
-        options: ["Sardar Vallabhbhai Patel", "Bhagat Singh", "Lal Bahadur Shastri", "Bal Gangadhar Tilak"],
-        answer: 0,
-        explanation: "Sardar Vallabhbhai Patel united 565 princely states into the Indian Union."
-    },
-    {
-        category: "India History & Leaders",
-        question: "Which city served as the capital of British India before Delhi in 1911?",
-        options: ["Calcutta (Kolkata)", "Bombay (Mumbai)", "Madras (Chennai)", "Agra"],
-        answer: 0,
-        explanation: "Calcutta was the capital of British India until King George V announced moving it to Delhi in 1911."
-    },
-
-    // --- AI & Modern Tech ---
-    {
-        category: "AI & Modern Tech",
-        question: "Which ISRO lunar mission made India the first country to land near the Moon's South Pole?",
-        options: ["Chandrayaan-3", "Chandrayaan-1", "Mangalyaan", "Aditya-L1"],
-        answer: 0,
-        explanation: "Chandrayaan-3's Vikram lander successfully touched down near the lunar South Pole on Aug 23, 2023."
-    },
-    {
-        category: "AI & Modern Tech",
-        question: "Which Indian city is globally recognized as the 'Silicon Valley of India'?",
-        options: ["Bengaluru", "Hyderabad", "Pune", "Gurugram"],
-        answer: 0,
-        explanation: "Bengaluru is India's premier IT hub and start-up ecosystem capital."
-    },
-    {
-        category: "AI & Modern Tech",
-        question: "What does LLM stand for in modern AI technology?",
-        options: ["Large Language Model", "Linear Logic Machine", "Linked Layer Memory", "Language Learning Module"],
-        answer: 0,
-        explanation: "Large Language Models (LLMs) power generative AI systems like Groq, ChatGPT, and Gemini."
-    },
-    {
-        category: "AI & Modern Tech",
-        question: "What is the name of C-DAC's premier supercomputer series in India?",
-        options: ["PARAM", "SHAKTI", "AGNI", "ARYABHATA"],
-        answer: 0,
-        explanation: "C-DAC's PARAM supercomputers lead India's national high-performance computing capability."
-    },
-    {
-        category: "AI & Modern Tech",
-        question: "Which Indian space observatory mission was launched in 2023 to study the Sun?",
-        options: ["Aditya-L1", "Gaganyaan", "Astrosat", "XPoSat"],
-        answer: 0,
-        explanation: "Aditya-L1 is India's first dedicated solar observatory mission placed at Lagrange Point 1."
-    },
-
-    // --- India Heritage & Civics ---
-    {
-        category: "India Heritage & Civics",
-        question: "How many states and Union Territories are there in India currently?",
-        options: ["28 States, 8 UTs", "29 States, 7 UTs", "28 States, 9 UTs", "30 States, 8 UTs"],
-        answer: 0,
-        explanation: "India currently comprises 28 States and 8 Union Territories."
-    },
-    {
-        category: "India Heritage & Civics",
-        question: "Which river is the longest river originating and flowing within India?",
-        options: ["Ganga", "Godavari", "Yamuna", "Narmada"],
-        answer: 0,
-        explanation: "The Ganga is the longest river flowing entirely within India (~2,525 km)."
-    },
-    {
-        category: "India Heritage & Civics",
-        question: "Which Indian monument in Agra is listed among the Seven Wonders of the World?",
-        options: ["Taj Mahal", "Qutub Minar", "Red Fort", "Fatehpur Sikri"],
-        answer: 0,
-        explanation: "The Taj Mahal, built by Mughal Emperor Shah Jahan, is a UNESCO World Heritage site."
-    },
-    {
-        category: "India Heritage & Civics",
-        question: "What is the official currency of India?",
-        options: ["Indian Rupee (INR)", "Rupee (PKR)", "Taka", "Rupiah"],
-        answer: 0,
-        explanation: "The Indian Rupee (₹ / INR) is the official currency regulated by the Reserve Bank of India (RBI)."
-    },
-    {
-        category: "India Heritage & Civics",
-        question: "Where is the Supreme Court of India located?",
-        options: ["New Delhi", "Mumbai", "Kolkata", "Bengaluru"],
-        answer: 0,
-        explanation: "The Supreme Court of India is the highest judicial authority located at Tilak Marg, New Delhi."
-    }
-];
+const quizBanks = {
+    india: [
+        { category: "India History & Leaders", question: "Who was the first Prime Minister of independent India?", options: ["Jawaharlal Nehru", "Mahatma Gandhi", "Sardar Vallabhbhai Patel", "Dr. B.R. Ambedkar"], answer: 0, explanation: "Pandit Jawaharlal Nehru served as India's first Prime Minister from 1947 to 1964." },
+        { category: "India History & Leaders", question: "Who is known as the 'Missile Man of India'?", options: ["Dr. A.P.J. Abdul Kalam", "Dr. Homi Bhabha", "Vikram Sarabhai", "C.V. Raman"], answer: 0, explanation: "Dr. A.P.J. Abdul Kalam earned the title for his work on ISRO and missile technology." },
+        { category: "India History & Leaders", question: "Who was the chief architect of the Indian Constitution?", options: ["Dr. B.R. Ambedkar", "Dr. Rajendra Prasad", "Subhas Chandra Bose", "Sarojini Naidu"], answer: 0, explanation: "Dr. B.R. Ambedkar served as Chairman of the Drafting Committee." },
+        { category: "India Heritage & Civics", question: "Which river is the longest river originating and flowing within India?", options: ["Ganga", "Godavari", "Yamuna", "Narmada"], answer: 0, explanation: "The Ganga flows entirely within India (~2,525 km)." },
+        { category: "India Heritage & Civics", question: "How many states and Union Territories are in India currently?", options: ["28 States, 8 UTs", "29 States, 7 UTs", "28 States, 9 UTs", "30 States, 8 UTs"], answer: 0, explanation: "India currently comprises 28 States and 8 Union Territories." }
+    ],
+    ai: [
+        { category: "AI & Modern Tech", question: "What does LLM stand for in artificial intelligence?", options: ["Large Language Model", "Linear Logic Machine", "Linked Layer Memory", "Language Learning Module"], answer: 0, explanation: "Large Language Models power generative AI tools like Gemini, Groq, and ChatGPT." },
+        { category: "AI & Modern Tech", question: "Which company developed the Transformer architecture (2017 paper 'Attention is All You Need')?", options: ["Google", "OpenAI", "Meta", "IBM"], answer: 0, explanation: "Google researchers invented the Transformer neural network architecture in 2017." },
+        { category: "AI & Modern Tech", question: "What is the primary function of a GPU in deep learning AI model training?", options: ["Parallel Processing of Matrix Math", "Data Compression", "Display Rendering Only", "Sequential File I/O"], answer: 0, explanation: "GPUs excel at massive parallel matrix operations required for AI neural nets." },
+        { category: "AI & Modern Tech", question: "Which Indian tech city is known as the 'Silicon Valley of India'?", options: ["Bengaluru", "Hyderabad", "Pune", "Gurugram"], answer: 0, explanation: "Bengaluru is India's leading AI and technology startup hub." },
+        { category: "AI & Modern Tech", question: "Which field of AI enables computers to interpret and understand visual images?", options: ["Computer Vision", "Natural Language Processing", "Reinforcement Learning", "Quantum Computing"], answer: 0, explanation: "Computer Vision processes visual inputs like images and live video streams." }
+    ],
+    history: [
+        { category: "World History", question: "Which ancient civilization built the Great Pyramids of Giza?", options: ["Ancient Egyptians", "Mesopotamians", "Mayans", "Romans"], answer: 0, explanation: "The Pyramids of Giza were built in Ancient Egypt during the 4th Dynasty." },
+        { category: "World History", question: "In which year did World War II officially end?", options: ["1945", "1942", "1950", "1939"], answer: 0, explanation: "WWII ended in 1945 following the surrender of Axis forces." },
+        { category: "World History", question: "Who was the first emperor of the Roman Empire?", options: ["Augustus Caesar", "Julius Caesar", "Nero", "Marcus Aurelius"], answer: 0, explanation: "Augustus Caesar became the first Roman Emperor in 27 BC." },
+        { category: "World History", question: "Which historic document was signed in England in 1215 limiting royal power?", options: ["Magna Carta", "Declaration of Independence", "Treaty of Versailles", "Bill of Rights"], answer: 0, explanation: "King John signed the Magna Carta at Runnymede in 1215." },
+        { category: "World History", question: "Who led the Salt March (Dandi March) in 1930 against British tax laws?", options: ["Mahatma Gandhi", "Jawaharlal Nehru", "Subhas Chandra Bose", "Bhagat Singh"], answer: 0, explanation: "Mahatma Gandhi led the 240-mile Salt March to Dandi in 1930." }
+    ],
+    science: [
+        { category: "Science & Space", question: "Which planet in our solar system is known as the Red Planet?", options: ["Mars", "Venus", "Jupiter", "Saturn"], answer: 0, explanation: "Mars gets its red color from iron oxide (rust) on its surface." },
+        { category: "Science & Space", question: "What is the speed of light in a vacuum?", options: ["~300,000 km/s", "~150,000 km/s", "~1,000,000 km/s", "~30,000 km/s"], answer: 0, explanation: "Light travels at approximately 299,792 kilometers per second." },
+        { category: "Science & Space", question: "Which element is the most abundant element in the universe?", options: ["Hydrogen", "Helium", "Oxygen", "Carbon"], answer: 0, explanation: "Hydrogen accounts for roughly 75% of all elemental mass in the universe." },
+        { category: "Science & Space", question: "What is the chemical symbol for Gold?", options: ["Au", "Ag", "Fe", "Cu"], answer: 0, explanation: "'Au' comes from the Latin word for gold, 'Aurum'." },
+        { category: "Science & Space", question: "Which ISRO mission made India the 1st country to reach Martian orbit on its 1st attempt?", options: ["Mangalyaan (MOM)", "Chandrayaan-1", "Aditya-L1", "Astrosat"], answer: 0, explanation: "ISRO's Mars Orbiter Mission (Mangalyaan) entered Martian orbit in 2014." }
+    ],
+    cinema: [
+        { category: "Cinema & Pop Culture", question: "Which film won 7 Oscars including Best Picture at the 96th Academy Awards (2024)?", options: ["Oppenheimer", "Barbie", "Avatar: The Way of Water", "Dune: Part Two"], answer: 0, explanation: "Christopher Nolan's 'Oppenheimer' swept the 2024 Oscars." },
+        { category: "Cinema & Pop Culture", question: "Which song from the movie RRR won the Oscar for Best Original Song in 2023?", options: ["Naatu Naatu", "Jai Ho", "Kesariya", "Sami Sami"], answer: 0, explanation: "'Naatu Naatu' composed by M.M. Keeravani won the historic Oscar." },
+        { category: "Cinema & Pop Culture", question: "Who directed the famous Sci-Fi blockbuster movie 'Interstellar'?", options: ["Christopher Nolan", "Steven Spielberg", "James Cameron", "Quentin Tarantino"], answer: 0, explanation: "Christopher Nolan directed Interstellar in 2014." },
+        { category: "Cinema & Pop Culture", question: "Which movie holds the record as the highest-grossing film of all time worldwide?", options: ["Avatar", "Avengers: Endgame", "Titanic", "Star Wars: The Force Awakens"], answer: 0, explanation: "James Cameron's 'Avatar' (2009) remains the highest-grossing movie globally." },
+        { category: "Cinema & Pop Culture", question: "What is the real name of the iconic Marvel superhero Iron Man?", options: ["Tony Stark", "Bruce Wayne", "Clark Kent", "Peter Parker"], answer: 0, explanation: "Tony Stark is played by Robert Downey Jr. in the Marvel Cinematic Universe." }
+    ],
+    sports: [
+        { category: "Sports & Games", question: "Which country won the ICC Men's T20 World Cup in 2024?", options: ["India", "South Africa", "Australia", "England"], answer: 0, explanation: "India defeated South Africa in Barbados to win the T20 World Cup 2024!" },
+        { category: "Sports & Games", question: "How many players are on the field for one team in a standard Cricket match?", options: ["11 Players", "10 Players", "12 Players", "9 Players"], answer: 0, explanation: "Each cricket team fields 11 players during a match." },
+        { category: "Sports & Games", question: "Who holds the record for the most Grand Slam singles titles in men's tennis history?", options: ["Novak Djokovic", "Rafael Nadal", "Roger Federer", "Carlos Alcaraz"], answer: 0, explanation: "Novak Djokovic leads men's tennis with 24 Grand Slam titles." },
+        { category: "Sports & Games", question: "In football (soccer), how long is a standard professional match excluding extra time?", options: ["90 Minutes", "80 Minutes", "100 Minutes", "60 Minutes"], answer: 0, explanation: "Matches consist of two halves of 45 minutes each." },
+        { category: "Sports & Games", question: "Where were the 2024 Summer Olympic Games hosted?", options: ["Paris, France", "Tokyo, Japan", "Los Angeles, USA", "London, UK"], answer: 0, explanation: "The 2024 Olympic Games took place in Paris from July to August 2024." }
+    ],
+    geography: [
+        { category: "Geography & Nature", question: "Which is the largest ocean on Planet Earth?", options: ["Pacific Ocean", "Atlantic Ocean", "Indian Ocean", "Arctic Ocean"], answer: 0, explanation: "The Pacific Ocean covers over 30% of the Earth's total surface area." },
+        { category: "Geography & Nature", question: "What is the capital city of Japan?", options: ["Tokyo", "Kyoto", "Osaka", "Sapporo"], answer: 0, explanation: "Tokyo is the bustling capital city of Japan." },
+        { category: "Geography & Nature", question: "Which is the highest mountain peak above sea level in the world?", options: ["Mount Everest", "K2", "Kangchenjunga", "Lhotse"], answer: 0, explanation: "Mount Everest in the Himalayas reaches 8,848.86 meters above sea level." },
+        { category: "Geography & Nature", question: "Which continent is home to the Amazon Rainforest?", options: ["South America", "Africa", "Asia", "Australia"], answer: 0, explanation: "The Amazon Rainforest spans across South America, primarily in Brazil." },
+        { category: "Geography & Nature", question: "Which is the largest hot desert in the world?", options: ["Sahara Desert", "Gobi Desert", "Thar Desert", "Kalahari Desert"], answer: 0, explanation: "The Sahara Desert in North Africa spans over 9 million square kilometers." }
+    ],
+    coding: [
+        { category: "Web & Coding QA", question: "What does HTTP status code 404 signify?", options: ["Not Found", "OK / Success", "Internal Server Error", "Unauthorized"], answer: 0, explanation: "HTTP 404 indicates the requested server URL could not be found." },
+        { category: "Web & Coding QA", question: "Which HTML5 tag is used to embed client-side JavaScript code?", options: ["<script>", "<js>", "<code>", "<javascript>"], answer: 0, explanation: "<script> tags execute embedded or external JS code." },
+        { category: "Web & Coding QA", question: "In CSS layout, what does flexbox property 'justify-content: center' do?", options: ["Aligns items along main axis center", "Aligns items vertically only", "Sets font alignment", "Sets background color"], answer: 0, explanation: "justify-content aligns flex items horizontally along the primary axis." },
+        { category: "Web & Coding QA", question: "What Git command is used to record staged code snapshot changes into local history?", options: ["git commit", "git push", "git pull", "git add"], answer: 0, explanation: "'git commit' saves your staged changes with a descriptive message." },
+        { category: "Web & Coding QA", question: "What keyword in JavaScript declares a block-scoped variable that cannot be reassigned?", options: ["const", "let", "var", "static"], answer: 0, explanation: "'const' creates an immutable reference within block scope." }
+    ],
+    riddles: [
+        { category: "Riddles & Logic", question: "What has keys but can't open a single lock?", options: ["A Piano / Keyboard", "A Map", "A Vault", "A Clock"], answer: 0, explanation: "Pianos and computer keyboards have musical/letter keys!" },
+        { category: "Riddles & Logic", question: "What gets wetter and wetter the more it dries?", options: ["A Towel", "A Sponge", "Rain", "A River"], answer: 0, explanation: "A towel absorbs moisture while drying your hands!" },
+        { category: "Riddles & Logic", question: "What has a neck but no head?", options: ["A Bottle", "A Shirt", "A Guitar", "A Snake"], answer: 0, explanation: "A glass bottle has a narrow neck leading to its opening." },
+        { category: "Riddles & Logic", question: "I speak without a mouth and hear without ears. I have no body, but I come alive with wind. What am I?", options: ["An Echo", "A Cloud", "Shadow", "A Kite"], answer: 0, explanation: "An echo bounces sound back across mountains!" },
+        { category: "Riddles & Logic", question: "What can travel all around the world while remaining stuck in one corner?", options: ["A Stamp", "A Compass", "A Postcard", "A Airplane"], answer: 0, explanation: "A postage stamp stays stuck in the corner of an envelope!" }
+    ]
+};
 
 let quizAutoAdvanceTimer = null;
 
@@ -1211,39 +1165,47 @@ function initQuizGame() {
         if (scoreElem) scoreElem.textContent = quizState.score;
     }
 
-    // Initialize math question if empty
-    if (!quizState.modeData.math.q) {
-        quizState.modeData.math.q = generateMathQuestion();
-    }
-    // Initialize india question if empty
-    if (!quizState.modeData.india.q) {
-        quizState.modeData.india.q = getRandomIndiaQuestion();
-    }
+    const allModes = ['math', 'india', 'ai', 'history', 'science', 'cinema', 'sports', 'geography', 'coding', 'riddles'];
+    allModes.forEach(m => {
+        if (!quizState.modeData[m]) {
+            quizState.modeData[m] = { q: getRandomQuestionForMode(m), answered: false, selectedIndex: -1 };
+        } else if (!quizState.modeData[m].q) {
+            quizState.modeData[m].q = getRandomQuestionForMode(m);
+        }
+    });
 
     renderActiveModeQuestion();
 }
 
-function getRandomIndiaQuestion() {
-    return indiaTriviaBank[Math.floor(Math.random() * indiaTriviaBank.length)];
+function getRandomQuestionForMode(mode) {
+    if (mode === 'math') {
+        return generateMathQuestion();
+    }
+    const bank = quizBanks[mode] || quizBanks['india'];
+    return bank[Math.floor(Math.random() * bank.length)];
 }
 
 function setQuizMode(mode) {
     if (quizState.mode === mode) return;
     quizState.mode = mode;
     
-    const btnMath = document.getElementById('btn-quiz-mode-math');
-    const btnIndia = document.getElementById('btn-quiz-mode-india');
+    const allModes = ['math', 'india', 'ai', 'history', 'science', 'cinema', 'sports', 'geography', 'coding', 'riddles'];
     
-    const activeStyle = "padding: 10px 24px; border-radius: 30px; font-size: 13px; font-weight: 600; cursor: pointer; border: 2px solid var(--color-primary); background: linear-gradient(135deg, rgba(99, 102, 241, 0.35), rgba(168, 85, 247, 0.35)); color: #ffffff; box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4); transition: all 0.25s ease;";
-    const inactiveStyle = "padding: 10px 24px; border-radius: 30px; font-size: 13px; font-weight: 600; cursor: pointer; border: 2px solid rgba(255, 255, 255, 0.12); background: rgba(255, 255, 255, 0.05); color: var(--text-secondary); box-shadow: none; transition: all 0.25s ease;";
-
-    if (mode === 'math') {
-        if (btnMath) btnMath.style.cssText = activeStyle;
-        if (btnIndia) btnIndia.style.cssText = inactiveStyle;
-    } else {
-        if (btnIndia) btnIndia.style.cssText = activeStyle;
-        if (btnMath) btnMath.style.cssText = inactiveStyle;
-    }
+    allModes.forEach(m => {
+        const btn = document.getElementById(`btn-quiz-mode-${m}`);
+        if (!btn) return;
+        if (m === mode) {
+            btn.style.border = '2px solid var(--color-primary)';
+            btn.style.background = 'linear-gradient(135deg, rgba(99, 102, 241, 0.35), rgba(168, 85, 247, 0.35))';
+            btn.style.color = '#ffffff';
+            btn.style.boxShadow = '0 4px 14px rgba(99, 102, 241, 0.4)';
+        } else {
+            btn.style.border = '2px solid rgba(255, 255, 255, 0.12)';
+            btn.style.background = 'rgba(255, 255, 255, 0.05)';
+            btn.style.color = 'var(--text-secondary)';
+            btn.style.boxShadow = 'none';
+        }
+    });
 
     // Smoothly switch to the active question preserved for the selected mode
     const container = document.getElementById('quiz-body-container');
@@ -1315,13 +1277,16 @@ function renderActiveModeQuestion() {
     const currentModeData = quizState.modeData[quizState.mode];
     
     // Ensure question exists for mode
-    if (!currentModeData.q) {
-        currentModeData.q = (quizState.mode === 'math') ? generateMathQuestion() : getRandomIndiaQuestion();
-        currentModeData.answered = false;
-        currentModeData.selectedIndex = -1;
+    if (!currentModeData || !currentModeData.q) {
+        quizState.modeData[quizState.mode] = {
+            q: getRandomQuestionForMode(quizState.mode),
+            answered: false,
+            selectedIndex: -1
+        };
     }
 
-    const q = currentModeData.q;
+    const modeObj = quizState.modeData[quizState.mode];
+    const q = modeObj.q;
     const feedbackBox = document.getElementById('quiz-feedback-box');
     
     // Update Tag and Question text
@@ -1359,25 +1324,25 @@ function renderActiveModeQuestion() {
         btn.innerHTML = `<span style="width: 24px; height: 24px; border-radius: 50%; background: rgba(99, 102, 241, 0.2); color: #818cf8; font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center;">${letter}</span> ${optText}`;
 
         // If this question in this mode was already answered, restore its visual feedback
-        if (currentModeData.answered) {
+        if (modeObj.answered) {
             if (index === q.answer) {
                 btn.style.background = 'rgba(16, 185, 129, 0.25)';
                 btn.style.borderColor = '#10b981';
                 btn.style.color = '#34d399';
-            } else if (index === currentModeData.selectedIndex) {
+            } else if (index === modeObj.selectedIndex) {
                 btn.style.background = 'rgba(239, 68, 68, 0.25)';
                 btn.style.borderColor = '#ef4444';
                 btn.style.color = '#f87171';
             }
         } else {
             btn.onmouseover = () => {
-                if (!currentModeData.answered) {
+                if (!modeObj.answered) {
                     btn.style.borderColor = 'var(--color-primary)';
                     btn.style.background = 'rgba(99, 102, 241, 0.15)';
                 }
             };
             btn.onmouseout = () => {
-                if (!currentModeData.answered) {
+                if (!modeObj.answered) {
                     btn.style.borderColor = 'rgba(255, 255, 255, 0.1)';
                     btn.style.background = 'rgba(255, 255, 255, 0.05)';
                 }
@@ -1389,8 +1354,8 @@ function renderActiveModeQuestion() {
     });
 
     // Render feedback toast if already answered for this mode
-    if (currentModeData.answered && feedbackBox) {
-        const isCorrect = currentModeData.selectedIndex === q.answer;
+    if (modeObj.answered && feedbackBox) {
+        const isCorrect = modeObj.selectedIndex === q.answer;
         feedbackBox.style.display = 'flex';
         feedbackBox.style.alignItems = 'center';
         feedbackBox.style.justifyContent = 'space-between';
@@ -1470,7 +1435,7 @@ function closeQuizFeedbackInstant() {
     
     // Generate a NEW question for the current mode ONLY
     quizState.modeData[quizState.mode] = {
-        q: (quizState.mode === 'math') ? generateMathQuestion() : getRandomIndiaQuestion(),
+        q: getRandomQuestionForMode(quizState.mode),
         answered: false,
         selectedIndex: -1
     };

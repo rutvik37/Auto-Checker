@@ -161,14 +161,43 @@
                                 </div>
                             </div>
 
-                            <!-- Prominently Centered Highlighted Game Mode Selectors -->
-                            <div style="display: flex; justify-content: center; align-items: center; gap: 14px; margin-bottom: 20px; flex-wrap: wrap;">
-                                <button type="button" id="btn-quiz-mode-math" onclick="setQuizMode('math')" style="padding: 10px 24px; border-radius: 30px; font-size: 13px; font-weight: 600; cursor: pointer; border: 2px solid var(--color-primary); background: linear-gradient(135deg, rgba(99, 102, 241, 0.35), rgba(168, 85, 247, 0.35)); color: #ffffff; box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4); transition: all 0.25s ease;">
-                                    <i class="fa-solid fa-calculator" style="margin-right: 6px; color: #a5b4fc;"></i> Mode 1: Speed Math
-                                </button>
-                                <button type="button" id="btn-quiz-mode-india" onclick="setQuizMode('india')" style="padding: 10px 24px; border-radius: 30px; font-size: 13px; font-weight: 600; cursor: pointer; border: 2px solid rgba(255, 255, 255, 0.12); background: rgba(255, 255, 255, 0.05); color: var(--text-secondary); transition: all 0.25s ease;">
-                                    <i class="fa-solid fa-earth-asia" style="margin-right: 6px; color: #34d399;"></i> Mode 2: India & Tech Trivia
-                                </button>
+                            <!-- Prominently Centered Highlighted 10 Game Mode Selectors -->
+                            <div style="margin-bottom: 20px;">
+                                <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #a5b4fc; margin-bottom: 10px; text-align: center;">
+                                    <i class="fa-solid fa-layer-group"></i> Choose Game Category (10 Modes Available):
+                                </div>
+                                <div id="quiz-modes-container" style="display: flex; justify-content: center; align-items: center; gap: 8px; flex-wrap: wrap; max-width: 1100px; margin: 0 auto;">
+                                    <button type="button" id="btn-quiz-mode-math" onclick="setQuizMode('math')" style="padding: 8px 16px; border-radius: 25px; font-size: 12px; font-weight: 600; cursor: pointer; border: 2px solid var(--color-primary); background: linear-gradient(135deg, rgba(99, 102, 241, 0.35), rgba(168, 85, 247, 0.35)); color: #ffffff; box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4); transition: all 0.25s ease;">
+                                        <i class="fa-solid fa-calculator" style="margin-right: 5px; color: #a5b4fc;"></i> Mode 1: Speed Math
+                                    </button>
+                                    <button type="button" id="btn-quiz-mode-india" onclick="setQuizMode('india')" style="padding: 8px 16px; border-radius: 25px; font-size: 12px; font-weight: 600; cursor: pointer; border: 2px solid rgba(255, 255, 255, 0.12); background: rgba(255, 255, 255, 0.05); color: var(--text-secondary); transition: all 0.25s ease;">
+                                        <i class="fa-solid fa-earth-asia" style="margin-right: 5px; color: #34d399;"></i> Mode 2: India Trivia
+                                    </button>
+                                    <button type="button" id="btn-quiz-mode-ai" onclick="setQuizMode('ai')" style="padding: 8px 16px; border-radius: 25px; font-size: 12px; font-weight: 600; cursor: pointer; border: 2px solid rgba(255, 255, 255, 0.12); background: rgba(255, 255, 255, 0.05); color: var(--text-secondary); transition: all 0.25s ease;">
+                                        <i class="fa-solid fa-brain" style="margin-right: 5px; color: #c084fc;"></i> Mode 3: AI & Tech
+                                    </button>
+                                    <button type="button" id="btn-quiz-mode-history" onclick="setQuizMode('history')" style="padding: 8px 16px; border-radius: 25px; font-size: 12px; font-weight: 600; cursor: pointer; border: 2px solid rgba(255, 255, 255, 0.12); background: rgba(255, 255, 255, 0.05); color: var(--text-secondary); transition: all 0.25s ease;">
+                                        <i class="fa-solid fa-landmark" style="margin-right: 5px; color: #f59e0b;"></i> Mode 4: World History
+                                    </button>
+                                    <button type="button" id="btn-quiz-mode-science" onclick="setQuizMode('science')" style="padding: 8px 16px; border-radius: 25px; font-size: 12px; font-weight: 600; cursor: pointer; border: 2px solid rgba(255, 255, 255, 0.12); background: rgba(255, 255, 255, 0.05); color: var(--text-secondary); transition: all 0.25s ease;">
+                                        <i class="fa-solid fa-atom" style="margin-right: 5px; color: #38bdf8;"></i> Mode 5: Science & Space
+                                    </button>
+                                    <button type="button" id="btn-quiz-mode-cinema" onclick="setQuizMode('cinema')" style="padding: 8px 16px; border-radius: 25px; font-size: 12px; font-weight: 600; cursor: pointer; border: 2px solid rgba(255, 255, 255, 0.12); background: rgba(255, 255, 255, 0.05); color: var(--text-secondary); transition: all 0.25s ease;">
+                                        <i class="fa-solid fa-film" style="margin-right: 5px; color: #f43f5e;"></i> Mode 6: Cinema & Movies
+                                    </button>
+                                    <button type="button" id="btn-quiz-mode-sports" onclick="setQuizMode('sports')" style="padding: 8px 16px; border-radius: 25px; font-size: 12px; font-weight: 600; cursor: pointer; border: 2px solid rgba(255, 255, 255, 0.12); background: rgba(255, 255, 255, 0.05); color: var(--text-secondary); transition: all 0.25s ease;">
+                                        <i class="fa-solid fa-trophy" style="margin-right: 5px; color: #fbbf24;"></i> Mode 7: Sports & Games
+                                    </button>
+                                    <button type="button" id="btn-quiz-mode-geography" onclick="setQuizMode('geography')" style="padding: 8px 16px; border-radius: 25px; font-size: 12px; font-weight: 600; cursor: pointer; border: 2px solid rgba(255, 255, 255, 0.12); background: rgba(255, 255, 255, 0.05); color: var(--text-secondary); transition: all 0.25s ease;">
+                                        <i class="fa-solid fa-compass" style="margin-right: 5px; color: #4ade80;"></i> Mode 8: Geography & Nature
+                                    </button>
+                                    <button type="button" id="btn-quiz-mode-coding" onclick="setQuizMode('coding')" style="padding: 8px 16px; border-radius: 25px; font-size: 12px; font-weight: 600; cursor: pointer; border: 2px solid rgba(255, 255, 255, 0.12); background: rgba(255, 255, 255, 0.05); color: var(--text-secondary); transition: all 0.25s ease;">
+                                        <i class="fa-solid fa-code" style="margin-right: 5px; color: #a78bfa;"></i> Mode 9: Web & Coding QA
+                                    </button>
+                                    <button type="button" id="btn-quiz-mode-riddles" onclick="setQuizMode('riddles')" style="padding: 8px 16px; border-radius: 25px; font-size: 12px; font-weight: 600; cursor: pointer; border: 2px solid rgba(255, 255, 255, 0.12); background: rgba(255, 255, 255, 0.05); color: var(--text-secondary); transition: all 0.25s ease;">
+                                        <i class="fa-solid fa-lightbulb" style="margin-right: 5px; color: #facc15;"></i> Mode 10: Riddles & Teasers
+                                    </button>
+                                </div>
                             </div>
 
                             <!-- Quiz Question & Options Body (Smooth non-blinking container) -->
