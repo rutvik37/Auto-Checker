@@ -167,7 +167,7 @@
                                     <i class="fa-solid fa-layer-group"></i> Choose Game Category (10 Modes Available):
                                 </div>
                                 <div id="quiz-modes-container" style="display: flex; justify-content: center; align-items: center; gap: 8px; flex-wrap: wrap; max-width: 1100px; margin: 0 auto;">
-                                    <button type="button" id="btn-quiz-mode-math" onclick="setQuizMode('math')" style="padding: 8px 16px; border-radius: 25px; font-size: 12px; font-weight: 600; cursor: pointer; border: 2px solid var(--color-primary); background: linear-gradient(135deg, rgba(99, 102, 241, 0.35), rgba(168, 85, 247, 0.35)); color: #ffffff; box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4); transition: all 0.25s ease;">
+                                    <button type="button" id="btn-quiz-mode-math" onclick="setQuizMode('math')" style="padding: 8px 16px; border-radius: 25px; font-size: 12px; font-weight: 600; cursor: pointer; border: 2px solid rgba(255, 255, 255, 0.12); background: rgba(255, 255, 255, 0.05); color: var(--text-secondary); transition: all 0.25s ease;">
                                         <i class="fa-solid fa-calculator" style="margin-right: 5px; color: #a5b4fc;"></i> Mode 1: Speed Math
                                     </button>
                                     <button type="button" id="btn-quiz-mode-india" onclick="setQuizMode('india')" style="padding: 8px 16px; border-radius: 25px; font-size: 12px; font-weight: 600; cursor: pointer; border: 2px solid rgba(255, 255, 255, 0.12); background: rgba(255, 255, 255, 0.05); color: var(--text-secondary); transition: all 0.25s ease;">
@@ -260,6 +260,45 @@
                                     </div>
                                     <div id="fact-text-elem" style="font-size: 14px; font-weight: 500; color: #f3f4f6; line-height: 1.5;">
                                         The first computer bug was an actual real moth found trapped inside a Harvard Mark II relay in 1947 by Grace Hopper's team!
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Section 3: World Mysteries, Curiosities & Mind-Benders Vault -->
+                        <div id="world-wonders-card" style="margin-top: 20px; background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(56, 189, 248, 0.35); border-radius: 14px; padding: 20px 24px; box-shadow: 0 8px 24px rgba(0,0,0,0.35); backdrop-filter: blur(12px);">
+                            <!-- Card Header -->
+                            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 12px; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <div style="width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(135deg, #38bdf8, #818cf8); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 19px; box-shadow: 0 4px 14px rgba(56, 189, 248, 0.4);">
+                                        <i class="fa-solid fa-earth-americas"></i>
+                                    </div>
+                                    <div>
+                                        <h3 style="font-family: var(--font-header); font-size: 16px; font-weight: 600; color: #f3f4f6; margin: 0; display: flex; align-items: center; gap: 8px;">
+                                            World Wonders, Mysteries & Curiosities
+                                            <span style="font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 12px; background: rgba(56, 189, 248, 0.2); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.4);">Global Edition</span>
+                                        </h3>
+                                        <p style="font-size: 12px; color: var(--text-secondary); margin-top: 2px;">Explore mind-bending natural phenomena, ancient human achievements, space mysteries & world records!</p>
+                                    </div>
+                                </div>
+                                <div>
+                                    <button type="button" onclick="revealNextWorldWonder()" style="padding: 8px 18px; border-radius: 25px; font-size: 12px; font-weight: 600; cursor: pointer; border: 1px solid rgba(56, 189, 248, 0.4); background: linear-gradient(135deg, rgba(56, 189, 248, 0.25), rgba(129, 140, 248, 0.25)); color: #7dd3fc; box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3); transition: all 0.25s ease;" onmouseover="this.style.transform='scale(1.03)';" onmouseout="this.style.transform='scale(1)';">
+                                        <i class="fa-solid fa-globe" style="margin-right: 6px;"></i> Discover Next Wonder 🌍
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- World Wonder Display Box -->
+                            <div id="world-wonder-display-box" style="background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 18px 22px; display: flex; align-items: center; gap: 16px; min-height: 80px; transition: opacity 0.25s ease;">
+                                <div style="width: 44px; height: 44px; border-radius: 50%; background: rgba(56, 189, 248, 0.18); border: 1px solid rgba(56, 189, 248, 0.3); display: flex; align-items: center; justify-content: center; color: #38bdf8; font-size: 20px; flex-shrink: 0;">
+                                    <i class="fa-solid fa-landmark-dome" id="wonder-icon-elem"></i>
+                                </div>
+                                <div style="flex: 1;">
+                                    <div id="wonder-category-badge" style="display: inline-block; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #38bdf8; margin-bottom: 4px;">
+                                        🏛️ Ancient Engineering & Wonders
+                                    </div>
+                                    <div id="wonder-text-elem" style="font-size: 14px; font-weight: 500; color: #f3f4f6; line-height: 1.5;">
+                                        The Great Pyramid of Giza was constructed with over 2.3 million giant stone blocks fitting together so precisely that a single razor blade cannot pass between them!
                                     </div>
                                 </div>
                             </div>

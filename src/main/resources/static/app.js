@@ -1068,7 +1068,7 @@ function hideZeroIssuesCelebration() {
 // --- Brain Break & Trivia Quiz Mini-Game Engine ---
 // --- Brain Break & Trivia Quiz Mini-Game Engine (10 Modes) ---
 let quizState = {
-    mode: 'math',
+    mode: null,
     score: 0,
     // Per-mode question cache for all 10 modes
     modeData: {
@@ -1298,6 +1298,26 @@ function generateMathQuestion() {
 }
 
 function renderActiveModeQuestion() {
+    const container = document.getElementById('quiz-body-container');
+    if (!container) return;
+
+    if (quizState.mode === null) {
+        container.innerHTML = `
+            <div style="padding: 30px 20px; text-align: center;">
+                <div style="width: 54px; height: 54px; border-radius: 50%; background: rgba(99, 102, 241, 0.2); border: 1px solid rgba(99, 102, 241, 0.4); display: inline-flex; align-items: center; justify-content: center; color: #818cf8; font-size: 24px; margin-bottom: 12px; box-shadow: 0 4px 14px rgba(99, 102, 241, 0.3);">
+                    <i class="fa-solid fa-gamepad"></i>
+                </div>
+                <h4 style="font-family: var(--font-header); font-size: 18px; font-weight: 600; color: #ffffff; margin-bottom: 6px;">
+                    Brain Break Quiz Challenge 🎮
+                </h4>
+                <p style="font-size: 13.5px; color: var(--text-secondary); max-width: 480px; margin: 0 auto; line-height: 1.5;">
+                    👆 Select any of the <strong>10 Game Categories</strong> above to start playing questions while your pages are scanning!
+                </p>
+            </div>
+        `;
+        return;
+    }
+
     const currentModeData = quizState.modeData[quizState.mode];
     
     // Ensure question exists for mode
@@ -1307,6 +1327,26 @@ function renderActiveModeQuestion() {
             answered: false,
             selectedIndex: -1
         };
+    }
+
+    // Re-create internal layout if coming from null mode prompt
+    if (!document.getElementById('quiz-category-tag')) {
+        container.innerHTML = `
+            <div id="quiz-category-tag" style="display: inline-block; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 12px; background: rgba(168, 85, 247, 0.2); color: #c084fc; margin-bottom: 10px;">
+                Speed Math Challenge
+            </div>
+            <h4 id="quiz-question-text" style="font-family: var(--font-header); font-size: 18px; font-weight: 600; color: #ffffff; margin-bottom: 16px; min-height: 26px;">
+            </h4>
+            <div id="quiz-options-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; max-width: 650px; margin: 0 auto;">
+            </div>
+            <div style="display: flex; justify-content: center; align-items: center; gap: 12px; margin-top: 14px; flex-wrap: wrap;">
+                <button type="button" id="btn-quiz-skip" onclick="skipQuizQuestion()" style="padding: 6px 18px; border-radius: 20px; font-size: 12px; font-weight: 500; border: 1px solid rgba(255, 255, 255, 0.15); background: rgba(255, 255, 255, 0.08); color: var(--text-secondary); cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='rgba(99, 102, 241, 0.2)'; this.style.borderColor='var(--color-primary)';" onmouseout="this.style.background='rgba(255, 255, 255, 0.08)'; this.style.borderColor='rgba(255, 255, 255, 0.15)';">
+                    <i class="fa-solid fa-forward"></i> Skip Question ⏭️
+                </button>
+            </div>
+            <div id="quiz-feedback-box" style="display: none; max-width: 580px; margin: 16px auto 0 auto; padding: 12px 18px; border-radius: 10px; font-size: 13px; font-weight: 500; box-shadow: 0 10px 25px rgba(0,0,0,0.5); backdrop-filter: blur(8px); transition: all 0.3s ease; text-align: left;">
+            </div>
+        `;
     }
 
     const modeObj = quizState.modeData[quizState.mode];
@@ -1561,7 +1601,89 @@ function revealNextTechFact() {
     }, 150);
 }
 
+// --- Section 3: World Wonders, Mysteries & Curiosities Engine ---
+const worldWondersBank = [
+    {
+        category: "🏛️ Ancient Engineering & Wonders",
+        icon: "fa-landmark-dome",
+        wonder: "The Great Pyramid of Giza was constructed with over 2.3 million giant stone blocks fitting together so precisely that a single razor blade cannot pass between them!"
+    },
+    {
+        category: "🌊 Deep Ocean Mysteries",
+        icon: "fa-water",
+        wonder: "The Mariana Trench is so deep (11,000 meters) that if you placed Mount Everest inside it, the peak would still be covered by over 2 kilometers of ocean water!"
+    },
+    {
+        category: "🍯 Biological Marvels",
+        icon: "fa-jar",
+        wonder: "Honey never spoils! Archaeologists found 3,000-year-old pots of honey in ancient Egyptian tombs that are still perfectly edible today."
+    },
+    {
+        category: "🐋 Wildlife Records",
+        icon: "fa-fish",
+        wonder: "A Blue Whale's heart is as large as a small car, weighing nearly 400 pounds, and its heartbeat can be detected underwater from 2 miles away!"
+    },
+    {
+        category: "⚡ Natural Phenomena",
+        icon: "fa-bolt-lightning",
+        wonder: "Lightning strikes Planet Earth approximately 8.6 million times every single day—that's roughly 100 lightning strikes every second!"
+    },
+    {
+        category: "🧠 Human Brain Secrets",
+        icon: "fa-brain",
+        wonder: "The human brain generates about 20 watts of electrical power when awake—enough to power a dim LED light bulb!"
+    },
+    {
+        category: "🌲 Global Nature Facts",
+        icon: "fa-tree",
+        wonder: "There are more trees on Earth (~3 trillion trees) than there are stars in the entire Milky Way galaxy (~100 billion stars)!"
+    },
+    {
+        category: "🌋 Geological Marvels",
+        icon: "fa-mountain-sun",
+        wonder: "Mount Everest grows about 4 millimeters (0.16 inches) taller every single year due to ongoing continental plate collision!"
+    },
+    {
+        category: "🍌 Unexpected Science",
+        icon: "fa-atom",
+        wonder: "Bananas are naturally slightly radioactive because they contain high levels of Potassium-40 isotopes!"
+    },
+    {
+        category: "🌌 Space Wonders",
+        icon: "fa-meteor",
+        wonder: "One day on Venus is longer than one year on Venus! It takes Venus 243 Earth days to rotate once on its axis, but only 225 Earth days to orbit the Sun."
+    }
+];
+
+let lastWorldWonderIndex = 0;
+
+function revealNextWorldWonder() {
+    const box = document.getElementById('world-wonder-display-box');
+    const categoryElem = document.getElementById('wonder-category-badge');
+    const textElem = document.getElementById('wonder-text-elem');
+    const iconElem = document.getElementById('wonder-icon-elem');
+
+    if (!box || !textElem) return;
+
+    let nextIndex = Math.floor(Math.random() * worldWondersBank.length);
+    if (nextIndex === lastWorldWonderIndex) {
+        nextIndex = (nextIndex + 1) % worldWondersBank.length;
+    }
+    lastWorldWonderIndex = nextIndex;
+
+    const wonderObj = worldWondersBank[nextIndex];
+
+    box.style.opacity = '0.3';
+    setTimeout(() => {
+        if (categoryElem) categoryElem.textContent = wonderObj.category;
+        if (textElem) textElem.textContent = wonderObj.wonder;
+        if (iconElem) iconElem.className = `fa-solid ${wonderObj.icon}`;
+        box.style.opacity = '1';
+    }, 150);
+}
+
 window.setQuizMode = setQuizMode;
 window.skipQuizQuestion = skipQuizQuestion;
 window.closeQuizFeedbackInstant = closeQuizFeedbackInstant;
 window.revealNextTechFact = revealNextTechFact;
+window.revealNextWorldWonder = revealNextWorldWonder;
