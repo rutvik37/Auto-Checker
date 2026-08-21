@@ -294,6 +294,7 @@ async function startScan(event) {
 }
 
 function resetDashboardStats(url) {
+    hideZeroIssuesCelebration();
     const statusIcon = document.getElementById('scan-status-icon');
     const statusText = document.getElementById('scan-status-text');
     if (statusIcon) {
@@ -410,6 +411,16 @@ function initSseStream(scanId) {
         }
         if (progressFill) {
             progressFill.style.width = '100%';
+        }
+        
+        // Trigger celebratory state if 0 spelling issues were found
+        if (activeScanId) {
+            loadLiveIssues(activeScanId).then((issues) => {
+                if (issues && issues.length === 0) {
+                    showZeroIssuesCelebration();
+                    launchCelebrationConfetti();
+                }
+            });
         }
         
         // Refresh project list scans history in background
@@ -646,13 +657,20 @@ async function loadLiveIssues(scanId) {
         }
 
         const tbody = document.getElementById('live-issues-table-body');
-        if (!tbody) return;
+        if (!tbody) return issues;
         
         if (issues.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6" class="text-center" style="color: var(--text-muted);">No typos detected yet...</td></tr>';
-            return;
+            const statusText = document.getElementById('scan-status-text');
+            if (statusText && statusText.textContent === 'Scan Completed') {
+                showZeroIssuesCelebration();
+            } else {
+                hideZeroIssuesCelebration();
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center" style="color: var(--text-muted);">No typos detected yet...</td></tr>';
+            }
+            return issues;
         }
 
+        hideZeroIssuesCelebration();
         tbody.innerHTML = '';
         issues.forEach(issue => {
             const tr = document.createElement('tr');
@@ -753,6 +771,7 @@ function resetFormAndOutput() {
     }
 
     // 6. Reset tables and views
+    hideZeroIssuesCelebration();
     const liveTbody = document.getElementById('live-issues-table-body');
     if (liveTbody) {
         liveTbody.innerHTML = '<tr><td colspan="6" class="text-center" style="color: var(--text-muted); padding: 20px;">No typos detected yet...</td></tr>';
@@ -852,5 +871,133 @@ async function checkForActiveScan() {
         }
     } catch (e) {
         console.error('Error checking for active scan:', e);
+    }
+}
+
+// --- Celebratory Zero-Issue Canvas Particle Confetti & UI Controllers ---
+function launchCelebrationConfetti() {
+    const canvas = document.getElementById('celebration-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const particles = [];
+    const colors = ['#10b981', '#34d399', '#6366f1', '#a855f7', '#fbbf24', '#3b82f6', '#ec4899'];
+
+    for (let i = 0; i < 90; i++) {
+        particles.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * (canvas.height * 0.4),
+            vx: (Math.random() - 0.5) * 6,
+            vy: Math.random() * 4 + 2,
+            size: Math.random() * 8 + 4,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            rotation: Math.random() * 360,
+            rotationSpeed: (Math.random() - 0.5) * 10,
+            opacity: 1
+        });
+    }
+
+    let animationFrame;
+    const startTime = Date.now();
+
+    function render() {
+        const elapsed = Date.now() - startTime;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        let activeParticles = 0;
+        particles.forEach(p => {
+            if (p.opacity <= 0) return;
+            activeParticles++;
+
+            p.x += p.vx;
+            p.y += p.vy;
+            p.rotation += p.rotationSpeed;
+            if (elapsed > 2000) {
+                p.opacity -= 0.02;
+            }
+
+            ctx.save();
+            ctx.globalAlpha = Math.max(0, p.opacity);
+            ctx.translate(p.x, p.y);
+            ctx.rotate((p.rotation * Math.PI) / 180);
+            ctx.fillStyle = p.color;
+            ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+            ctx.restore();
+        });
+
+        if (activeParticles > 0 && elapsed < 4000) {
+            animationFrame = requestAnimationFrame(render);
+        } else {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            cancelAnimationFrame(animationFrame);
+        }
+    }
+
+    render();
+}
+
+function showZeroIssuesCelebration(pagesScanned, wordsChecked) {
+    const tableWrapper = document.getElementById('live-issues-table-wrapper');
+    const exportContainer = document.getElementById('export-buttons-container');
+    const container = document.getElementById('zero-issues-celebration-container');
+
+    if (tableWrapper) tableWrapper.style.display = 'none';
+    if (exportContainer) exportContainer.style.display = 'none';
+
+    const pages = pagesScanned || (document.getElementById('stat-pages') ? document.getElementById('stat-pages').textContent : '0');
+    const words = wordsChecked || (document.getElementById('stat-words') ? document.getElementById('stat-words').textContent : '0');
+
+    if (container) {
+        container.style.display = 'block';
+        container.innerHTML = `
+            <div class="zero-issues-card">
+                <div class="celebration-badge-wrapper">
+                    <span class="celebration-sparkle sparkle-left"><i class="fa-solid fa-sparkles"></i></span>
+                    <div class="celebration-badge">
+                        <i class="fa-solid fa-trophy"></i>
+                    </div>
+                    <span class="celebration-sparkle sparkle-right"><i class="fa-solid fa-star"></i></span>
+                </div>
+                
+                <h3 class="zero-issues-title">
+                    <i class="fa-solid fa-circle-check" style="color: #34d399;"></i>
+                    Awesome News! 0 Spelling Typos Found!
+                </h3>
+                
+                <p class="zero-issues-desc">
+                    Your website content passed with <strong>100% spelling accuracy</strong>! Every word checked was verified cleanly with no spelling errors detected. Your site is polished, professional, and ready for visitors!
+                </p>
+
+                <div class="zero-issues-stats">
+                    <div class="zero-stat-pill">
+                        <i class="fa-solid fa-file-circle-check"></i>
+                        <span><strong>${pages}</strong> Pages Crawled</span>
+                    </div>
+                    <div class="zero-stat-pill">
+                        <i class="fa-solid fa-font"></i>
+                        <span><strong>${words}</strong> Words Verified</span>
+                    </div>
+                    <div class="zero-stat-pill" style="border-color: rgba(16, 185, 129, 0.4); background: rgba(16, 185, 129, 0.15);">
+                        <i class="fa-solid fa-shield-halved" style="color: #34d399;"></i>
+                        <span style="color: #34d399;"><strong>100% Clean Quality</strong></span>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+}
+
+function hideZeroIssuesCelebration() {
+    const tableWrapper = document.getElementById('live-issues-table-wrapper');
+    const exportContainer = document.getElementById('export-buttons-container');
+    const container = document.getElementById('zero-issues-celebration-container');
+
+    if (tableWrapper) tableWrapper.style.display = 'block';
+    if (exportContainer) exportContainer.style.display = 'flex';
+    if (container) {
+        container.style.display = 'none';
+        container.innerHTML = '';
     }
 }

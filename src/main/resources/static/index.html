@@ -18,6 +18,7 @@
 </head>
 <body>
     <div class="glow-bg"></div>
+    <canvas id="celebration-canvas"></canvas>
     <div class="app-container">
         <!-- Hidden elements to maintain app.js compatibility without errors -->
         <aside class="sidebar" style="display: none;">
@@ -150,7 +151,7 @@
                                     </button>
                                 </div>
                             </div>
-                            <div class="table-responsive" style="max-height: 400px; overflow-y: auto; background: rgba(0, 0, 0, 0.2); border-radius: 8px; border: 1px solid var(--card-border);">
+                            <div class="table-responsive" id="live-issues-table-wrapper" style="max-height: 400px; overflow-y: auto; background: rgba(0, 0, 0, 0.2); border-radius: 8px; border: 1px solid var(--card-border);">
                                 <table class="table" id="live-issues-table" style="font-size: 13px;">
                                     <thead>
                                         <tr>
@@ -167,6 +168,8 @@
                                     </tbody>
                                 </table>
                             </div>
+                            <!-- Friendly Celebratory Zero-Issue Container -->
+                            <div id="zero-issues-celebration-container" style="display: none;"></div>
                         </div>
                     </div>
                     

@@ -12,6 +12,7 @@ scanner.db-wal
 
 # Projects crawled reports & logs
 Projects/
+AuditReports/
 
 # Logs & temp files
 *.log
