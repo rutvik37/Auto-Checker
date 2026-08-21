@@ -290,12 +290,14 @@ body {
     display: flex;
     align-items: center;
     gap: 20px;
-    transition: transform 0.2s, border-color 0.2s;
+    cursor: pointer;
+    transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
 }
 
 .metric-card:hover {
     transform: translateY(-4px);
     border-color: var(--accent);
+    box-shadow: 0 12px 28px -6px rgba(99, 102, 241, 0.25);
 }
 
 .card-icon {

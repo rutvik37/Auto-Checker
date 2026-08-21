@@ -850,9 +850,13 @@ function loadDashboardStats() {
             tbody.innerHTML = '';
             page.content.forEach(s => {
                 const tr = document.createElement('tr');
+                tr.style.cursor = 'pointer';
+                tr.addEventListener('click', () => {
+                    window.location.hash = `scan-details/${s.id}`;
+                });
                 tr.innerHTML = `
                     <td>${s.id}</td>
-                    <td><strong>${s.name || 'Unnamed Scan'}</strong></td>
+                    <td><strong>${s.projectName || s.name || 'Unnamed Project'}</strong></td>
                     <td><span class="text-secondary">${s.url}</span></td>
                     <td><span class="status-badge ${s.status.toLowerCase()}">${s.status}</span></td>
                     <td><strong>${s.totalIssues}</strong></td>
@@ -1206,7 +1210,7 @@ function loadAnalytics() {
 }
 
 function renderScanMetricsCharts(scans) {
-    const labels = scans.map(s => s.name || `Scan #${s.id}`);
+    const labels = scans.map(s => s.projectName || s.name || `Scan #${s.id}`);
     const issuesData = scans.map(s => s.totalIssues);
     const pagesData = scans.map(s => s.pagesScanned);
     const wordsData = scans.map(s => s.wordsChecked);
@@ -1407,7 +1411,7 @@ function loadPerformance() {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td><strong>#${scan.id}</strong></td>
-                    <td><strong>${scan.name || 'Unnamed Scan'}</strong></td>
+                    <td><strong>${scan.projectName || scan.name || 'Unnamed Project'}</strong></td>
                     <td>${formatDate(scan.startedAt)}</td>
                     <td>${formatDate(scan.endedAt)}</td>
                     <td><span class="decision-badge valid">${formatDuration(scan.durationSeconds)}</span></td>

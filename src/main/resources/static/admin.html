@@ -129,63 +129,63 @@
                 <!-- Dashboard Pane -->
                 <section id="pane-dashboard" class="pane active">
                     <div class="metrics-grid">
-                        <div class="metric-card">
+                        <div class="metric-card" onclick="window.location.hash='#projects'" title="View Total Projects">
                             <div class="card-icon projects-icon"><i class="fa-solid fa-folder"></i></div>
                             <div class="card-info">
                                 <h3>Total Projects</h3>
                                 <p class="metric-value" id="stat-projects">-</p>
                             </div>
                         </div>
-                        <div class="metric-card">
+                        <div class="metric-card" onclick="window.location.hash='#scans'" title="View Total Scans">
                             <div class="card-icon scans-icon"><i class="fa-solid fa-rocket"></i></div>
                             <div class="card-info">
                                 <h3>Total Scans</h3>
                                 <p class="metric-value" id="stat-scans">-</p>
                             </div>
                         </div>
-                        <div class="metric-card">
+                        <div class="metric-card" onclick="window.location.hash='#scans'" title="View Pages Crawled in Scans">
                             <div class="card-icon pages-icon"><i class="fa-solid fa-file-lines"></i></div>
                             <div class="card-info">
                                 <h3>Pages Crawled</h3>
                                 <p class="metric-value" id="stat-pages">-</p>
                             </div>
                         </div>
-                        <div class="metric-card">
+                        <div class="metric-card" onclick="window.location.hash='#issues'" title="View Issues Found">
                             <div class="card-icon issues-icon"><i class="fa-solid fa-circle-exclamation"></i></div>
                             <div class="card-info">
                                 <h3>Issues Found</h3>
                                 <p class="metric-value" id="stat-issues">-</p>
                             </div>
                         </div>
-                        <div class="metric-card">
+                        <div class="metric-card" onclick="window.location.hash='#cache'" title="View Total Cached Words">
                             <div class="card-icon cache-icon"><i class="fa-solid fa-database"></i></div>
                             <div class="card-info">
                                 <h3>Total Cached Words</h3>
                                 <p class="metric-value" id="stat-cache-total">-</p>
                             </div>
                         </div>
-                        <div class="metric-card">
+                        <div class="metric-card" onclick="window.location.hash='#cache'" title="View Unique Cached Words">
                             <div class="card-icon unique-cache-icon"><i class="fa-solid fa-fingerprint"></i></div>
                             <div class="card-info">
                                 <h3>Unique Cached Words</h3>
                                 <p class="metric-value" id="stat-cache-unique">-</p>
                             </div>
                         </div>
-                        <div class="metric-card">
+                        <div class="metric-card" onclick="window.location.hash='#cache'" title="View Active Cache Entries">
                             <div class="card-icon active-cache-icon"><i class="fa-solid fa-bolt"></i></div>
                             <div class="card-info">
                                 <h3>Active Cache Entries</h3>
                                 <p class="metric-value" id="stat-cache-active">-</p>
                             </div>
                         </div>
-                        <div class="metric-card">
+                        <div class="metric-card" onclick="window.location.hash='#scans'" title="View Latest Scan Status">
                             <div class="card-icon status-icon"><i class="fa-solid fa-circle-nodes"></i></div>
                             <div class="card-info">
                                 <h3>Latest Scan Status</h3>
                                 <p class="metric-value status-badge" id="stat-latest-status">-</p>
                             </div>
                         </div>
-                        <div class="metric-card">
+                        <div class="metric-card" onclick="window.location.hash='#performance'" title="View Performance Metrics">
                             <div class="card-icon duration-icon"><i class="fa-solid fa-hourglass-half"></i></div>
                             <div class="card-info">
                                 <h3>Latest Scan Duration</h3>
@@ -202,7 +202,7 @@
                                     <thead>
                                         <tr>
                                             <th>ID</th>
-                                            <th>Name</th>
+                                            <th>Project Name</th>
                                             <th>URL</th>
                                             <th>Status</th>
                                             <th>Issues</th>
