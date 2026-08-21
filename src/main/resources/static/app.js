@@ -1177,12 +1177,36 @@ function initQuizGame() {
     renderActiveModeQuestion();
 }
 
+function shuffleQuestionOptions(qObj) {
+    if (!qObj || !qObj.options) return qObj;
+    
+    const correctAnswerText = qObj.options[qObj.answer];
+    const shuffledOptions = [...qObj.options];
+    
+    // Fisher-Yates shuffle options array
+    for (let i = shuffledOptions.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffledOptions[i], shuffledOptions[j]] = [shuffledOptions[j], shuffledOptions[i]];
+    }
+    
+    const newAnswerIndex = shuffledOptions.indexOf(correctAnswerText);
+    
+    return {
+        category: qObj.category,
+        question: qObj.question,
+        options: shuffledOptions,
+        answer: newAnswerIndex,
+        explanation: qObj.explanation
+    };
+}
+
 function getRandomQuestionForMode(mode) {
     if (mode === 'math') {
         return generateMathQuestion();
     }
     const bank = quizBanks[mode] || quizBanks['india'];
-    return bank[Math.floor(Math.random() * bank.length)];
+    const rawQ = bank[Math.floor(Math.random() * bank.length)];
+    return shuffleQuestionOptions(rawQ);
 }
 
 function setQuizMode(mode) {
