@@ -1066,12 +1066,15 @@ function hideZeroIssuesCelebration() {
 }
 
 // --- Brain Break & Trivia Quiz Mini-Game Engine ---
+// --- Brain Break & Trivia Quiz Mini-Game Engine ---
 let quizState = {
-    mode: 'math', // 'math' or 'spelling'
+    mode: 'math', // 'math' or 'india'
     score: 0,
-    streak: 0,
-    currentQuestion: null,
-    answered: false
+    // Separate independent question state per mode
+    modeData: {
+        math: { q: null, answered: false, selectedIndex: -1 },
+        india: { q: null, answered: false, selectedIndex: -1 }
+    }
 };
 
 const indiaTriviaBank = [
@@ -1194,6 +1197,8 @@ const indiaTriviaBank = [
     }
 ];
 
+let quizAutoAdvanceTimer = null;
+
 function initQuizGame() {
     const card = document.getElementById('scan-mini-game-card');
     if (!card) return;
@@ -1206,10 +1211,21 @@ function initQuizGame() {
         if (scoreElem) scoreElem.textContent = quizState.score;
     }
 
-    renderNextQuestion();
+    // Initialize math question if empty
+    if (!quizState.modeData.math.q) {
+        quizState.modeData.math.q = generateMathQuestion();
+    }
+    // Initialize india question if empty
+    if (!quizState.modeData.india.q) {
+        quizState.modeData.india.q = getRandomIndiaQuestion();
+    }
+
+    renderActiveModeQuestion();
 }
 
-let quizAutoAdvanceTimer = null;
+function getRandomIndiaQuestion() {
+    return indiaTriviaBank[Math.floor(Math.random() * indiaTriviaBank.length)];
+}
 
 function setQuizMode(mode) {
     if (quizState.mode === mode) return;
@@ -1227,6 +1243,18 @@ function setQuizMode(mode) {
     } else {
         if (btnIndia) btnIndia.style.cssText = activeStyle;
         if (btnMath) btnMath.style.cssText = inactiveStyle;
+    }
+
+    // Smoothly switch to the active question preserved for the selected mode
+    const container = document.getElementById('quiz-body-container');
+    if (container) {
+        container.style.opacity = '0.3';
+        setTimeout(() => {
+            renderActiveModeQuestion();
+            container.style.opacity = '1';
+        }, 150);
+    } else {
+        renderActiveModeQuestion();
     }
 }
 
@@ -1283,19 +1311,20 @@ function generateMathQuestion() {
     };
 }
 
-function renderNextQuestion() {
-    quizState.answered = false;
-    const feedbackBox = document.getElementById('quiz-feedback-box');
-    if (feedbackBox) feedbackBox.style.display = 'none';
-
-    let q;
-    if (quizState.mode === 'math') {
-        q = generateMathQuestion();
-    } else {
-        q = indiaTriviaBank[Math.floor(Math.random() * indiaTriviaBank.length)];
+function renderActiveModeQuestion() {
+    const currentModeData = quizState.modeData[quizState.mode];
+    
+    // Ensure question exists for mode
+    if (!currentModeData.q) {
+        currentModeData.q = (quizState.mode === 'math') ? generateMathQuestion() : getRandomIndiaQuestion();
+        currentModeData.answered = false;
+        currentModeData.selectedIndex = -1;
     }
-    quizState.currentQuestion = q;
 
+    const q = currentModeData.q;
+    const feedbackBox = document.getElementById('quiz-feedback-box');
+    
+    // Update Tag and Question text
     const tagElem = document.getElementById('quiz-category-tag');
     if (tagElem) tagElem.textContent = q.category;
 
@@ -1329,50 +1358,44 @@ function renderNextQuestion() {
         const letter = String.fromCharCode(65 + index);
         btn.innerHTML = `<span style="width: 24px; height: 24px; border-radius: 50%; background: rgba(99, 102, 241, 0.2); color: #818cf8; font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center;">${letter}</span> ${optText}`;
 
-        btn.onmouseover = () => {
-            if (!quizState.answered) {
-                btn.style.borderColor = 'var(--color-primary)';
-                btn.style.background = 'rgba(99, 102, 241, 0.15)';
+        // If this question in this mode was already answered, restore its visual feedback
+        if (currentModeData.answered) {
+            if (index === q.answer) {
+                btn.style.background = 'rgba(16, 185, 129, 0.25)';
+                btn.style.borderColor = '#10b981';
+                btn.style.color = '#34d399';
+            } else if (index === currentModeData.selectedIndex) {
+                btn.style.background = 'rgba(239, 68, 68, 0.25)';
+                btn.style.borderColor = '#ef4444';
+                btn.style.color = '#f87171';
             }
-        };
-        btn.onmouseout = () => {
-            if (!quizState.answered) {
-                btn.style.borderColor = 'rgba(255, 255, 255, 0.1)';
-                btn.style.background = 'rgba(255, 255, 255, 0.05)';
-            }
-        };
+        } else {
+            btn.onmouseover = () => {
+                if (!currentModeData.answered) {
+                    btn.style.borderColor = 'var(--color-primary)';
+                    btn.style.background = 'rgba(99, 102, 241, 0.15)';
+                }
+            };
+            btn.onmouseout = () => {
+                if (!currentModeData.answered) {
+                    btn.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                    btn.style.background = 'rgba(255, 255, 255, 0.05)';
+                }
+            };
+            btn.onclick = () => selectQuizAnswer(index, btn);
+        }
 
-        btn.onclick = () => selectQuizAnswer(index, btn);
         optionsGrid.appendChild(btn);
     });
-}
 
-function selectQuizAnswer(selectedIndex, clickedBtn) {
-    if (quizState.answered) return;
-    quizState.answered = true;
+    // Render feedback toast if already answered for this mode
+    if (currentModeData.answered && feedbackBox) {
+        const isCorrect = currentModeData.selectedIndex === q.answer;
+        feedbackBox.style.display = 'flex';
+        feedbackBox.style.alignItems = 'center';
+        feedbackBox.style.justifyContent = 'space-between';
 
-    if (quizAutoAdvanceTimer) {
-        clearTimeout(quizAutoAdvanceTimer);
-        quizAutoAdvanceTimer = null;
-    }
-
-    const q = quizState.currentQuestion;
-    const isCorrect = selectedIndex === q.answer;
-
-    const allBtns = document.querySelectorAll('.quiz-opt-btn');
-    const feedbackBox = document.getElementById('quiz-feedback-box');
-
-    if (isCorrect) {
-        clickedBtn.style.background = 'rgba(16, 185, 129, 0.25)';
-        clickedBtn.style.borderColor = '#10b981';
-        clickedBtn.style.color = '#34d399';
-        
-        quizState.score += 10;
-
-        if (feedbackBox) {
-            feedbackBox.style.display = 'flex';
-            feedbackBox.style.alignItems = 'center';
-            feedbackBox.style.justifyContent = 'space-between';
+        if (isCorrect) {
             feedbackBox.style.background = 'rgba(16, 185, 129, 0.18)';
             feedbackBox.style.border = '1px solid rgba(16, 185, 129, 0.4)';
             feedbackBox.style.color = '#34d399';
@@ -1386,23 +1409,7 @@ function selectQuizAnswer(selectedIndex, clickedBtn) {
                 </div>
                 <button type="button" onclick="closeQuizFeedbackInstant()" style="background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(255, 255, 255, 0.2); color: #f3f4f6; border-radius: 50%; width: 26px; height: 26px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; flex-shrink: 0; margin-left: 14px; transition: all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.25)'" onmouseout="this.style.background='rgba(255,255,255,0.12)'" title="Dismiss & Next Question">✕</button>
             `;
-        }
-    } else {
-        clickedBtn.style.background = 'rgba(239, 68, 68, 0.25)';
-        clickedBtn.style.borderColor = '#ef4444';
-        clickedBtn.style.color = '#f87171';
-
-        // Highlight correct button
-        if (allBtns[q.answer]) {
-            allBtns[q.answer].style.background = 'rgba(16, 185, 129, 0.25)';
-            allBtns[q.answer].style.borderColor = '#10b981';
-            allBtns[q.answer].style.color = '#34d399';
-        }
-
-        if (feedbackBox) {
-            feedbackBox.style.display = 'flex';
-            feedbackBox.style.alignItems = 'center';
-            feedbackBox.style.justifyContent = 'space-between';
+        } else {
             feedbackBox.style.background = 'rgba(239, 68, 68, 0.18)';
             feedbackBox.style.border = '1px solid rgba(239, 68, 68, 0.4)';
             feedbackBox.style.color = '#f87171';
@@ -1417,12 +1424,37 @@ function selectQuizAnswer(selectedIndex, clickedBtn) {
                 <button type="button" onclick="closeQuizFeedbackInstant()" style="background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(255, 255, 255, 0.2); color: #f3f4f6; border-radius: 50%; width: 26px; height: 26px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; flex-shrink: 0; margin-left: 14px; transition: all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.25)'" onmouseout="this.style.background='rgba(255,255,255,0.12)'" title="Dismiss & Next Question">✕</button>
             `;
         }
+    } else if (feedbackBox) {
+        feedbackBox.style.display = 'none';
+    }
+}
+
+function selectQuizAnswer(selectedIndex, clickedBtn) {
+    const currentModeData = quizState.modeData[quizState.mode];
+    if (currentModeData.answered) return;
+    
+    currentModeData.answered = true;
+    currentModeData.selectedIndex = selectedIndex;
+
+    if (quizAutoAdvanceTimer) {
+        clearTimeout(quizAutoAdvanceTimer);
+        quizAutoAdvanceTimer = null;
+    }
+
+    const q = currentModeData.q;
+    const isCorrect = selectedIndex === q.answer;
+
+    if (isCorrect) {
+        quizState.score += 10;
     }
 
     // Update Score
     const scoreElem = document.getElementById('quiz-score');
     if (scoreElem) scoreElem.textContent = quizState.score;
     localStorage.setItem('quiz_score', quizState.score);
+
+    // Re-render UI for current mode
+    renderActiveModeQuestion();
 
     // Auto advance after 3 seconds (3000ms)
     quizAutoAdvanceTimer = setTimeout(() => {
@@ -1435,18 +1467,23 @@ function closeQuizFeedbackInstant() {
         clearTimeout(quizAutoAdvanceTimer);
         quizAutoAdvanceTimer = null;
     }
-    const feedbackBox = document.getElementById('quiz-feedback-box');
-    if (feedbackBox) feedbackBox.style.display = 'none';
+    
+    // Generate a NEW question for the current mode ONLY
+    quizState.modeData[quizState.mode] = {
+        q: (quizState.mode === 'math') ? generateMathQuestion() : getRandomIndiaQuestion(),
+        answered: false,
+        selectedIndex: -1
+    };
 
     const container = document.getElementById('quiz-body-container');
     if (container) {
         container.style.opacity = '0.3';
         setTimeout(() => {
-            renderNextQuestion();
+            renderActiveModeQuestion();
             container.style.opacity = '1';
         }, 150);
     } else {
-        renderNextQuestion();
+        renderActiveModeQuestion();
     }
 }
 
