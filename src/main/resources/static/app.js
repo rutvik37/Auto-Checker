@@ -1212,7 +1212,7 @@ function initQuizGame() {
 let quizAutoAdvanceTimer = null;
 
 function setQuizMode(mode) {
-    if (quizState.mode === mode) return; // Never refresh question if clicking already active mode
+    if (quizState.mode === mode) return; // Clicking the already active mode does not reset the question
     quizState.mode = mode;
     
     const btnMath = document.getElementById('btn-quiz-mode-math');
@@ -1229,10 +1229,8 @@ function setQuizMode(mode) {
         if (btnMath) btnMath.style.cssText = inactiveStyle;
     }
 
-    // Only load next question if current question was already answered
-    if (quizState.answered) {
-        renderNextQuestion();
-    }
+    // Immediately load question for the newly selected mode
+    renderNextQuestion();
 }
 
 function generateMathQuestion() {
