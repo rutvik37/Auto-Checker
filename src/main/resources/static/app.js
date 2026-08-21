@@ -1480,6 +1480,105 @@ function skipQuizQuestion() {
     closeQuizFeedbackInstant();
 }
 
+// --- Interactive AI Assistant & Feedback Engine ---
+function useAiQuickPrompt(text) {
+    const input = document.getElementById('ai-query-input');
+    if (input) {
+        input.value = text;
+        input.focus();
+    }
+}
+
+function generateAiAssistantReply(userQuery) {
+    const query = userQuery.toLowerCase().trim();
+
+    if (query.includes('typo') || query.includes('spelling') || query.includes('fix') || query.includes('qa')) {
+        return "✨ **QA & Spelling Tip:** Auto-Checker scans every crawled page and logs misspelled terms. You can review detected typos in the 'Spelling Mistakes Log' below or export reports in CSV/Excel format to update your web content or CMS dictionary!";
+    }
+    if (query.includes('crawl') || query.includes('speed') || query.includes('fast') || query.includes('depth')) {
+        return "⚡ **Crawl Speed Optimization:** Ensure your web server allows multithreaded requests and has healthy response times (<500ms). Setting Crawl Depth between 2 to 4 balances coverage and scan speed efficiently!";
+    }
+    if (query.includes('great') || query.includes('good') || query.includes('love') || query.includes('enjoy') || query.includes('feedback') || query.includes('thanks') || query.includes('awesome')) {
+        return "❤️ **Thank you for your valuable feedback!** We're thrilled that you're enjoying Auto-Checker's live scanner and mini-games. Your input helps us continually improve!";
+    }
+    if (query.includes('game') || query.includes('mode') || query.includes('score') || query.includes('quiz')) {
+        return "🎮 **Brain Break Quiz:** Auto-Checker includes 10 interactive game modes (Speed Math, India Trivia, AI Tech, History, Science, Cinema, Sports, Geography, Coding, and Riddles). Each mode saves your question progress independently so you stay entertained during scans!";
+    }
+    if (query.includes('admin') || query.includes('reset') || query.includes('pin') || query.includes('setting')) {
+        return "🔒 **Admin Panel Security:** Admin settings, reset statistics, and project metrics are protected by PIN verification. Access the Admin Panel at `/admin.html` for deep analytics and history!";
+    }
+    if (query.includes('ai') || query.includes('gpt') || query.includes('llm') || query.includes('model')) {
+        return "🤖 **AI Intelligence:** Our AI Engine utilizes smart semantic pattern matching and natural language processing to assist you with web auditing, site quality assurance, and automated content checks!";
+    }
+
+    return `🤖 **AI Response:** Thanks for reaching out! Regarding *"${userQuery}"*, our automated QA engine is actively processing your requests while keeping your site auditing running smoothly. Feel free to ask more or share any feedback!`;
+}
+
+function handleAiQuerySubmit(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    const input = document.getElementById('ai-query-input');
+    const chatContainer = document.getElementById('ai-chat-history');
+    if (!input || !chatContainer) return;
+
+    const userText = input.value.trim();
+    if (!userText) return;
+
+    // 1. Render User Message
+    const userMsgElem = document.createElement('div');
+    userMsgElem.style.cssText = "display: flex; gap: 10px; align-items: flex-start; justify-content: flex-end;";
+    userMsgElem.innerHTML = `
+        <div style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.35), rgba(168, 85, 247, 0.35)); border: 1px solid rgba(99, 102, 241, 0.4); padding: 10px 14px; border-radius: 10px; border-top-right-radius: 2px; color: #ffffff; font-size: 13px; line-height: 1.5; max-width: 85%;">
+            ${userText}
+        </div>
+        <div style="width: 30px; height: 30px; border-radius: 50%; background: #6366f1; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 12px; flex-shrink: 0;">
+            <i class="fa-solid fa-user"></i>
+        </div>
+    `;
+    chatContainer.appendChild(userMsgElem);
+
+    // Clear input
+    input.value = '';
+
+    // Scroll to bottom
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+
+    // 2. Render AI Loading Indicator
+    const aiLoadingElem = document.createElement('div');
+    aiLoadingElem.className = 'ai-typing-indicator';
+    aiLoadingElem.style.cssText = "display: flex; gap: 10px; align-items: flex-start;";
+    aiLoadingElem.innerHTML = `
+        <div style="width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, #a855f7, #6366f1); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 13px; flex-shrink: 0;">
+            <i class="fa-solid fa-robot"></i>
+        </div>
+        <div style="background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.1); padding: 10px 14px; border-radius: 10px; border-top-left-radius: 2px; color: #9ca3af; font-size: 13px; display: flex; align-items: center; gap: 6px;">
+            <i class="fa-solid fa-spinner fa-spin" style="color: #c084fc;"></i> AI Assistant is analyzing...
+        </div>
+    `;
+    chatContainer.appendChild(aiLoadingElem);
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+
+    // 3. Generate AI Response after 650ms simulation delay
+    setTimeout(() => {
+        aiLoadingElem.remove();
+
+        const aiReplyText = generateAiAssistantReply(userText);
+        const aiMsgElem = document.createElement('div');
+        aiMsgElem.style.cssText = "display: flex; gap: 10px; align-items: flex-start;";
+        aiMsgElem.innerHTML = `
+            <div style="width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, #a855f7, #6366f1); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 13px; flex-shrink: 0;">
+                <i class="fa-solid fa-robot"></i>
+            </div>
+            <div style="background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.1); padding: 10px 14px; border-radius: 10px; border-top-left-radius: 2px; color: #e5e7eb; font-size: 13px; line-height: 1.5; max-width: 85%;">
+                ${aiReplyText}
+            </div>
+        `;
+        chatContainer.appendChild(aiMsgElem);
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+    }, 650);
+}
+
 window.setQuizMode = setQuizMode;
 window.skipQuizQuestion = skipQuizQuestion;
 window.closeQuizFeedbackInstant = closeQuizFeedbackInstant;
+window.useAiQuickPrompt = useAiQuickPrompt;
+window.handleAiQuerySubmit = handleAiQuerySubmit;

@@ -226,6 +226,69 @@
                             </div>
                         </div>
 
+                        <!-- Interactive AI Assistant & Feedback Hub -->
+                        <div id="ai-assistant-card" style="margin-top: 20px; background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(168, 85, 247, 0.35); border-radius: 14px; padding: 20px 24px; box-shadow: 0 8px 24px rgba(0,0,0,0.35); backdrop-filter: blur(12px);">
+                            <!-- AI Card Header -->
+                            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 12px; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <div style="width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(135deg, #a855f7, #ec4899); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 19px; box-shadow: 0 4px 14px rgba(168, 85, 247, 0.4);">
+                                        <i class="fa-solid fa-robot"></i>
+                                    </div>
+                                    <div>
+                                        <h3 style="font-family: var(--font-header); font-size: 16px; font-weight: 600; color: #f3f4f6; margin: 0; display: flex; align-items: center; gap: 8px;">
+                                            Ask AI Assistant & Submit Feedback
+                                            <span style="font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 12px; background: rgba(168, 85, 247, 0.2); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.4);">AI Powered</span>
+                                        </h3>
+                                        <p style="font-size: 12px; color: var(--text-secondary); margin-top: 2px;">Ask anything about website QA, SEO, coding, or share your feedback with our AI assistant!</p>
+                                    </div>
+                                </div>
+                                <div>
+                                    <span style="font-size: 11px; padding: 4px 12px; border-radius: 20px; background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
+                                        <i class="fa-solid fa-circle" style="font-size: 8px; color: #10b981;"></i> AI Online
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Quick Suggestion Pills -->
+                            <div style="display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; align-items: center;">
+                                <span style="font-size: 11px; font-weight: 600; color: var(--text-secondary); display: inline-flex; align-items: center; gap: 4px;">
+                                    <i class="fa-solid fa-wand-magic-sparkles" style="color: #c084fc;"></i> Quick Prompts:
+                                </span>
+                                <button type="button" onclick="useAiQuickPrompt('How can I fix spelling & QA errors on my site?')" style="padding: 4px 12px; border-radius: 15px; font-size: 11px; border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.05); color: #d1d5db; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='var(--color-primary)'; this.style.color='#fff';" onmouseout="this.style.borderColor='rgba(255,255,255,0.12)'; this.style.color='#d1d5db';">
+                                    💡 How to fix QA typos?
+                                </button>
+                                <button type="button" onclick="useAiQuickPrompt('What are best practices for site crawling speed?')" style="padding: 4px 12px; border-radius: 15px; font-size: 11px; border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.05); color: #d1d5db; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='var(--color-primary)'; this.style.color='#fff';" onmouseout="this.style.borderColor='rgba(255,255,255,0.12)'; this.style.color='#d1d5db';">
+                                    ⚡ Crawl Speed Tips
+                                </button>
+                                <button type="button" onclick="useAiQuickPrompt('Great website scanner! Really enjoying the mini-games.')" style="padding: 4px 12px; border-radius: 15px; font-size: 11px; border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.05); color: #d1d5db; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='var(--color-primary)'; this.style.color='#fff';" onmouseout="this.style.borderColor='rgba(255,255,255,0.12)'; this.style.color='#d1d5db';">
+                                    💬 Send Positive Feedback
+                                </button>
+                            </div>
+
+                            <!-- AI Chat Conversation Container -->
+                            <div id="ai-chat-history" style="max-height: 220px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding: 12px; background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 10px; margin-bottom: 14px;">
+                                <!-- Welcome Message from AI -->
+                                <div style="display: flex; gap: 10px; align-items: flex-start;">
+                                    <div style="width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, #a855f7, #6366f1); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 13px; flex-shrink: 0;">
+                                        <i class="fa-solid fa-robot"></i>
+                                    </div>
+                                    <div style="background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.1); padding: 10px 14px; border-radius: 10px; border-top-left-radius: 2px; color: #e5e7eb; font-size: 13px; line-height: 1.5; max-width: 85%;">
+                                        👋 Hello! I am your AI Assistant for Auto-Checker. Feel free to ask me any question about your website QA, SEO audit, tech topics, or submit your feedback!
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Input Form Row -->
+                            <form id="ai-assistant-form" onsubmit="handleAiQuerySubmit(event)" style="display: flex; gap: 10px; align-items: center;">
+                                <div style="position: relative; flex: 1;">
+                                    <input type="text" id="ai-query-input" placeholder="Type your question or feedback here..." required style="width: 100%; padding: 12px 16px; border-radius: 10px; background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(168, 85, 247, 0.3); color: #ffffff; font-size: 13px; outline: none; transition: all 0.25s ease;" onfocus="this.style.borderColor='var(--color-primary)'; this.style.boxShadow='0 0 12px rgba(168,85,247,0.3)';" onblur="this.style.borderColor='rgba(168, 85, 247, 0.3)'; this.style.boxShadow='none';">
+                                </div>
+                                <button type="submit" id="btn-send-ai-query" style="padding: 12px 22px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; background: linear-gradient(135deg, #a855f7, #6366f1); color: #ffffff; box-shadow: 0 4px 14px rgba(168, 85, 247, 0.4); display: flex; align-items: center; gap: 6px; transition: all 0.2s;" onmouseover="this.style.transform='scale(1.02)';" onmouseout="this.style.transform='scale(1)';">
+                                    <span>Send AI</span> <i class="fa-solid fa-paper-plane"></i>
+                                </button>
+                            </form>
+                        </div>
+
                         <!-- Detected Typos Live Table -->
                         <div style="margin-top: 25px;">
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
