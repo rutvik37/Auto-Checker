@@ -1374,12 +1374,20 @@ function selectQuizAnswer(selectedIndex, clickedBtn) {
 
         if (feedbackBox) {
             feedbackBox.style.display = 'flex';
-            feedbackBox.style.background = 'rgba(16, 185, 129, 0.15)';
-            feedbackBox.style.border = '1px solid rgba(16, 185, 129, 0.3)';
+            feedbackBox.style.alignItems = 'center';
+            feedbackBox.style.justifyContent = 'space-between';
+            feedbackBox.style.background = 'rgba(16, 185, 129, 0.18)';
+            feedbackBox.style.border = '1px solid rgba(16, 185, 129, 0.4)';
             feedbackBox.style.color = '#34d399';
             feedbackBox.innerHTML = `
-                <span><i class="fa-solid fa-circle-check"></i> <strong>Spot On! +10 Points!</strong> ${q.explanation}</span>
-                <button type="button" onclick="closeQuizFeedbackInstant()" style="background: rgba(16, 185, 129, 0.3); border: none; color: #34d399; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; flex-shrink: 0;" title="Dismiss & Next Question">✕</button>
+                <div style="display: flex; align-items: flex-start; gap: 12px; flex: 1;">
+                    <i class="fa-solid fa-circle-check" style="font-size: 16px; margin-top: 2px; color: #34d399; flex-shrink: 0;"></i>
+                    <div style="line-height: 1.4;">
+                        <strong style="color: #6ee7b7; display: block; margin-bottom: 2px;">Spot On! +10 Points!</strong>
+                        <span style="font-size: 12.5px; opacity: 0.95;">${q.explanation}</span>
+                    </div>
+                </div>
+                <button type="button" onclick="closeQuizFeedbackInstant()" style="background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(255, 255, 255, 0.2); color: #f3f4f6; border-radius: 50%; width: 26px; height: 26px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; flex-shrink: 0; margin-left: 14px; transition: all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.25)'" onmouseout="this.style.background='rgba(255,255,255,0.12)'" title="Dismiss & Next Question">✕</button>
             `;
         }
     } else {
@@ -1396,12 +1404,20 @@ function selectQuizAnswer(selectedIndex, clickedBtn) {
 
         if (feedbackBox) {
             feedbackBox.style.display = 'flex';
-            feedbackBox.style.background = 'rgba(239, 68, 68, 0.15)';
-            feedbackBox.style.border = '1px solid rgba(239, 68, 68, 0.3)';
+            feedbackBox.style.alignItems = 'center';
+            feedbackBox.style.justifyContent = 'space-between';
+            feedbackBox.style.background = 'rgba(239, 68, 68, 0.18)';
+            feedbackBox.style.border = '1px solid rgba(239, 68, 68, 0.4)';
             feedbackBox.style.color = '#f87171';
             feedbackBox.innerHTML = `
-                <span><i class="fa-solid fa-circle-xmark"></i> <strong>Incorrect!</strong> ${q.explanation}</span>
-                <button type="button" onclick="closeQuizFeedbackInstant()" style="background: rgba(239, 68, 68, 0.3); border: none; color: #f87171; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; flex-shrink: 0;" title="Dismiss & Next Question">✕</button>
+                <div style="display: flex; align-items: flex-start; gap: 12px; flex: 1;">
+                    <i class="fa-solid fa-circle-xmark" style="font-size: 16px; margin-top: 2px; color: #f87171; flex-shrink: 0;"></i>
+                    <div style="line-height: 1.4;">
+                        <strong style="color: #fca5a5; display: block; margin-bottom: 2px;">Incorrect!</strong>
+                        <span style="font-size: 12.5px; opacity: 0.95;">${q.explanation}</span>
+                    </div>
+                </div>
+                <button type="button" onclick="closeQuizFeedbackInstant()" style="background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(255, 255, 255, 0.2); color: #f3f4f6; border-radius: 50%; width: 26px; height: 26px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; flex-shrink: 0; margin-left: 14px; transition: all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.25)'" onmouseout="this.style.background='rgba(255,255,255,0.12)'" title="Dismiss & Next Question">✕</button>
             `;
         }
     }
