@@ -37,6 +37,7 @@ public class SettingsService {
     private int groqBatchSize;
     private boolean crawlerParallelEnabled;
     private int crawlerParallelWorkers;
+    private Map<String, Object> widgetSettings;
 
     public SettingsService() {
         this.objectMapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
@@ -57,6 +58,11 @@ public class SettingsService {
                 this.groqBatchSize = ((Number) data.getOrDefault("groqBatchSize", defaultGroqBatchSize)).intValue();
                 this.crawlerParallelEnabled = (Boolean) data.getOrDefault("crawlerParallelEnabled", defaultCrawlerParallelEnabled);
                 this.crawlerParallelWorkers = ((Number) data.getOrDefault("crawlerParallelWorkers", defaultCrawlerParallelWorkers)).intValue();
+                if (data.containsKey("widgetSettings")) {
+                    this.widgetSettings = (Map<String, Object>) data.get("widgetSettings");
+                } else {
+                    this.widgetSettings = getDefaultWidgetSettings();
+                }
             } catch (IOException e) {
                 loadDefaults();
             }
@@ -72,6 +78,27 @@ public class SettingsService {
         this.groqBatchSize = defaultGroqBatchSize;
         this.crawlerParallelEnabled = defaultCrawlerParallelEnabled;
         this.crawlerParallelWorkers = defaultCrawlerParallelWorkers;
+        this.widgetSettings = getDefaultWidgetSettings();
+    }
+
+    private Map<String, Object> getDefaultWidgetSettings() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("sec1_visible", true);
+        map.put("sec2_visible", true);
+        map.put("sec3_visible", true);
+        Map<String, Boolean> modes = new HashMap<>();
+        modes.put("math", true);
+        modes.put("india", true);
+        modes.put("ai", true);
+        modes.put("history", true);
+        modes.put("science", true);
+        modes.put("cinema", true);
+        modes.put("sports", true);
+        modes.put("geography", true);
+        modes.put("coding", true);
+        modes.put("riddles", true);
+        map.put("modes", modes);
+        return map;
     }
 
     public synchronized void updateSettings(Map<String, Object> newSettings) {
@@ -93,6 +120,9 @@ public class SettingsService {
         if (newSettings.containsKey("crawlerParallelWorkers")) {
             this.crawlerParallelWorkers = ((Number) newSettings.get("crawlerParallelWorkers")).intValue();
         }
+        if (newSettings.containsKey("widgetSettings")) {
+            this.widgetSettings = (Map<String, Object>) newSettings.get("widgetSettings");
+        }
         saveToFile();
     }
 
@@ -104,6 +134,7 @@ public class SettingsService {
             data.put("groqBatchSize", this.groqBatchSize);
             data.put("crawlerParallelEnabled", this.crawlerParallelEnabled);
             data.put("crawlerParallelWorkers", this.crawlerParallelWorkers);
+            data.put("widgetSettings", this.widgetSettings != null ? this.widgetSettings : getDefaultWidgetSettings());
             objectMapper.writeValue(settingsFile, data);
         } catch (IOException e) {
             e.printStackTrace();
@@ -115,4 +146,5 @@ public class SettingsService {
     public int getGroqBatchSize() { return groqBatchSize; }
     public boolean isCrawlerParallelEnabled() { return crawlerParallelEnabled; }
     public int getCrawlerParallelWorkers() { return crawlerParallelWorkers; }
+    public Map<String, Object> getWidgetSettings() { return widgetSettings != null ? widgetSettings : getDefaultWidgetSettings(); }
 }

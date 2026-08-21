@@ -692,7 +692,13 @@ public class AdminController {
         settings.put("groqBatchSize", settingsService.getGroqBatchSize());
         settings.put("crawlerParallelEnabled", settingsService.isCrawlerParallelEnabled());
         settings.put("crawlerParallelWorkers", settingsService.getCrawlerParallelWorkers());
+        settings.put("widgetSettings", settingsService.getWidgetSettings());
         return ResponseEntity.ok(settings);
+    }
+
+    @GetMapping("/public/widget-settings")
+    public ResponseEntity<?> getPublicWidgetSettings() {
+        return ResponseEntity.ok(settingsService.getWidgetSettings());
     }
 
     @PostMapping("/settings")

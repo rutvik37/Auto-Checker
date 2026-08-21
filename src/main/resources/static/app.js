@@ -1685,8 +1685,24 @@ function revealNextWorldWonder() {
     }, 150);
 }
 
-// --- Cross-Tab Admin Widget Settings Sync Engine ---
+// --- Cross-Tab & Server Admin Widget Settings Sync Engine ---
 function applyWidgetSettingsFromAdmin() {
+    fetch('/api/public/widget-settings')
+        .then(res => res.json())
+        .then(settings => {
+            if (settings) {
+                localStorage.setItem('admin_widget_settings', JSON.stringify(settings));
+                renderWidgetSettingsToDom(settings);
+            } else {
+                renderWidgetSettingsFromLocal();
+            }
+        })
+        .catch(() => {
+            renderWidgetSettingsFromLocal();
+        });
+}
+
+function renderWidgetSettingsFromLocal() {
     const raw = localStorage.getItem('admin_widget_settings');
     let settings = {
         sec1_visible: true,
@@ -1698,10 +1714,13 @@ function applyWidgetSettingsFromAdmin() {
         }
     };
     if (raw) {
-        try {
-            settings = JSON.parse(raw);
-        } catch (e) {}
+        try { settings = JSON.parse(raw); } catch (e) {}
     }
+    renderWidgetSettingsToDom(settings);
+}
+
+function renderWidgetSettingsToDom(settings) {
+    if (!settings) return;
 
     // Manage Section 1 Visibility
     const sec1 = document.getElementById('scan-mini-game-card');
@@ -1735,7 +1754,7 @@ function applyWidgetSettingsFromAdmin() {
 // Live cross-tab sync when Admin updates settings
 window.addEventListener('storage', (e) => {
     if (e.key === 'admin_widget_settings') {
-        applyWidgetSettingsFromAdmin();
+        renderWidgetSettingsFromLocal();
     }
 });
 

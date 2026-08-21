@@ -1980,22 +1980,22 @@ function startAutoRefreshPolling() {
 
 // --- Entertainment & Interactive Widget Admin Manager ---
 function loadAdminWidgetSettings() {
-    const raw = localStorage.getItem('admin_widget_settings');
-    let settings = {
-        sec1_visible: true,
-        sec2_visible: true,
-        sec3_visible: true,
-        modes: {
-            math: true, india: true, ai: true, history: true, science: true,
-            cinema: true, sports: true, geography: true, coding: true, riddles: true
-        }
-    };
-    if (raw) {
-        try {
-            settings = JSON.parse(raw);
-        } catch (e) {}
-    }
+    fetch('/api/admin/settings')
+        .then(res => res.json())
+        .then(data => {
+            if (data && data.widgetSettings) {
+                localStorage.setItem('admin_widget_settings', JSON.stringify(data.widgetSettings));
+                renderAdminWidgetControls(data.widgetSettings);
+            } else {
+                renderAdminWidgetControlsFromLocal();
+            }
+        })
+        .catch(() => {
+            renderAdminWidgetControlsFromLocal();
+        });
+}
 
+function renderAdminWidgetControls(settings) {
     const sec1 = document.getElementById('admin-toggle-sec1');
     if (sec1) sec1.checked = settings.sec1_visible !== false;
 
@@ -2011,6 +2011,23 @@ function loadAdminWidgetSettings() {
             chk.checked = settings.modes[mode] !== false;
         }
     });
+}
+
+function renderAdminWidgetControlsFromLocal() {
+    const raw = localStorage.getItem('admin_widget_settings');
+    let settings = {
+        sec1_visible: true,
+        sec2_visible: true,
+        sec3_visible: true,
+        modes: {
+            math: true, india: true, ai: true, history: true, science: true,
+            cinema: true, sports: true, geography: true, coding: true, riddles: true
+        }
+    };
+    if (raw) {
+        try { settings = JSON.parse(raw); } catch (e) {}
+    }
+    renderAdminWidgetControls(settings);
 }
 
 function saveAdminWidgetSettings() {
@@ -2033,7 +2050,16 @@ function saveAdminWidgetSettings() {
     });
 
     localStorage.setItem('admin_widget_settings', JSON.stringify(settings));
-    showToast('✨ Interactive widget & mode settings saved successfully!', 'success', 'Widget Settings Updated');
+
+    fetch('/api/admin/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ widgetSettings: settings })
+    }).then(res => {
+        showToast('✨ Interactive widget & mode settings saved to server successfully!', 'success', 'Widget Settings Saved');
+    }).catch(err => {
+        showToast('✨ Interactive widget & mode settings saved locally!', 'success', 'Widget Settings Saved');
+    });
 }
 
 window.loadAdminWidgetSettings = loadAdminWidgetSettings;
