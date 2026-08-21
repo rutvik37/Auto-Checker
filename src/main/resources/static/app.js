@@ -12,6 +12,7 @@ let dialogResolve = null;
 // On Page Load
 document.addEventListener('DOMContentLoaded', () => {
     initTheme();
+    initQuizGame();
     loadProjects().then(() => {
         checkForActiveScan();
     });
@@ -1063,3 +1064,334 @@ function hideZeroIssuesCelebration() {
         container.innerHTML = '';
     }
 }
+
+// --- Brain Break & Trivia Quiz Mini-Game Engine ---
+let quizState = {
+    mode: 'math', // 'math' or 'spelling'
+    score: 0,
+    streak: 0,
+    currentQuestion: null,
+    answered: false
+};
+
+const spellingTriviaBank = [
+    {
+        category: "Spelling & Vocabulary",
+        question: "Which spelling is correct?",
+        options: ["Accommodation", "Acomodation", "Accomodation", "Acommodation"],
+        answer: 0,
+        explanation: "Accommodation has double 'c' and double 'm'!"
+    },
+    {
+        category: "Spelling & Vocabulary",
+        question: "Identify the correct typo fix for 'Feild':",
+        options: ["Field", "Bald", "Fall", "Feild"],
+        answer: 0,
+        explanation: "Remember 'i' before 'e' except after 'c' -> Field!"
+    },
+    {
+        category: "Spelling & Vocabulary",
+        question: "Select the correctly spelled word:",
+        options: ["Definitely", "Definately", "Definitly", "Defenitely"],
+        answer: 0,
+        explanation: "Definitely comes from 'finite'!"
+    },
+    {
+        category: "QA & Web Trivia",
+        question: "What does HTML stand for?",
+        options: ["HyperText Markup Language", "HighText Machine Language", "HyperTransfer Markup Level", "HyperText Machine Logic"],
+        answer: 0,
+        explanation: "HTML = HyperText Markup Language!"
+    },
+    {
+        category: "Spelling & Vocabulary",
+        question: "Which spelling is correct?",
+        options: ["Maintenance", "Maintainance", "Maintenence", "Maintenace"],
+        answer: 0,
+        explanation: "Maintenance has an 'a' after the 't'!"
+    },
+    {
+        category: "Spelling & Vocabulary",
+        question: "Select the correct spelling:",
+        options: ["Receiving", "Recieving", "Reiceving", "Receving"],
+        answer: 0,
+        explanation: "'i' before 'e' except after 'c' -> Receiving!"
+    },
+    {
+        category: "Spelling & Vocabulary",
+        question: "Select the correctly spelled word:",
+        options: ["Occurred", "Occured", "Occurre", "Ocurred"],
+        answer: 0,
+        explanation: "Occurred has double 'c' and double 'r'!"
+    },
+    {
+        category: "Spelling & Vocabulary",
+        question: "Select the correct spelling:",
+        options: ["Separate", "Seperate", "Separat", "Seperat"],
+        answer: 0,
+        explanation: "There is 'a rat' in sep-a-rat-e!"
+    },
+    {
+        category: "Spelling & Vocabulary",
+        question: "Select the correct spelling:",
+        options: ["Privilege", "Privelege", "Privlege", "Priviledge"],
+        answer: 0,
+        explanation: "Privilege has two 'i's and two 'e's!"
+    },
+    {
+        category: "Spelling & Vocabulary",
+        question: "Select the correct spelling:",
+        options: ["Necessary", "Necesary", "Neccessary", "Nessasary"],
+        answer: 0,
+        explanation: "1 Collar (c), 2 Sleeves (s) -> Necessary!"
+    },
+    {
+        category: "QA & Web Trivia",
+        question: "What status code represents HTTP 200?",
+        options: ["OK (Success)", "Not Found", "Server Error", "Forbidden"],
+        answer: 0,
+        explanation: "200 OK means request succeeded!"
+    },
+    {
+        category: "Spelling & Vocabulary",
+        question: "Identify the correct typo fix for 'wiht':",
+        options: ["with", "wit", "white", "weight"],
+        answer: 0,
+        explanation: "wiht is a common typo for 'with'!"
+    },
+    {
+        category: "Spelling & Vocabulary",
+        question: "Select the correct spelling:",
+        options: ["Calendar", "Calender", "Calander", "Calendr"],
+        answer: 0,
+        explanation: "Calendar ends with '-ar'!"
+    },
+    {
+        category: "Spelling & Vocabulary",
+        question: "Select the correct spelling:",
+        options: ["Embarrass", "Embaras", "Embarass", "Emberrass"],
+        answer: 0,
+        explanation: "Double 'r' and double 's' -> Embarrass!"
+    }
+];
+
+function initQuizGame() {
+    const card = document.getElementById('scan-mini-game-card');
+    if (!card) return;
+    
+    // Restore saved score
+    const savedScore = localStorage.getItem('quiz_score');
+    if (savedScore) {
+        quizState.score = parseInt(savedScore, 10) || 0;
+        const scoreElem = document.getElementById('quiz-score');
+        if (scoreElem) scoreElem.textContent = quizState.score;
+    }
+
+    renderNextQuestion();
+}
+
+function setQuizMode(mode) {
+    quizState.mode = mode;
+    const btnMath = document.getElementById('btn-quiz-mode-math');
+    const btnSpelling = document.getElementById('btn-quiz-mode-spelling');
+    
+    if (mode === 'math') {
+        if (btnMath) {
+            btnMath.style.background = 'var(--color-primary)';
+            btnMath.style.color = 'white';
+        }
+        if (btnSpelling) {
+            btnSpelling.style.background = 'transparent';
+            btnSpelling.style.color = 'var(--text-secondary)';
+        }
+    } else {
+        if (btnSpelling) {
+            btnSpelling.style.background = 'var(--color-primary)';
+            btnSpelling.style.color = 'white';
+        }
+        if (btnMath) {
+            btnMath.style.background = 'transparent';
+            btnMath.style.color = 'var(--text-secondary)';
+        }
+    }
+
+    renderNextQuestion();
+}
+
+function generateMathQuestion() {
+    const types = ['add', 'sub', 'mul', 'missing'];
+    const type = types[Math.floor(Math.random() * types.length)];
+    
+    let qText = '';
+    let correct = 0;
+    
+    if (type === 'add') {
+        const a = Math.floor(Math.random() * 80) + 12;
+        const b = Math.floor(Math.random() * 80) + 12;
+        qText = `What is ${a} + ${b}?`;
+        correct = a + b;
+    } else if (type === 'sub') {
+        const a = Math.floor(Math.random() * 90) + 30;
+        const b = Math.floor(Math.random() * (a - 10)) + 5;
+        qText = `What is ${a} - ${b}?`;
+        correct = a - b;
+    } else if (type === 'mul') {
+        const a = Math.floor(Math.random() * 12) + 3;
+        const b = Math.floor(Math.random() * 12) + 3;
+        qText = `What is ${a} × ${b}?`;
+        correct = a * b;
+    } else {
+        const target = Math.floor(Math.random() * 70) + 30;
+        const part = Math.floor(Math.random() * (target - 10)) + 5;
+        qText = `Solve: ${part} + ? = ${target}`;
+        correct = target - part;
+    }
+
+    // Generate 3 unique wrong options
+    const optionsSet = new Set([correct]);
+    while (optionsSet.size < 4) {
+        const delta = (Math.floor(Math.random() * 7) + 1) * (Math.random() > 0.5 ? 1 : -1);
+        const wrong = correct + delta;
+        if (wrong >= 0) optionsSet.add(wrong);
+    }
+    
+    const options = Array.from(optionsSet);
+    // Shuffle options
+    for (let i = options.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [options[i], options[j]] = [options[j], options[i]];
+    }
+
+    return {
+        category: "Speed Math Challenge",
+        question: qText,
+        options: options.map(String),
+        answer: options.indexOf(correct),
+        explanation: `Correct answer is ${correct}!`
+    };
+}
+
+function renderNextQuestion() {
+    quizState.answered = false;
+    const feedbackBox = document.getElementById('quiz-feedback-box');
+    if (feedbackBox) feedbackBox.style.display = 'none';
+
+    let q;
+    if (quizState.mode === 'math') {
+        q = generateMathQuestion();
+    } else {
+        q = spellingTriviaBank[Math.floor(Math.random() * spellingTriviaBank.length)];
+    }
+    quizState.currentQuestion = q;
+
+    const tagElem = document.getElementById('quiz-category-tag');
+    if (tagElem) tagElem.textContent = q.category;
+
+    const qTextElem = document.getElementById('quiz-question-text');
+    if (qTextElem) qTextElem.textContent = q.question;
+
+    const optionsGrid = document.getElementById('quiz-options-grid');
+    if (!optionsGrid) return;
+    
+    optionsGrid.innerHTML = '';
+    q.options.forEach((optText, index) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'quiz-opt-btn';
+        btn.style.cssText = `
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #f3f4f6;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        `;
+
+        const letter = String.fromCharCode(65 + index);
+        btn.innerHTML = `<span style="width: 24px; height: 24px; border-radius: 50%; background: rgba(99, 102, 241, 0.2); color: #818cf8; font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center;">${letter}</span> ${optText}`;
+
+        btn.onmouseover = () => {
+            if (!quizState.answered) {
+                btn.style.borderColor = 'var(--color-primary)';
+                btn.style.background = 'rgba(99, 102, 241, 0.15)';
+            }
+        };
+        btn.onmouseout = () => {
+            if (!quizState.answered) {
+                btn.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                btn.style.background = 'rgba(255, 255, 255, 0.05)';
+            }
+        };
+
+        btn.onclick = () => selectQuizAnswer(index, btn);
+        optionsGrid.appendChild(btn);
+    });
+}
+
+function selectQuizAnswer(selectedIndex, clickedBtn) {
+    if (quizState.answered) return;
+    quizState.answered = true;
+
+    const q = quizState.currentQuestion;
+    const isCorrect = selectedIndex === q.answer;
+
+    const allBtns = document.querySelectorAll('.quiz-opt-btn');
+    const feedbackBox = document.getElementById('quiz-feedback-box');
+
+    if (isCorrect) {
+        clickedBtn.style.background = 'rgba(16, 185, 129, 0.25)';
+        clickedBtn.style.borderColor = '#10b981';
+        clickedBtn.style.color = '#34d399';
+        
+        quizState.score += 10;
+        quizState.streak += 1;
+
+        if (feedbackBox) {
+            feedbackBox.style.display = 'block';
+            feedbackBox.style.background = 'rgba(16, 185, 129, 0.15)';
+            feedbackBox.style.border = '1px solid rgba(16, 185, 129, 0.3)';
+            feedbackBox.style.color = '#34d399';
+            feedbackBox.innerHTML = `<i class="fa-solid fa-circle-check"></i> <strong>Spot On! +10 Points!</strong> 🔥 ${q.explanation}`;
+        }
+    } else {
+        clickedBtn.style.background = 'rgba(239, 68, 68, 0.25)';
+        clickedBtn.style.borderColor = '#ef4444';
+        clickedBtn.style.color = '#f87171';
+
+        // Highlight correct button
+        if (allBtns[q.answer]) {
+            allBtns[q.answer].style.background = 'rgba(16, 185, 129, 0.25)';
+            allBtns[q.answer].style.borderColor = '#10b981';
+            allBtns[q.answer].style.color = '#34d399';
+        }
+
+        quizState.streak = 0;
+
+        if (feedbackBox) {
+            feedbackBox.style.display = 'block';
+            feedbackBox.style.background = 'rgba(239, 68, 68, 0.15)';
+            feedbackBox.style.border = '1px solid rgba(239, 68, 68, 0.3)';
+            feedbackBox.style.color = '#f87171';
+            feedbackBox.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> <strong>Incorrect!</strong> ${q.explanation}`;
+        }
+    }
+
+    // Update UI Badges
+    document.getElementById('quiz-score').textContent = quizState.score;
+    document.getElementById('quiz-streak').textContent = quizState.streak;
+    localStorage.setItem('quiz_score', quizState.score);
+
+    // Auto load next question
+    setTimeout(() => {
+        renderNextQuestion();
+    }, isCorrect ? 1200 : 2000);
+}
+
+window.setQuizMode = setQuizMode;
