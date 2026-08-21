@@ -161,6 +161,53 @@ function closeAdminDialog(result) {
 }
 window.closeAdminDialog = closeAdminDialog;
 
+let adminPromptResolve = null;
+
+function showAdminPrompt(message, title = "Security Verification Required", placeholder = "••••", isPassword = true) {
+    return new Promise((resolve) => {
+        const modal = document.getElementById('admin-custom-prompt-modal');
+        if (!modal) {
+            const res = window.nativePrompt ? window.nativePrompt(message) : null;
+            resolve(res);
+            return;
+        }
+        document.getElementById('admin-prompt-title').textContent = title;
+        document.getElementById('admin-prompt-message').textContent = message;
+        
+        const input = document.getElementById('admin-prompt-input');
+        input.type = isPassword ? 'password' : 'text';
+        input.placeholder = placeholder;
+        input.value = '';
+        
+        modal.style.display = 'flex';
+        modal.classList.add('active');
+        
+        setTimeout(() => input.focus(), 100);
+        
+        adminPromptResolve = resolve;
+    });
+}
+
+function closeAdminPrompt(value) {
+    const modal = document.getElementById('admin-custom-prompt-modal');
+    if (modal) {
+        modal.style.display = 'none';
+        modal.classList.remove('active');
+    }
+    if (adminPromptResolve) {
+        adminPromptResolve(value);
+        adminPromptResolve = null;
+    }
+}
+window.closeAdminPrompt = closeAdminPrompt;
+
+// Global override of native window.prompt to prevent native browser popups
+window.nativePrompt = window.prompt;
+window.prompt = function(msg) {
+    showAdminPrompt(msg);
+    return null;
+};
+
 function checkAuthStatus(isStartup = false) {
 
     fetch('/api/admin/status')
@@ -738,8 +785,13 @@ function initEventListeners() {
     const btnMetricsReset = document.getElementById('btn-metrics-reset');
     if (btnMetricsReset) {
         btnMetricsReset.addEventListener('click', async () => {
-            const pin = prompt('Enter System Security PIN (Special Key) to authorize statistics reset:');
-            if (pin === null) return; // User cancelled
+            const pin = await showAdminPrompt(
+                'Enter System Security PIN (Special Key) to authorize statistics reset:',
+                'Security PIN Authorization',
+                '••••',
+                true
+            );
+            if (!pin) return; // User cancelled or empty
             
             const confirmed = await showAdminConfirm('Are you sure you want to reset all Groq API metrics and cost statistics back to zero?', 'Reset API Metrics?', 'fa-solid fa-rotate-left');
             if (confirmed) {
@@ -754,7 +806,7 @@ function initEventListeners() {
                         loadGroqMetrics();
                     } else {
                         const errMsg = await res.text();
-                        showToast(errMsg || 'Failed to reset statistics.', 'error', 'Reset Failed');
+                        showToast(errMsg || 'Failed to reset statistics. Invalid PIN.', 'error', 'Reset Failed');
                     }
                 })
                 .catch(err => console.error('Error resetting metrics:', err));

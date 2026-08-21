@@ -1032,7 +1032,32 @@
         </div>
     </div>
 
+    <!-- Admin Custom Prompt Modal (PIN / Input Dialog) -->
+    <div class="modal" id="admin-custom-prompt-modal" style="display: none;">
+        <div class="modal-content glass-panel" style="max-width: 440px; text-align: center; padding: 28px;">
+            <div style="margin-bottom: 16px;">
+                <div style="width: 56px; height: 56px; border-radius: 50%; background: rgba(239, 68, 68, 0.15); display: flex; align-items: center; justify-content: center; margin: 0 auto; color: var(--danger);">
+                    <i id="admin-prompt-icon" class="fa-solid fa-key" style="font-size: 24px;"></i>
+                </div>
+            </div>
+            <h3 id="admin-prompt-title" style="font-family: var(--font-heading); font-size: 18px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px;">Security Verification Required</h3>
+            <p id="admin-prompt-message" style="color: var(--text-secondary); font-size: 13px; line-height: 1.5; margin-bottom: 20px;">Enter System Security PIN (Special Key) to authorize statistics reset:</p>
+            <form id="admin-prompt-form" onsubmit="event.preventDefault(); closeAdminPrompt(document.getElementById('admin-prompt-input').value);">
+                <div style="margin-bottom: 24px; position: relative;">
+                    <input type="password" id="admin-prompt-input" placeholder="••••" maxlength="10" required
+                        style="width: 100%; padding: 12px 16px; background: rgba(0, 0, 0, 0.3); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-primary); font-size: 16px; text-align: center; letter-spacing: 4px; outline: none; transition: border-color 0.2s;"
+                        onfocus="this.style.borderColor='var(--accent)';" onblur="this.style.borderColor='var(--border-color)';">
+                </div>
+                <div style="display: flex; justify-content: center; gap: 12px;">
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="closeAdminPrompt(null)">Cancel</button>
+                    <button type="submit" class="btn btn-primary btn-sm" id="admin-prompt-submit-btn">Authorize & Reset</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script src="admin.js"></script>
+
 </body>
 
 </html>
