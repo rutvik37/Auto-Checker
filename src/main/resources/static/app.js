@@ -1214,24 +1214,15 @@ function setQuizMode(mode) {
     const btnMath = document.getElementById('btn-quiz-mode-math');
     const btnIndia = document.getElementById('btn-quiz-mode-india');
     
+    const activeStyle = "padding: 10px 24px; border-radius: 30px; font-size: 13px; font-weight: 600; cursor: pointer; border: 2px solid var(--color-primary); background: linear-gradient(135deg, rgba(99, 102, 241, 0.35), rgba(168, 85, 247, 0.35)); color: #ffffff; box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4); transition: all 0.25s ease;";
+    const inactiveStyle = "padding: 10px 24px; border-radius: 30px; font-size: 13px; font-weight: 600; cursor: pointer; border: 2px solid rgba(255, 255, 255, 0.12); background: rgba(255, 255, 255, 0.05); color: var(--text-secondary); box-shadow: none; transition: all 0.25s ease;";
+
     if (mode === 'math') {
-        if (btnMath) {
-            btnMath.style.background = 'var(--color-primary)';
-            btnMath.style.color = 'white';
-        }
-        if (btnIndia) {
-            btnIndia.style.background = 'transparent';
-            btnIndia.style.color = 'var(--text-secondary)';
-        }
+        if (btnMath) btnMath.style.cssText = activeStyle;
+        if (btnIndia) btnIndia.style.cssText = inactiveStyle;
     } else {
-        if (btnIndia) {
-            btnIndia.style.background = 'var(--color-primary)';
-            btnIndia.style.color = 'white';
-        }
-        if (btnMath) {
-            btnMath.style.background = 'transparent';
-            btnMath.style.color = 'var(--text-secondary)';
-        }
+        if (btnIndia) btnIndia.style.cssText = activeStyle;
+        if (btnMath) btnMath.style.cssText = inactiveStyle;
     }
 
     renderNextQuestion();
@@ -1327,7 +1318,7 @@ function renderNextQuestion() {
             font-weight: 500;
             cursor: pointer;
             text-align: left;
-            transition: all 0.2s;
+            transition: background 0.2s, border-color 0.2s;
             display: flex;
             align-items: center;
             gap: 10px;
@@ -1370,14 +1361,13 @@ function selectQuizAnswer(selectedIndex, clickedBtn) {
         clickedBtn.style.color = '#34d399';
         
         quizState.score += 10;
-        quizState.streak += 1;
 
         if (feedbackBox) {
             feedbackBox.style.display = 'block';
             feedbackBox.style.background = 'rgba(16, 185, 129, 0.15)';
             feedbackBox.style.border = '1px solid rgba(16, 185, 129, 0.3)';
             feedbackBox.style.color = '#34d399';
-            feedbackBox.innerHTML = `<i class="fa-solid fa-circle-check"></i> <strong>Spot On! +10 Points!</strong> 🔥 ${q.explanation}`;
+            feedbackBox.innerHTML = `<i class="fa-solid fa-circle-check"></i> <strong>Spot On! +10 Points!</strong> ${q.explanation}`;
         }
     } else {
         clickedBtn.style.background = 'rgba(239, 68, 68, 0.25)';
@@ -1391,8 +1381,6 @@ function selectQuizAnswer(selectedIndex, clickedBtn) {
             allBtns[q.answer].style.color = '#34d399';
         }
 
-        quizState.streak = 0;
-
         if (feedbackBox) {
             feedbackBox.style.display = 'block';
             feedbackBox.style.background = 'rgba(239, 68, 68, 0.15)';
@@ -1402,19 +1390,37 @@ function selectQuizAnswer(selectedIndex, clickedBtn) {
         }
     }
 
-    // Update UI Badges
-    document.getElementById('quiz-score').textContent = quizState.score;
-    document.getElementById('quiz-streak').textContent = quizState.streak;
+    // Update Score
+    const scoreElem = document.getElementById('quiz-score');
+    if (scoreElem) scoreElem.textContent = quizState.score;
     localStorage.setItem('quiz_score', quizState.score);
 
-    // Auto load next question
+    // Smooth non-blinking transition to next question
     setTimeout(() => {
-        renderNextQuestion();
-    }, isCorrect ? 1200 : 2000);
+        const container = document.getElementById('quiz-body-container');
+        if (container) {
+            container.style.opacity = '0.3';
+            setTimeout(() => {
+                renderNextQuestion();
+                container.style.opacity = '1';
+            }, 150);
+        } else {
+            renderNextQuestion();
+        }
+    }, isCorrect ? 1000 : 1800);
 }
 
 function skipQuizQuestion() {
-    renderNextQuestion();
+    const container = document.getElementById('quiz-body-container');
+    if (container) {
+        container.style.opacity = '0.3';
+        setTimeout(() => {
+            renderNextQuestion();
+            container.style.opacity = '1';
+        }, 150);
+    } else {
+        renderNextQuestion();
+    }
 }
 
 window.setQuizMode = setQuizMode;
