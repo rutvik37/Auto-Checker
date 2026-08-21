@@ -1043,10 +1043,13 @@
             <h3 id="admin-prompt-title" style="font-family: var(--font-heading); font-size: 18px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px;">Security Verification Required</h3>
             <p id="admin-prompt-message" style="color: var(--text-secondary); font-size: 13px; line-height: 1.5; margin-bottom: 20px;">Enter System Security PIN (Special Key) to authorize statistics reset:</p>
             <form id="admin-prompt-form" onsubmit="event.preventDefault(); closeAdminPrompt(document.getElementById('admin-prompt-input').value);">
-                <div style="margin-bottom: 24px; position: relative;">
+                <div style="margin-bottom: 16px; position: relative;">
                     <input type="password" id="admin-prompt-input" placeholder="••••" maxlength="10" required
                         style="width: 100%; padding: 12px 16px; background: rgba(0, 0, 0, 0.3); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-primary); font-size: 16px; text-align: center; letter-spacing: 4px; outline: none; transition: border-color 0.2s;"
                         onfocus="this.style.borderColor='var(--accent)';" onblur="this.style.borderColor='var(--border-color)';">
+                </div>
+                <div id="admin-prompt-error" style="color: #ef4444; font-size: 13px; font-weight: 500; display: none; margin-bottom: 16px;">
+                    <i class="fa-solid fa-circle-exclamation"></i> Invalid Security PIN. Please try again.
                 </div>
                 <div style="display: flex; justify-content: center; gap: 12px;">
                     <button type="button" class="btn btn-secondary btn-sm" onclick="closeAdminPrompt(null)">Cancel</button>

@@ -174,6 +174,9 @@ function showAdminPrompt(message, title = "Security Verification Required", plac
         document.getElementById('admin-prompt-title').textContent = title;
         document.getElementById('admin-prompt-message').textContent = message;
         
+        const errElem = document.getElementById('admin-prompt-error');
+        if (errElem) errElem.style.display = 'none';
+
         const input = document.getElementById('admin-prompt-input');
         input.type = isPassword ? 'password' : 'text';
         input.placeholder = placeholder;
@@ -785,31 +788,61 @@ function initEventListeners() {
     const btnMetricsReset = document.getElementById('btn-metrics-reset');
     if (btnMetricsReset) {
         btnMetricsReset.addEventListener('click', async () => {
-            const pin = await showAdminPrompt(
-                'Enter System Security PIN (Special Key) to authorize statistics reset:',
-                'Security PIN Authorization',
-                '••••',
-                true
-            );
-            if (!pin) return; // User cancelled or empty
-            
-            const confirmed = await showAdminConfirm('Are you sure you want to reset all Groq API metrics and cost statistics back to zero?', 'Reset API Metrics?', 'fa-solid fa-rotate-left');
-            if (confirmed) {
-                fetch('/api/admin/metrics/groq/reset', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ specialKey: pin })
-                })
-                .then(async res => {
+            let validPin = null;
+
+            while (true) {
+                const pin = await showAdminPrompt(
+                    'Enter System Security PIN (Special Key) to authorize statistics reset:',
+                    'Security PIN Authorization',
+                    '••••',
+                    true
+                );
+                
+                if (!pin) return; // User cancelled or closed
+
+                // Validate PIN with backend before showing confirmation modal
+                try {
+                    const res = await fetch('/api/admin/verify-pin', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ pin: pin })
+                    });
+
                     if (res.ok) {
-                        showToast('Statistics reset successfully.', 'success', 'Metrics Reset');
-                        loadGroqMetrics();
+                        validPin = pin;
+                        break; // Correct PIN! Proceed to confirmation
                     } else {
-                        const errMsg = await res.text();
-                        showToast(errMsg || 'Failed to reset statistics. Invalid PIN.', 'error', 'Reset Failed');
+                        // Invalid PIN! Show Toast & inline error and stay on PIN step
+                        showToast('Invalid Security PIN. Please try again.', 'error', 'Invalid PIN');
+                        const errElem = document.getElementById('admin-prompt-error');
+                        if (errElem) errElem.style.display = 'block';
                     }
-                })
-                .catch(err => console.error('Error resetting metrics:', err));
+                } catch (err) {
+                    showToast('Connection error verifying PIN.', 'error');
+                    return;
+                }
+            }
+
+            // Only show confirmation modal after PIN is successfully verified
+            if (validPin) {
+                const confirmed = await showAdminConfirm('Are you sure you want to reset all Groq API metrics and cost statistics back to zero?', 'Reset API Metrics?', 'fa-solid fa-rotate-left');
+                if (confirmed) {
+                    fetch('/api/admin/metrics/groq/reset', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ specialKey: validPin })
+                    })
+                    .then(async res => {
+                        if (res.ok) {
+                            showToast('Statistics reset successfully.', 'success', 'Metrics Reset');
+                            loadGroqMetrics();
+                        } else {
+                            const errMsg = await res.text();
+                            showToast(errMsg || 'Failed to reset statistics.', 'error', 'Reset Failed');
+                        }
+                    })
+                    .catch(err => console.error('Error resetting metrics:', err));
+                }
             }
         });
     }

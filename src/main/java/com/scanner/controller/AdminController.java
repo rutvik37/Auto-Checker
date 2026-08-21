@@ -725,6 +725,17 @@ public class AdminController {
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping("/verify-pin")
+    public ResponseEntity<?> verifyPin(@RequestBody Map<String, String> body) {
+        String pin = body != null ? body.get("pin") : null;
+        if (pin != null && securityPin.equals(pin.trim())) {
+            return ResponseEntity.ok(Map.of("valid", true));
+        } else {
+            return ResponseEntity.status(org.springframework.http.HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("valid", false, "message", "Invalid Security PIN"));
+        }
+    }
+
     // 11. Dictionary Management
     @GetMapping("/dictionaries")
     public ResponseEntity<?> getDictionaries() {
