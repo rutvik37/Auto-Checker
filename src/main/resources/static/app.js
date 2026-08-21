@@ -469,14 +469,18 @@ function initSseStream(scanId) {
             progressFill.style.width = '100%';
         }
         
-        // Trigger celebratory state if 0 spelling issues were found
+        // Trigger celebratory state if 0 spelling issues were found (with delay for DB transaction finish)
         if (activeScanId) {
-            loadLiveIssues(activeScanId).then((issues) => {
-                if (issues && issues.length === 0) {
-                    showZeroIssuesCelebration();
-                    launchCelebrationConfetti();
-                }
-            });
+            setTimeout(() => {
+                loadLiveIssues(activeScanId).then((issues) => {
+                    if (issues && issues.length === 0) {
+                        showZeroIssuesCelebration();
+                        launchCelebrationConfetti();
+                    } else {
+                        hideZeroIssuesCelebration();
+                    }
+                });
+            }, 400);
         }
         
         // Refresh project list scans history in background
@@ -766,8 +770,10 @@ async function loadLiveIssues(scanId) {
 
             tbody.appendChild(tr);
         });
+        return issues;
     } catch (e) {
         console.error('Failed to load live issues:', e);
+        return [];
     }
 }
 
