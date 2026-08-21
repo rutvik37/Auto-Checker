@@ -38,7 +38,131 @@ document.addEventListener('DOMContentLoaded', () => {
 
 let isInitialized = false;
 
+// Toast Notification System for Admin Panel
+function showToast(message, type = 'info', title = '') {
+    let container = document.getElementById('toast-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'toast-container';
+        container.className = 'toast-container';
+        document.body.appendChild(container);
+    }
+
+    const icons = {
+        success: 'fa-solid fa-circle-check',
+        error: 'fa-solid fa-circle-xmark',
+        warning: 'fa-solid fa-triangle-exclamation',
+        info: 'fa-solid fa-circle-info'
+    };
+
+    const titles = {
+        success: title || 'Success',
+        error: title || 'Error',
+        warning: title || 'Warning',
+        info: title || 'Notification'
+    };
+
+    const toast = document.createElement('div');
+    toast.className = `toast-item toast-${type}`;
+    toast.innerHTML = `
+        <i class="${icons[type] || icons.info} toast-icon"></i>
+        <div class="toast-content">
+            <div class="toast-title">${titles[type]}</div>
+            <div class="toast-message">${message}</div>
+        </div>
+        <button class="toast-close" onclick="this.parentElement.remove()">&times;</button>
+    `;
+
+    container.appendChild(toast);
+
+    requestAnimationFrame(() => {
+        toast.classList.add('show');
+    });
+
+    setTimeout(() => {
+        if (toast.parentElement) {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 400);
+        }
+    }, 4000);
+}
+
+// Override native window.alert globally to guarantee no "localhost says" popups anywhere
+window.nativeAlert = window.alert;
+window.alert = function(msg) {
+    showToast(msg, 'info');
+};
+
+let adminDialogResolve = null;
+
+function showAdminAlert(message, title = "Notification", iconClass = "fa-solid fa-circle-info") {
+    return new Promise((resolve) => {
+        const modal = document.getElementById('admin-custom-dialog-modal');
+        if (!modal) {
+            showToast(message, 'info', title);
+            resolve(true);
+            return;
+        }
+        document.getElementById('admin-dialog-title').textContent = title;
+        document.getElementById('admin-dialog-message').textContent = message;
+        document.getElementById('admin-dialog-icon').className = iconClass;
+        
+        const cancelBtn = document.getElementById('admin-dialog-cancel-btn');
+        const okBtn = document.getElementById('admin-dialog-ok-btn');
+        
+        cancelBtn.style.display = 'none';
+        okBtn.textContent = 'OK';
+        okBtn.className = 'btn btn-primary btn-sm';
+        
+        modal.style.display = 'flex';
+        modal.classList.add('active');
+        
+        adminDialogResolve = resolve;
+    });
+}
+
+function showAdminConfirm(message, title = "Confirmation Required", iconClass = "fa-solid fa-triangle-exclamation") {
+    return new Promise((resolve) => {
+        const modal = document.getElementById('admin-custom-dialog-modal');
+        if (!modal) {
+            showToast(message, 'warning', title);
+            resolve(true);
+            return;
+        }
+        document.getElementById('admin-dialog-title').textContent = title;
+        document.getElementById('admin-dialog-message').textContent = message;
+        document.getElementById('admin-dialog-icon').className = iconClass;
+        
+        const cancelBtn = document.getElementById('admin-dialog-cancel-btn');
+        const okBtn = document.getElementById('admin-dialog-ok-btn');
+        
+        cancelBtn.style.display = 'inline-flex';
+        cancelBtn.textContent = 'Cancel';
+        okBtn.textContent = 'Yes, Proceed';
+        okBtn.className = 'btn btn-danger btn-sm';
+        
+        modal.style.display = 'flex';
+        modal.classList.add('active');
+        
+        adminDialogResolve = resolve;
+    });
+}
+
+function closeAdminDialog(result) {
+    const modal = document.getElementById('admin-custom-dialog-modal');
+    if (modal) {
+        modal.style.display = 'none';
+        modal.classList.remove('active');
+    }
+    if (adminDialogResolve) {
+        adminDialogResolve(result);
+        adminDialogResolve = null;
+    }
+}
+window.closeAdminDialog = closeAdminDialog;
+
 function checkAuthStatus(isStartup = false) {
+
     fetch('/api/admin/status')
         .then(res => res.json())
         .then(data => {
@@ -352,17 +476,20 @@ function initEventListeners() {
         loadCache();
     });
 
-    document.getElementById('btn-clear-cache').addEventListener('click', () => {
-        if (confirm('Are you absolutely sure you want to clear the entire spelling validation cache? This will force Groq to re-verify all future candidates.')) {
+    document.getElementById('btn-clear-cache').addEventListener('click', async () => {
+        const confirmed = await showAdminConfirm('Are you absolutely sure you want to clear the entire spelling validation cache? This will force Groq to re-verify all future candidates.', 'Clear Validation Cache?', 'fa-solid fa-database');
+        if (confirmed) {
             fetch('/api/admin/cache/clear', { method: 'POST' })
                 .then(res => {
                     if (res.ok) {
+                        showToast('Validation cache cleared successfully.', 'success', 'Cache Cleared');
                         loadCacheStats();
                         loadCache();
                     } else {
-                        alert('Failed to clear cache.');
+                        showToast('Failed to clear cache.', 'error', 'Cache Error');
                     }
-                });
+                })
+                .catch(() => showToast('Error clearing cache.', 'error'));
         }
     });
 
@@ -440,7 +567,7 @@ function initEventListeners() {
             if (!file) return;
 
             if (file.size > 5 * 1024 * 1024) {
-                alert('File size exceeds 5MB limit.');
+                showToast('File size exceeds 5MB limit.', 'error', 'Upload Error');
                 return;
             }
 
@@ -467,7 +594,7 @@ function initEventListeners() {
             })
             .then(res => {
                 if (res.ok) {
-                    alert('Profile image updated successfully.');
+                    showToast('Profile image updated successfully.', 'success', 'Profile Updated');
                     // Force refresh all profile image instances on page with cache buster
                     const timestamp = new Date().getTime();
                     
@@ -492,12 +619,12 @@ function initEventListeners() {
                     }
                     if (topbarDefaultIcon) topbarDefaultIcon.style.display = 'none';
                 } else {
-                    alert('Failed to upload profile image.');
+                    showToast('Failed to upload profile image.', 'error', 'Upload Error');
                 }
             })
             .catch(err => {
                 console.error('Error uploading profile image:', err);
-                alert('Error uploading profile image.');
+                showToast('Error uploading profile image.', 'error', 'Upload Error');
             });
         });
     }
@@ -505,21 +632,23 @@ function initEventListeners() {
     // Cancel Scan binding
     const btnCancelScan = document.getElementById('btn-cancel-scan');
     if (btnCancelScan) {
-        btnCancelScan.addEventListener('click', () => {
+        btnCancelScan.addEventListener('click', async () => {
             const scanId = window.state.currentScanDetailsId;
             if (!scanId) return;
-            if (confirm(`Are you sure you want to cancel the active scan #${scanId}?`)) {
+            const confirmed = await showAdminConfirm(`Are you sure you want to cancel the active scan #${scanId}?`, 'Cancel Scan?', 'fa-solid fa-stop');
+            if (confirmed) {
                 fetch(`/api/admin/scans/${scanId}/cancel`, { method: 'POST' })
                     .then(res => {
                         if (res.ok) {
-                            alert('Scan cancellation request sent.');
+                            showToast('Scan cancellation request sent.', 'info', 'Scan Cancelled');
                             loadScanDetails(scanId);
                         } else {
-                            alert('Failed to send cancellation request.');
+                            showToast('Failed to send cancellation request.', 'error', 'Cancellation Error');
                         }
                     })
                     .catch(err => {
                         console.error('Error canceling scan:', err);
+                        showToast('Error cancelling scan.', 'error');
                     });
             }
         });
@@ -585,16 +714,16 @@ function initEventListeners() {
             })
             .then(async res => {
                 if (res.ok) {
-                    alert('Configurations saved successfully.');
+                    showToast('Configurations saved successfully.', 'success', 'Settings Saved');
                     loadSettings();
                 } else {
                     const errMsg = await res.text();
-                    alert(errMsg || 'Failed to save settings.');
+                    showToast(errMsg || 'Failed to save settings.', 'error', 'Settings Error');
                 }
             })
             .catch(err => {
                 console.error('Error saving configurations:', err);
-                alert('Error saving configurations.');
+                showToast('Error saving configurations.', 'error');
             });
         });
     }
@@ -608,11 +737,12 @@ function initEventListeners() {
 
     const btnMetricsReset = document.getElementById('btn-metrics-reset');
     if (btnMetricsReset) {
-        btnMetricsReset.addEventListener('click', () => {
+        btnMetricsReset.addEventListener('click', async () => {
             const pin = prompt('Enter System Security PIN (Special Key) to authorize statistics reset:');
             if (pin === null) return; // User cancelled
             
-            if (confirm('Are you sure you want to reset all Groq API metrics and cost statistics back to zero?')) {
+            const confirmed = await showAdminConfirm('Are you sure you want to reset all Groq API metrics and cost statistics back to zero?', 'Reset API Metrics?', 'fa-solid fa-rotate-left');
+            if (confirmed) {
                 fetch('/api/admin/metrics/groq/reset', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -620,11 +750,11 @@ function initEventListeners() {
                 })
                 .then(async res => {
                     if (res.ok) {
-                        alert('Statistics reset successfully.');
+                        showToast('Statistics reset successfully.', 'success', 'Metrics Reset');
                         loadGroqMetrics();
                     } else {
                         const errMsg = await res.text();
-                        alert(errMsg || 'Failed to reset statistics.');
+                        showToast(errMsg || 'Failed to reset statistics.', 'error', 'Reset Failed');
                     }
                 })
                 .catch(err => console.error('Error resetting metrics:', err));
@@ -756,20 +886,22 @@ function loadProjects() {
                     </td>
                 `;
 
-                tr.querySelector('.btn-delete-project').addEventListener('click', (e) => {
+                tr.querySelector('.btn-delete-project').addEventListener('click', async (e) => {
                     e.stopPropagation();
-                    if (confirm(`Are you sure you want to delete project "${proj.name}"? This will permanently delete all scans and issues for this project.`)) {
+                    const confirmed = await showAdminConfirm(`Are you sure you want to delete project "${proj.name}"? This will permanently delete all scans and issues for this project.`, 'Delete Project?', 'fa-solid fa-trash-can');
+                    if (confirmed) {
                         fetch(`/api/admin/projects/${proj.id}`, { method: 'DELETE' })
                             .then(res => {
                                 if (res.ok) {
+                                    showToast(`Project "${proj.name}" deleted successfully.`, 'success', 'Project Deleted');
                                     loadProjects();
                                 } else {
-                                    alert('Failed to delete project.');
+                                    showToast('Failed to delete project.', 'error', 'Delete Error');
                                 }
                             })
                             .catch(err => {
                                 console.error('Error deleting project:', err);
-                                alert('Error deleting project.');
+                                showToast('Error deleting project.', 'error');
                             });
                     }
                 });
@@ -943,18 +1075,20 @@ function loadScanDetailsIssues() {
         });
 }
 
-window.removeIssueFromDetails = function(issueId) {
-    if (confirm("Remove this issue? This ignores it from reports.")) {
+window.removeIssueFromDetails = async function(issueId) {
+    const confirmed = await showAdminConfirm("Remove this issue? This ignores it from reports.", "Remove Issue?", "fa-solid fa-eye-slash");
+    if (confirmed) {
         fetch(`/api/admin/issues/${issueId}/remove`, { method: 'POST' })
             .then(res => {
                 if (res.ok) {
+                    showToast("Issue removed successfully.", "success", "Issue Ignored");
                     loadScanDetailsIssues();
                     // update counts
                     fetchApi(`/api/admin/scans/${window.state.currentScanDetailsId}`).then(scan => {
                         document.getElementById('det-total-issues').textContent = scan.totalIssues;
                     });
                 } else {
-                    alert('Failed to remove issue.');
+                    showToast('Failed to remove issue.', 'error', 'Remove Error');
                 }
             });
     }
@@ -1044,15 +1178,17 @@ function loadCache() {
         });
 }
 
-window.deleteCacheEntry = function(id) {
-    if (confirm("Delete this validation cache entry?")) {
+window.deleteCacheEntry = async function(id) {
+    const confirmed = await showAdminConfirm("Delete this validation cache entry?", "Delete Cache Entry?", "fa-solid fa-trash-can");
+    if (confirmed) {
         fetch(`/api/admin/cache/${id}`, { method: 'DELETE' })
             .then(res => {
                 if (res.ok) {
+                    showToast("Cache entry deleted.", "success", "Deleted");
                     loadCacheStats();
                     loadCache();
                 } else {
-                    alert('Failed to delete cache entry.');
+                    showToast('Failed to delete cache entry.', 'error', 'Delete Error');
                 }
             });
     }
@@ -1512,18 +1648,21 @@ function addDictionaryWord(type, word, callback) {
     })
     .then(res => {
         if (res.ok) {
+            showToast(`Word "${word}" added to ${type} dictionary.`, 'success', 'Word Added');
             if (callback) callback();
         } else {
-            alert('Failed to add word to dictionary.');
+            showToast('Failed to add word to dictionary.', 'error', 'Add Error');
         }
     })
     .catch(err => {
         console.error('Error adding dictionary word:', err);
+        showToast('Error adding dictionary word.', 'error');
     });
 }
 
-window.removeDictionaryWord = function(type, word) {
-    if (confirm(`Remove word "${word}" from the ${type} dictionary?`)) {
+window.removeDictionaryWord = async function(type, word) {
+    const confirmed = await showAdminConfirm(`Remove word "${word}" from the ${type} dictionary?`, "Remove Word?", "fa-solid fa-trash-can");
+    if (confirmed) {
         fetch('/api/admin/dictionaries/remove', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -1531,13 +1670,15 @@ window.removeDictionaryWord = function(type, word) {
         })
         .then(res => {
             if (res.ok) {
+                showToast(`Word "${word}" removed from ${type} dictionary.`, 'success', 'Word Removed');
                 loadDictionaries();
             } else {
-                alert('Failed to remove word.');
+                showToast('Failed to remove word.', 'error', 'Remove Error');
             }
         })
         .catch(err => {
             console.error('Error removing word:', err);
+            showToast('Error removing word.', 'error');
         });
     }
 };

@@ -51,6 +51,61 @@ function initTheme() {
     });
 }
 
+// Toast Notification System
+function showToast(message, type = 'info', title = '') {
+    let container = document.getElementById('toast-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'toast-container';
+        container.className = 'toast-container';
+        document.body.appendChild(container);
+    }
+
+    const icons = {
+        success: 'fa-solid fa-circle-check',
+        error: 'fa-solid fa-circle-xmark',
+        warning: 'fa-solid fa-triangle-exclamation',
+        info: 'fa-solid fa-circle-info'
+    };
+
+    const titles = {
+        success: title || 'Success',
+        error: title || 'Error',
+        warning: title || 'Warning',
+        info: title || 'Notification'
+    };
+
+    const toast = document.createElement('div');
+    toast.className = `toast-item toast-${type}`;
+    toast.innerHTML = `
+        <i class="${icons[type] || icons.info} toast-icon"></i>
+        <div class="toast-content">
+            <div class="toast-title">${titles[type]}</div>
+            <div class="toast-message">${message}</div>
+        </div>
+        <button class="toast-close" onclick="this.parentElement.remove()">&times;</button>
+    `;
+
+    container.appendChild(toast);
+
+    requestAnimationFrame(() => {
+        toast.classList.add('show');
+    });
+
+    setTimeout(() => {
+        if (toast.parentElement) {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 400);
+        }
+    }, 4000);
+}
+
+// Override native browser alert to guarantee no "localhost says" popups
+window.nativeAlert = window.alert;
+window.alert = function(msg) {
+    showToast(msg, 'info');
+};
+
 // Custom Alert & Confirm Modals
 function showCustomAlert(message, title = "Notification") {
     return new Promise((resolve) => {
@@ -83,6 +138,7 @@ function closeCustomDialog(result) {
         dialogResolve = null;
     }
 }
+
 
 // Tab Switcher
 function switchTab(tabId) {

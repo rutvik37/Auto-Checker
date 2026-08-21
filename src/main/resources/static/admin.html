@@ -1012,6 +1012,26 @@
         </div>
     </div>
 
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Admin Custom Dialog Modal (Alert/Confirm) -->
+    <div class="modal" id="admin-custom-dialog-modal" style="display: none;">
+        <div class="modal-content glass-panel" style="max-width: 440px; text-align: center; padding: 28px;">
+            <div style="margin-bottom: 16px;">
+                <div id="admin-dialog-icon-wrapper" style="width: 56px; height: 56px; border-radius: 50%; background: rgba(99, 102, 241, 0.15); display: flex; align-items: center; justify-content: center; margin: 0 auto; color: var(--accent);">
+                    <i id="admin-dialog-icon" class="fa-solid fa-circle-info" style="font-size: 24px;"></i>
+                </div>
+            </div>
+            <h3 id="admin-dialog-title" style="font-family: var(--font-heading); font-size: 18px; font-weight: 600; color: var(--text-primary); margin-bottom: 10px;">Notification</h3>
+            <p id="admin-dialog-message" style="color: var(--text-secondary); font-size: 14px; line-height: 1.5; margin-bottom: 24px;"></p>
+            <div style="display: flex; justify-content: center; gap: 12px;">
+                <button type="button" class="btn btn-secondary btn-sm" id="admin-dialog-cancel-btn" style="display: none;" onclick="closeAdminDialog(false)">Cancel</button>
+                <button type="button" class="btn btn-primary btn-sm" id="admin-dialog-ok-btn" onclick="closeAdminDialog(true)">OK</button>
+            </div>
+        </div>
+    </div>
+
     <script src="admin.js"></script>
 </body>
 
