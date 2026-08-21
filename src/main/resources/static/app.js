@@ -1212,7 +1212,7 @@ function initQuizGame() {
 let quizAutoAdvanceTimer = null;
 
 function setQuizMode(mode) {
-    if (quizState.mode === mode) return; // Clicking the already active mode does not reset the question
+    if (quizState.mode === mode) return;
     quizState.mode = mode;
     
     const btnMath = document.getElementById('btn-quiz-mode-math');
@@ -1228,9 +1228,6 @@ function setQuizMode(mode) {
         if (btnIndia) btnIndia.style.cssText = activeStyle;
         if (btnMath) btnMath.style.cssText = inactiveStyle;
     }
-
-    // Immediately load question for the newly selected mode
-    renderNextQuestion();
 }
 
 function generateMathQuestion() {
