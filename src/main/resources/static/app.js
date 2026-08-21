@@ -1157,6 +1157,9 @@ function initQuizGame() {
     const card = document.getElementById('scan-mini-game-card');
     if (!card) return;
     
+    // Apply visibility & active mode settings controlled by Admin
+    applyWidgetSettingsFromAdmin();
+
     // Restore saved score
     const savedScore = localStorage.getItem('quiz_score');
     if (savedScore) {
@@ -1682,8 +1685,63 @@ function revealNextWorldWonder() {
     }, 150);
 }
 
+// --- Cross-Tab Admin Widget Settings Sync Engine ---
+function applyWidgetSettingsFromAdmin() {
+    const raw = localStorage.getItem('admin_widget_settings');
+    let settings = {
+        sec1_visible: true,
+        sec2_visible: true,
+        sec3_visible: true,
+        modes: {
+            math: true, india: true, ai: true, history: true, science: true,
+            cinema: true, sports: true, geography: true, coding: true, riddles: true
+        }
+    };
+    if (raw) {
+        try {
+            settings = JSON.parse(raw);
+        } catch (e) {}
+    }
+
+    // Manage Section 1 Visibility
+    const sec1 = document.getElementById('scan-mini-game-card');
+    if (sec1) {
+        sec1.style.display = (settings.sec1_visible !== false) ? 'block' : 'none';
+    }
+
+    // Manage Section 2 Visibility
+    const sec2 = document.getElementById('tech-fortune-card');
+    if (sec2) {
+        sec2.style.display = (settings.sec2_visible !== false) ? 'block' : 'none';
+    }
+
+    // Manage Section 3 Visibility
+    const sec3 = document.getElementById('world-wonders-card');
+    if (sec3) {
+        sec3.style.display = (settings.sec3_visible !== false) ? 'block' : 'none';
+    }
+
+    // Manage individual mode buttons
+    const allModes = ['math', 'india', 'ai', 'history', 'science', 'cinema', 'sports', 'geography', 'coding', 'riddles'];
+    allModes.forEach(m => {
+        const btn = document.getElementById(`btn-quiz-mode-${m}`);
+        if (btn) {
+            const isVisible = settings.modes ? (settings.modes[m] !== false) : true;
+            btn.style.display = isVisible ? 'inline-block' : 'none';
+        }
+    });
+}
+
+// Live cross-tab sync when Admin updates settings
+window.addEventListener('storage', (e) => {
+    if (e.key === 'admin_widget_settings') {
+        applyWidgetSettingsFromAdmin();
+    }
+});
+
 window.setQuizMode = setQuizMode;
 window.skipQuizQuestion = skipQuizQuestion;
 window.closeQuizFeedbackInstant = closeQuizFeedbackInstant;
 window.revealNextTechFact = revealNextTechFact;
 window.revealNextWorldWonder = revealNextWorldWonder;
+window.applyWidgetSettingsFromAdmin = applyWidgetSettingsFromAdmin;

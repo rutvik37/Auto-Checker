@@ -386,10 +386,15 @@ function showPane(paneId) {
         'performance': 'Scans Performance Metrics',
         'exports': 'System Data Exports',
         'dictionaries': 'Custom Whitelist Dictionaries',
+        'widgets': 'Widget & Game Controls',
         'settings': 'System Configurations',
         'profile': 'Edit Profile'
     };
     document.getElementById('current-page-title').textContent = titleMap[paneId] || 'Admin Panel';
+
+    if (paneId === 'widgets') {
+        loadAdminWidgetSettings();
+    }
 
     // Teardown log stream when leaving details
     if (paneId !== 'scan-details') {
@@ -1967,6 +1972,69 @@ function startAutoRefreshPolling() {
             if (metricsTab && metricsTab.style.display !== 'none') {
                 loadGroqMetrics();
             }
+        } else if (pane === 'widgets') {
+            loadAdminWidgetSettings();
         }
-    }, 3000); // 3-second seamless live update across whole admin panel
+    }, 5000);
 }
+
+// --- Entertainment & Interactive Widget Admin Manager ---
+function loadAdminWidgetSettings() {
+    const raw = localStorage.getItem('admin_widget_settings');
+    let settings = {
+        sec1_visible: true,
+        sec2_visible: true,
+        sec3_visible: true,
+        modes: {
+            math: true, india: true, ai: true, history: true, science: true,
+            cinema: true, sports: true, geography: true, coding: true, riddles: true
+        }
+    };
+    if (raw) {
+        try {
+            settings = JSON.parse(raw);
+        } catch (e) {}
+    }
+
+    const sec1 = document.getElementById('admin-toggle-sec1');
+    if (sec1) sec1.checked = settings.sec1_visible !== false;
+
+    const sec2 = document.getElementById('admin-toggle-sec2');
+    if (sec2) sec2.checked = settings.sec2_visible !== false;
+
+    const sec3 = document.getElementById('admin-toggle-sec3');
+    if (sec3) sec3.checked = settings.sec3_visible !== false;
+
+    document.querySelectorAll('.admin-mode-toggle').forEach(chk => {
+        const mode = chk.getAttribute('data-mode');
+        if (mode && settings.modes) {
+            chk.checked = settings.modes[mode] !== false;
+        }
+    });
+}
+
+function saveAdminWidgetSettings() {
+    const sec1 = document.getElementById('admin-toggle-sec1');
+    const sec2 = document.getElementById('admin-toggle-sec2');
+    const sec3 = document.getElementById('admin-toggle-sec3');
+
+    const settings = {
+        sec1_visible: sec1 ? sec1.checked : true,
+        sec2_visible: sec2 ? sec2.checked : true,
+        sec3_visible: sec3 ? sec3.checked : true,
+        modes: {}
+    };
+
+    document.querySelectorAll('.admin-mode-toggle').forEach(chk => {
+        const mode = chk.getAttribute('data-mode');
+        if (mode) {
+            settings.modes[mode] = chk.checked;
+        }
+    });
+
+    localStorage.setItem('admin_widget_settings', JSON.stringify(settings));
+    showToast('✨ Interactive widget & mode settings saved successfully!', 'success', 'Widget Settings Updated');
+}
+
+window.loadAdminWidgetSettings = loadAdminWidgetSettings;
+window.saveAdminWidgetSettings = saveAdminWidgetSettings;

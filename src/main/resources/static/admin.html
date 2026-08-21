@@ -86,6 +86,9 @@
                     <a href="#dictionaries" class="nav-item" data-pane="dictionaries">
                         <i class="fa-solid fa-book"></i><span>Dictionaries</span>
                     </a>
+                    <a href="#widgets" class="nav-item" data-pane="widgets">
+                        <i class="fa-solid fa-gamepad"></i><span>Widget Controls</span>
+                    </a>
                     <a href="#settings" class="nav-item" data-pane="settings">
                         <i class="fa-solid fa-gears"></i><span>System Settings</span>
                     </a>
@@ -939,6 +942,117 @@
                             <!-- Metrics Actions -->
                             <div style="display: flex; justify-content: flex-end; margin-top: 20px;">
                                 <button type="button" id="btn-metrics-reset" class="btn btn-secondary" style="background: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.2);"><i class="fa-solid fa-trash-can"></i> Reset Statistics</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Pane: Widget & Entertainment Controls -->
+                <section id="pane-widgets" class="pane">
+                    <div class="glass-panel" style="padding: 24px; margin-bottom: 24px; border: 1px solid rgba(168, 85, 247, 0.35); border-radius: 14px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 16px; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+                            <div>
+                                <h2 style="font-size: 18px; color: #fff; margin: 0; display: flex; align-items: center; gap: 10px;">
+                                    <i class="fa-solid fa-gamepad" style="color: #c084fc;"></i> Entertainment & Interactive Widgets Manager
+                                </h2>
+                                <p style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;">Control visibility and active game modes across all 3 sections on the main scanner frontend.</p>
+                            </div>
+                            <button class="btn btn-primary" onclick="saveAdminWidgetSettings()" style="padding: 10px 20px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px;">
+                                <i class="fa-solid fa-floppy-disk"></i> Save & Apply Changes
+                            </button>
+                        </div>
+
+                        <!-- Section 1 Management -->
+                        <div style="background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+                                <h3 style="font-size: 15px; color: #a5b4fc; margin: 0; display: flex; align-items: center; gap: 8px;">
+                                    <i class="fa-solid fa-puzzle-piece"></i> Section 1: Brain Break Quiz Challenge (10 Modes)
+                                </h3>
+                                <label style="display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; color: #fff; font-weight: 600;">
+                                    <input type="checkbox" id="admin-toggle-sec1" checked style="width: 18px; height: 18px; accent-color: var(--color-primary); cursor: pointer;">
+                                    Show Section 1
+                                </label>
+                            </div>
+
+                            <!-- Mode Selector Toggles -->
+                            <div style="margin-top: 14px;">
+                                <div style="font-size: 12px; color: var(--text-secondary); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px;">
+                                    Manage Active Modes (Checked = Visible on Frontend):
+                                </div>
+                                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px;">
+                                    <label style="display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; cursor: pointer; color: #fff; font-size: 13px;">
+                                        <input type="checkbox" class="admin-mode-toggle" data-mode="math" checked style="accent-color: #6366f1;">
+                                        <i class="fa-solid fa-calculator" style="color: #a5b4fc;"></i> Mode 1: Speed Math
+                                    </label>
+                                    <label style="display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; cursor: pointer; color: #fff; font-size: 13px;">
+                                        <input type="checkbox" class="admin-mode-toggle" data-mode="india" checked style="accent-color: #10b981;">
+                                        <i class="fa-solid fa-earth-asia" style="color: #34d399;"></i> Mode 2: India Trivia
+                                    </label>
+                                    <label style="display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; cursor: pointer; color: #fff; font-size: 13px;">
+                                        <input type="checkbox" class="admin-mode-toggle" data-mode="ai" checked style="accent-color: #a855f7;">
+                                        <i class="fa-solid fa-brain" style="color: #c084fc;"></i> Mode 3: AI & Tech
+                                    </label>
+                                    <label style="display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; cursor: pointer; color: #fff; font-size: 13px;">
+                                        <input type="checkbox" class="admin-mode-toggle" data-mode="history" checked style="accent-color: #f59e0b;">
+                                        <i class="fa-solid fa-landmark" style="color: #f59e0b;"></i> Mode 4: World History
+                                    </label>
+                                    <label style="display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; cursor: pointer; color: #fff; font-size: 13px;">
+                                        <input type="checkbox" class="admin-mode-toggle" data-mode="science" checked style="accent-color: #38bdf8;">
+                                        <i class="fa-solid fa-atom" style="color: #38bdf8;"></i> Mode 5: Science & Space
+                                    </label>
+                                    <label style="display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; cursor: pointer; color: #fff; font-size: 13px;">
+                                        <input type="checkbox" class="admin-mode-toggle" data-mode="cinema" checked style="accent-color: #f43f5e;">
+                                        <i class="fa-solid fa-film" style="color: #f43f5e;"></i> Mode 6: Cinema & Movies
+                                    </label>
+                                    <label style="display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; cursor: pointer; color: #fff; font-size: 13px;">
+                                        <input type="checkbox" class="admin-mode-toggle" data-mode="sports" checked style="accent-color: #fbbf24;">
+                                        <i class="fa-solid fa-trophy" style="color: #fbbf24;"></i> Mode 7: Sports & Games
+                                    </label>
+                                    <label style="display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; cursor: pointer; color: #fff; font-size: 13px;">
+                                        <input type="checkbox" class="admin-mode-toggle" data-mode="geography" checked style="accent-color: #4ade80;">
+                                        <i class="fa-solid fa-compass" style="color: #4ade80;"></i> Mode 8: Geography & Nature
+                                    </label>
+                                    <label style="display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; cursor: pointer; color: #fff; font-size: 13px;">
+                                        <input type="checkbox" class="admin-mode-toggle" data-mode="coding" checked style="accent-color: #a78bfa;">
+                                        <i class="fa-solid fa-code" style="color: #a78bfa;"></i> Mode 9: Web & Coding QA
+                                    </label>
+                                    <label style="display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; cursor: pointer; color: #fff; font-size: 13px;">
+                                        <input type="checkbox" class="admin-mode-toggle" data-mode="riddles" checked style="accent-color: #facc15;">
+                                        <i class="fa-solid fa-lightbulb" style="color: #facc15;"></i> Mode 10: Riddles & Teasers
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Section 2 Management -->
+                        <div style="background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                                <div>
+                                    <h3 style="font-size: 15px; color: #fbbf24; margin: 0; display: flex; align-items: center; gap: 8px;">
+                                        <i class="fa-solid fa-wand-magic-sparkles"></i> Section 2: Daily Tech Mind-Booster & Fun Facts
+                                    </h3>
+                                    <p style="font-size: 12px; color: var(--text-secondary); margin-top: 2px;">Control visibility of the tech trivia mind booster card on the scanner page.</p>
+                                </div>
+                                <label style="display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; color: #fff; font-weight: 600;">
+                                    <input type="checkbox" id="admin-toggle-sec2" checked style="width: 18px; height: 18px; accent-color: #f59e0b; cursor: pointer;">
+                                    Show Section 2
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Section 3 Management -->
+                        <div style="background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 20px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                                <div>
+                                    <h3 style="font-size: 15px; color: #38bdf8; margin: 0; display: flex; align-items: center; gap: 8px;">
+                                        <i class="fa-solid fa-earth-americas"></i> Section 3: World Wonders, Mysteries & Curiosities
+                                    </h3>
+                                    <p style="font-size: 12px; color: var(--text-secondary); margin-top: 2px;">Control visibility of the global wonders and mind-benders card on the scanner page.</p>
+                                </div>
+                                <label style="display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; color: #fff; font-weight: 600;">
+                                    <input type="checkbox" id="admin-toggle-sec3" checked style="width: 18px; height: 18px; accent-color: #38bdf8; cursor: pointer;">
+                                    Show Section 3
+                                </label>
                             </div>
                         </div>
                     </div>
