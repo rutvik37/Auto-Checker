@@ -1209,8 +1209,12 @@ function initQuizGame() {
     renderNextQuestion();
 }
 
+let quizAutoAdvanceTimer = null;
+
 function setQuizMode(mode) {
+    if (quizState.mode === mode) return; // Never refresh question if clicking already active mode
     quizState.mode = mode;
+    
     const btnMath = document.getElementById('btn-quiz-mode-math');
     const btnIndia = document.getElementById('btn-quiz-mode-india');
     
@@ -1225,7 +1229,10 @@ function setQuizMode(mode) {
         if (btnMath) btnMath.style.cssText = inactiveStyle;
     }
 
-    renderNextQuestion();
+    // Only load next question if current question was already answered
+    if (quizState.answered) {
+        renderNextQuestion();
+    }
 }
 
 function generateMathQuestion() {
@@ -1349,6 +1356,11 @@ function selectQuizAnswer(selectedIndex, clickedBtn) {
     if (quizState.answered) return;
     quizState.answered = true;
 
+    if (quizAutoAdvanceTimer) {
+        clearTimeout(quizAutoAdvanceTimer);
+        quizAutoAdvanceTimer = null;
+    }
+
     const q = quizState.currentQuestion;
     const isCorrect = selectedIndex === q.answer;
 
@@ -1363,11 +1375,14 @@ function selectQuizAnswer(selectedIndex, clickedBtn) {
         quizState.score += 10;
 
         if (feedbackBox) {
-            feedbackBox.style.display = 'block';
+            feedbackBox.style.display = 'flex';
             feedbackBox.style.background = 'rgba(16, 185, 129, 0.15)';
             feedbackBox.style.border = '1px solid rgba(16, 185, 129, 0.3)';
             feedbackBox.style.color = '#34d399';
-            feedbackBox.innerHTML = `<i class="fa-solid fa-circle-check"></i> <strong>Spot On! +10 Points!</strong> ${q.explanation}`;
+            feedbackBox.innerHTML = `
+                <span><i class="fa-solid fa-circle-check"></i> <strong>Spot On! +10 Points!</strong> ${q.explanation}</span>
+                <button type="button" onclick="closeQuizFeedbackInstant()" style="background: rgba(16, 185, 129, 0.3); border: none; color: #34d399; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; flex-shrink: 0;" title="Dismiss & Next Question">✕</button>
+            `;
         }
     } else {
         clickedBtn.style.background = 'rgba(239, 68, 68, 0.25)';
@@ -1382,11 +1397,14 @@ function selectQuizAnswer(selectedIndex, clickedBtn) {
         }
 
         if (feedbackBox) {
-            feedbackBox.style.display = 'block';
+            feedbackBox.style.display = 'flex';
             feedbackBox.style.background = 'rgba(239, 68, 68, 0.15)';
             feedbackBox.style.border = '1px solid rgba(239, 68, 68, 0.3)';
             feedbackBox.style.color = '#f87171';
-            feedbackBox.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> <strong>Incorrect!</strong> ${q.explanation}`;
+            feedbackBox.innerHTML = `
+                <span><i class="fa-solid fa-circle-xmark"></i> <strong>Incorrect!</strong> ${q.explanation}</span>
+                <button type="button" onclick="closeQuizFeedbackInstant()" style="background: rgba(239, 68, 68, 0.3); border: none; color: #f87171; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; flex-shrink: 0;" title="Dismiss & Next Question">✕</button>
+            `;
         }
     }
 
@@ -1395,22 +1413,20 @@ function selectQuizAnswer(selectedIndex, clickedBtn) {
     if (scoreElem) scoreElem.textContent = quizState.score;
     localStorage.setItem('quiz_score', quizState.score);
 
-    // Smooth non-blinking transition to next question
-    setTimeout(() => {
-        const container = document.getElementById('quiz-body-container');
-        if (container) {
-            container.style.opacity = '0.3';
-            setTimeout(() => {
-                renderNextQuestion();
-                container.style.opacity = '1';
-            }, 150);
-        } else {
-            renderNextQuestion();
-        }
-    }, isCorrect ? 1000 : 1800);
+    // Auto advance after 3 seconds (3000ms)
+    quizAutoAdvanceTimer = setTimeout(() => {
+        closeQuizFeedbackInstant();
+    }, 3000);
 }
 
-function skipQuizQuestion() {
+function closeQuizFeedbackInstant() {
+    if (quizAutoAdvanceTimer) {
+        clearTimeout(quizAutoAdvanceTimer);
+        quizAutoAdvanceTimer = null;
+    }
+    const feedbackBox = document.getElementById('quiz-feedback-box');
+    if (feedbackBox) feedbackBox.style.display = 'none';
+
     const container = document.getElementById('quiz-body-container');
     if (container) {
         container.style.opacity = '0.3';
@@ -1423,5 +1439,10 @@ function skipQuizQuestion() {
     }
 }
 
+function skipQuizQuestion() {
+    closeQuizFeedbackInstant();
+}
+
 window.setQuizMode = setQuizMode;
 window.skipQuizQuestion = skipQuizQuestion;
+window.closeQuizFeedbackInstant = closeQuizFeedbackInstant;
