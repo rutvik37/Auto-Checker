@@ -1046,6 +1046,7 @@ function loadScans() {
 
 // 4. Scan Details Loading
 function loadScanDetails(scanId) {
+    const isSameScan = window.state.currentScanDetailsId === scanId;
     window.state.currentScanDetailsId = scanId;
     fetchApi(`/api/admin/scans/${scanId}`)
         .then(scan => {
@@ -1118,8 +1119,10 @@ function loadScanDetails(scanId) {
             }
 
             // Load sub tabs
-            window.state.detPages.page = 0;
-            window.state.detIssues.page = 0;
+            if (!isSameScan) {
+                window.state.detPages.page = 0;
+                window.state.detIssues.page = 0;
+            }
             loadScanDetailsPages();
             loadScanDetailsIssues();
         });
@@ -1931,16 +1934,39 @@ function startLiveScanTimer() {
 function startAutoRefreshPolling() {
     if (window.state.autoRefreshInterval) return;
     window.state.autoRefreshInterval = setInterval(() => {
+        // Pause background polling if a modal dialog is open or an input/textarea is currently focused
+        const activeModal = document.querySelector('.modal.active, .modal[style*="display: flex"], .modal[style*="display: block"]');
+        if (activeModal) return;
+
+        const activeTag = document.activeElement ? document.activeElement.tagName : '';
+        if (activeTag === 'INPUT' || activeTag === 'TEXTAREA' || activeTag === 'SELECT') return;
+
         const pane = window.state.activePane;
-        const hasRunning = document.querySelector('.scan-duration-cell[data-status="RUNNING"]');
-        if (hasRunning) {
-            if (pane === 'scans') {
-                loadScans();
-            } else if (pane === 'dashboard') {
-                loadDashboardStats();
-            } else if (pane === 'scan-details' && window.state.currentScanDetailsId) {
-                loadScanDetails(window.state.currentScanDetailsId);
+
+        if (pane === 'dashboard') {
+            loadDashboardStats();
+        } else if (pane === 'projects') {
+            loadProjects();
+        } else if (pane === 'scans') {
+            loadScans();
+        } else if (pane === 'scan-details' && window.state.currentScanDetailsId) {
+            loadScanDetails(window.state.currentScanDetailsId);
+        } else if (pane === 'issues') {
+            loadIssues();
+        } else if (pane === 'cache') {
+            loadCacheStats();
+            loadCache();
+        } else if (pane === 'analytics') {
+            loadAnalytics();
+        } else if (pane === 'performance') {
+            loadPerformance();
+        } else if (pane === 'dictionaries') {
+            loadDictionaries();
+        } else if (pane === 'settings') {
+            const metricsTab = document.getElementById('settings-tab-metrics');
+            if (metricsTab && metricsTab.style.display !== 'none') {
+                loadGroqMetrics();
             }
         }
-    }, 4000);
+    }, 3000); // 3-second seamless live update across whole admin panel
 }
