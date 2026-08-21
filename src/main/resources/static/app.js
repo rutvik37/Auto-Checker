@@ -12,6 +12,7 @@ let dialogResolve = null;
 // On Page Load
 document.addEventListener('DOMContentLoaded', () => {
     initTheme();
+    applyWidgetSettingsFromAdmin();
     initQuizGame();
     loadProjects().then(() => {
         checkForActiveScan();
@@ -1719,25 +1720,32 @@ function renderWidgetSettingsFromLocal() {
     renderWidgetSettingsToDom(settings);
 }
 
+function isWidgetTruthy(val) {
+    if (val === false || val === 'false' || val === 0 || val === '0' || val === null || val === undefined) {
+        return false;
+    }
+    return true;
+}
+
 function renderWidgetSettingsToDom(settings) {
     if (!settings) return;
 
     // Manage Section 1 Visibility
     const sec1 = document.getElementById('scan-mini-game-card');
     if (sec1) {
-        sec1.style.display = (settings.sec1_visible !== false) ? 'block' : 'none';
+        sec1.style.display = isWidgetTruthy(settings.sec1_visible) ? 'block' : 'none';
     }
 
     // Manage Section 2 Visibility
     const sec2 = document.getElementById('tech-fortune-card');
     if (sec2) {
-        sec2.style.display = (settings.sec2_visible !== false) ? 'block' : 'none';
+        sec2.style.display = isWidgetTruthy(settings.sec2_visible) ? 'block' : 'none';
     }
 
     // Manage Section 3 Visibility
     const sec3 = document.getElementById('world-wonders-card');
     if (sec3) {
-        sec3.style.display = (settings.sec3_visible !== false) ? 'block' : 'none';
+        sec3.style.display = isWidgetTruthy(settings.sec3_visible) ? 'block' : 'none';
     }
 
     // Manage individual mode buttons
@@ -1745,7 +1753,7 @@ function renderWidgetSettingsToDom(settings) {
     allModes.forEach(m => {
         const btn = document.getElementById(`btn-quiz-mode-${m}`);
         if (btn) {
-            const isVisible = settings.modes ? (settings.modes[m] !== false) : true;
+            const isVisible = settings.modes ? isWidgetTruthy(settings.modes[m]) : true;
             btn.style.display = isVisible ? 'inline-block' : 'none';
         }
     });

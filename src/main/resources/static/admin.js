@@ -1995,20 +1995,27 @@ function loadAdminWidgetSettings() {
         });
 }
 
+function isWidgetTruthy(val) {
+    if (val === false || val === 'false' || val === 0 || val === '0' || val === null || val === undefined) {
+        return false;
+    }
+    return true;
+}
+
 function renderAdminWidgetControls(settings) {
     const sec1 = document.getElementById('admin-toggle-sec1');
-    if (sec1) sec1.checked = settings.sec1_visible !== false;
+    if (sec1) sec1.checked = isWidgetTruthy(settings.sec1_visible);
 
     const sec2 = document.getElementById('admin-toggle-sec2');
-    if (sec2) sec2.checked = settings.sec2_visible !== false;
+    if (sec2) sec2.checked = isWidgetTruthy(settings.sec2_visible);
 
     const sec3 = document.getElementById('admin-toggle-sec3');
-    if (sec3) sec3.checked = settings.sec3_visible !== false;
+    if (sec3) sec3.checked = isWidgetTruthy(settings.sec3_visible);
 
     document.querySelectorAll('.admin-mode-toggle').forEach(chk => {
         const mode = chk.getAttribute('data-mode');
         if (mode && settings.modes) {
-            chk.checked = settings.modes[mode] !== false;
+            chk.checked = isWidgetTruthy(settings.modes[mode]);
         }
     });
 }
