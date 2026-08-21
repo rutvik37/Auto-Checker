@@ -25,7 +25,9 @@ document.addEventListener('DOMContentLoaded', () => {
         dictionaries: { global: [], user: [] },
         settings: {},
         logEventSource: null,
-        metricsInterval: null
+        metricsInterval: null,
+        liveScanInterval: null,
+        autoRefreshInterval: null
     };
     window.state = state;
 
@@ -239,6 +241,8 @@ function checkAuthStatus(isStartup = false) {
 function showAdminPanel() {
     document.getElementById('login-layout').style.display = 'none';
     document.getElementById('admin-layout').style.display = 'block';
+    startLiveScanTimer();
+    startAutoRefreshPolling();
 }
 
 function showLoginScreen() {
@@ -918,12 +922,14 @@ function loadDashboardStats() {
             statusBadge.className = `metric-value status-badge ${data.latestScanStatus.toLowerCase()}`;
             statusBadge.textContent = data.latestScanStatus;
 
-            // Format duration
-            const secs = data.latestScanDurationSeconds;
-            if (secs >= 60) {
-                document.getElementById('stat-latest-duration').textContent = `${Math.floor(secs / 60)}m ${secs % 60}s`;
-            } else {
-                document.getElementById('stat-latest-duration').textContent = `${secs}s`;
+            // Format duration card with live ticking support
+            const durationElem = document.getElementById('stat-latest-duration');
+            if (durationElem) {
+                durationElem.className = 'metric-value scan-duration-cell';
+                durationElem.setAttribute('data-status', data.latestScanStatus);
+                durationElem.setAttribute('data-initial-secs', data.latestScanDurationSeconds || 0);
+                durationElem.setAttribute('data-render-time', Date.now());
+                durationElem.textContent = formatDuration(data.latestScanDurationSeconds);
             }
         })
         .catch(err => console.error("Error loading dashboard metrics:", err));
@@ -1030,7 +1036,7 @@ function loadScans() {
                     <td><strong>${scan.totalIssues}</strong></td>
                     <td>${formatDate(scan.startedAt)}</td>
                     <td>${formatDate(scan.endedAt)}</td>
-                    <td>${formatDuration(scan.durationSeconds)}</td>
+                    <td class="scan-duration-cell" data-status="${scan.status}" data-initial-secs="${scan.durationSeconds || 0}" data-render-time="${Date.now()}">${formatDuration(scan.durationSeconds)}</td>
                 `;
                 tbody.appendChild(tr);
             });
@@ -1057,7 +1063,16 @@ function loadScanDetails(scanId) {
             document.getElementById('det-pages-scanned').textContent = scan.pagesScanned;
             document.getElementById('det-words-checked').textContent = scan.wordsChecked;
             document.getElementById('det-total-issues').textContent = scan.totalIssues;
-            document.getElementById('det-duration').textContent = formatDuration(scan.durationSeconds);
+            
+            const detDurationElem = document.getElementById('det-duration');
+            if (detDurationElem) {
+                detDurationElem.className = 'scan-duration-cell';
+                detDurationElem.setAttribute('data-status', scan.status);
+                detDurationElem.setAttribute('data-initial-secs', scan.durationSeconds || 0);
+                detDurationElem.setAttribute('data-render-time', Date.now());
+                detDurationElem.textContent = formatDuration(scan.durationSeconds);
+            }
+
             document.getElementById('det-started-at').textContent = formatDate(scan.startedAt);
             document.getElementById('det-ended-at').textContent = formatDate(scan.endedAt);
 
@@ -1499,7 +1514,7 @@ function loadPerformance() {
                     <td><strong>${scan.projectName || scan.name || 'Unnamed Project'}</strong></td>
                     <td>${formatDate(scan.startedAt)}</td>
                     <td>${formatDate(scan.endedAt)}</td>
-                    <td><span class="decision-badge valid">${formatDuration(scan.durationSeconds)}</span></td>
+                    <td class="scan-duration-cell" data-status="${scan.status}" data-initial-secs="${scan.durationSeconds || 0}" data-render-time="${Date.now()}"><span class="decision-badge valid">${formatDuration(scan.durationSeconds)}</span></td>
                     <td>${scan.pagesScanned}</td>
                     <td><span class="status-badge failed">${scan.totalIssues}</span></td>
                 `;
@@ -1889,4 +1904,43 @@ function stopMetricsPolling() {
         clearInterval(window.state.metricsInterval);
         window.state.metricsInterval = null;
     }
+}
+
+function startLiveScanTimer() {
+    if (window.state.liveScanInterval) return;
+    window.state.liveScanInterval = setInterval(() => {
+        document.querySelectorAll('.scan-duration-cell').forEach(cell => {
+            const status = cell.getAttribute('data-status');
+            if (status && status.toUpperCase() === 'RUNNING') {
+                const initialSecs = parseInt(cell.getAttribute('data-initial-secs') || '0', 10);
+                const renderTime = parseInt(cell.getAttribute('data-render-time') || '0', 10);
+                if (renderTime > 0) {
+                    const currentElapsed = initialSecs + Math.floor((Date.now() - renderTime) / 1000);
+                    const badge = cell.querySelector('.decision-badge');
+                    if (badge) {
+                        badge.textContent = formatDuration(currentElapsed);
+                    } else {
+                        cell.textContent = formatDuration(currentElapsed);
+                    }
+                }
+            }
+        });
+    }, 1000);
+}
+
+function startAutoRefreshPolling() {
+    if (window.state.autoRefreshInterval) return;
+    window.state.autoRefreshInterval = setInterval(() => {
+        const pane = window.state.activePane;
+        const hasRunning = document.querySelector('.scan-duration-cell[data-status="RUNNING"]');
+        if (hasRunning) {
+            if (pane === 'scans') {
+                loadScans();
+            } else if (pane === 'dashboard') {
+                loadDashboardStats();
+            } else if (pane === 'scan-details' && window.state.currentScanDetailsId) {
+                loadScanDetails(window.state.currentScanDetailsId);
+            }
+        }
+    }, 4000);
 }
