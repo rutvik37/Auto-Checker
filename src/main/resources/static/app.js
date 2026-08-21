@@ -1074,104 +1074,123 @@ let quizState = {
     answered: false
 };
 
-const spellingTriviaBank = [
+const indiaTriviaBank = [
+    // --- India History & Leaders ---
     {
-        category: "Spelling & Vocabulary",
-        question: "Which spelling is correct?",
-        options: ["Accommodation", "Acomodation", "Accomodation", "Acommodation"],
+        category: "India History & Leaders",
+        question: "Who was the first Prime Minister of independent India?",
+        options: ["Jawaharlal Nehru", "Mahatma Gandhi", "Sardar Vallabhbhai Patel", "Dr. B.R. Ambedkar"],
         answer: 0,
-        explanation: "Accommodation has double 'c' and double 'm'!"
+        explanation: "Pandit Jawaharlal Nehru served as India's first Prime Minister from 1947 to 1964."
     },
     {
-        category: "Spelling & Vocabulary",
-        question: "Identify the correct typo fix for 'Feild':",
-        options: ["Field", "Bald", "Fall", "Feild"],
+        category: "India History & Leaders",
+        question: "Who is known as the 'Missile Man of India'?",
+        options: ["Dr. A.P.J. Abdul Kalam", "Dr. Homi Bhabha", "Vikram Sarabhai", "C.V. Raman"],
         answer: 0,
-        explanation: "Remember 'i' before 'e' except after 'c' -> Field!"
+        explanation: "Dr. A.P.J. Abdul Kalam earned the title for his seminal work on ISRO and defence missile technology."
     },
     {
-        category: "Spelling & Vocabulary",
-        question: "Select the correctly spelled word:",
-        options: ["Definitely", "Definately", "Definitly", "Defenitely"],
+        category: "India History & Leaders",
+        question: "Who was the chief architect of the Indian Constitution?",
+        options: ["Dr. B.R. Ambedkar", "Dr. Rajendra Prasad", "Subhas Chandra Bose", "Sarojini Naidu"],
         answer: 0,
-        explanation: "Definitely comes from 'finite'!"
+        explanation: "Dr. B.R. Ambedkar served as the Chairman of the Drafting Committee of the Constitution."
     },
     {
-        category: "QA & Web Trivia",
-        question: "What does HTML stand for?",
-        options: ["HyperText Markup Language", "HighText Machine Language", "HyperTransfer Markup Level", "HyperText Machine Logic"],
+        category: "India History & Leaders",
+        question: "In which year did India gain Independence from British rule?",
+        options: ["1947", "1950", "1942", "1945"],
         answer: 0,
-        explanation: "HTML = HyperText Markup Language!"
+        explanation: "India achieved independence on August 15, 1947."
     },
     {
-        category: "Spelling & Vocabulary",
-        question: "Which spelling is correct?",
-        options: ["Maintenance", "Maintainance", "Maintenence", "Maintenace"],
+        category: "India History & Leaders",
+        question: "Who is popularly known as the 'Iron Man of India'?",
+        options: ["Sardar Vallabhbhai Patel", "Bhagat Singh", "Lal Bahadur Shastri", "Bal Gangadhar Tilak"],
         answer: 0,
-        explanation: "Maintenance has an 'a' after the 't'!"
+        explanation: "Sardar Vallabhbhai Patel united 565 princely states into the Indian Union."
     },
     {
-        category: "Spelling & Vocabulary",
-        question: "Select the correct spelling:",
-        options: ["Receiving", "Recieving", "Reiceving", "Receving"],
+        category: "India History & Leaders",
+        question: "Which city served as the capital of British India before Delhi in 1911?",
+        options: ["Calcutta (Kolkata)", "Bombay (Mumbai)", "Madras (Chennai)", "Agra"],
         answer: 0,
-        explanation: "'i' before 'e' except after 'c' -> Receiving!"
+        explanation: "Calcutta was the capital of British India until King George V announced moving it to Delhi in 1911."
+    },
+
+    // --- AI & Modern Tech ---
+    {
+        category: "AI & Modern Tech",
+        question: "Which ISRO lunar mission made India the first country to land near the Moon's South Pole?",
+        options: ["Chandrayaan-3", "Chandrayaan-1", "Mangalyaan", "Aditya-L1"],
+        answer: 0,
+        explanation: "Chandrayaan-3's Vikram lander successfully touched down near the lunar South Pole on Aug 23, 2023."
     },
     {
-        category: "Spelling & Vocabulary",
-        question: "Select the correctly spelled word:",
-        options: ["Occurred", "Occured", "Occurre", "Ocurred"],
+        category: "AI & Modern Tech",
+        question: "Which Indian city is globally recognized as the 'Silicon Valley of India'?",
+        options: ["Bengaluru", "Hyderabad", "Pune", "Gurugram"],
         answer: 0,
-        explanation: "Occurred has double 'c' and double 'r'!"
+        explanation: "Bengaluru is India's premier IT hub and start-up ecosystem capital."
     },
     {
-        category: "Spelling & Vocabulary",
-        question: "Select the correct spelling:",
-        options: ["Separate", "Seperate", "Separat", "Seperat"],
+        category: "AI & Modern Tech",
+        question: "What does LLM stand for in modern AI technology?",
+        options: ["Large Language Model", "Linear Logic Machine", "Linked Layer Memory", "Language Learning Module"],
         answer: 0,
-        explanation: "There is 'a rat' in sep-a-rat-e!"
+        explanation: "Large Language Models (LLMs) power generative AI systems like Groq, ChatGPT, and Gemini."
     },
     {
-        category: "Spelling & Vocabulary",
-        question: "Select the correct spelling:",
-        options: ["Privilege", "Privelege", "Privlege", "Priviledge"],
+        category: "AI & Modern Tech",
+        question: "What is the name of C-DAC's premier supercomputer series in India?",
+        options: ["PARAM", "SHAKTI", "AGNI", "ARYABHATA"],
         answer: 0,
-        explanation: "Privilege has two 'i's and two 'e's!"
+        explanation: "C-DAC's PARAM supercomputers lead India's national high-performance computing capability."
     },
     {
-        category: "Spelling & Vocabulary",
-        question: "Select the correct spelling:",
-        options: ["Necessary", "Necesary", "Neccessary", "Nessasary"],
+        category: "AI & Modern Tech",
+        question: "Which Indian space observatory mission was launched in 2023 to study the Sun?",
+        options: ["Aditya-L1", "Gaganyaan", "Astrosat", "XPoSat"],
         answer: 0,
-        explanation: "1 Collar (c), 2 Sleeves (s) -> Necessary!"
+        explanation: "Aditya-L1 is India's first dedicated solar observatory mission placed at Lagrange Point 1."
+    },
+
+    // --- India Heritage & Civics ---
+    {
+        category: "India Heritage & Civics",
+        question: "How many states and Union Territories are there in India currently?",
+        options: ["28 States, 8 UTs", "29 States, 7 UTs", "28 States, 9 UTs", "30 States, 8 UTs"],
+        answer: 0,
+        explanation: "India currently comprises 28 States and 8 Union Territories."
     },
     {
-        category: "QA & Web Trivia",
-        question: "What status code represents HTTP 200?",
-        options: ["OK (Success)", "Not Found", "Server Error", "Forbidden"],
+        category: "India Heritage & Civics",
+        question: "Which river is the longest river originating and flowing within India?",
+        options: ["Ganga", "Godavari", "Yamuna", "Narmada"],
         answer: 0,
-        explanation: "200 OK means request succeeded!"
+        explanation: "The Ganga is the longest river flowing entirely within India (~2,525 km)."
     },
     {
-        category: "Spelling & Vocabulary",
-        question: "Identify the correct typo fix for 'wiht':",
-        options: ["with", "wit", "white", "weight"],
+        category: "India Heritage & Civics",
+        question: "Which Indian monument in Agra is listed among the Seven Wonders of the World?",
+        options: ["Taj Mahal", "Qutub Minar", "Red Fort", "Fatehpur Sikri"],
         answer: 0,
-        explanation: "wiht is a common typo for 'with'!"
+        explanation: "The Taj Mahal, built by Mughal Emperor Shah Jahan, is a UNESCO World Heritage site."
     },
     {
-        category: "Spelling & Vocabulary",
-        question: "Select the correct spelling:",
-        options: ["Calendar", "Calender", "Calander", "Calendr"],
+        category: "India Heritage & Civics",
+        question: "What is the official currency of India?",
+        options: ["Indian Rupee (INR)", "Rupee (PKR)", "Taka", "Rupiah"],
         answer: 0,
-        explanation: "Calendar ends with '-ar'!"
+        explanation: "The Indian Rupee (₹ / INR) is the official currency regulated by the Reserve Bank of India (RBI)."
     },
     {
-        category: "Spelling & Vocabulary",
-        question: "Select the correct spelling:",
-        options: ["Embarrass", "Embaras", "Embarass", "Emberrass"],
+        category: "India Heritage & Civics",
+        question: "Where is the Supreme Court of India located?",
+        options: ["New Delhi", "Mumbai", "Kolkata", "Bengaluru"],
         answer: 0,
-        explanation: "Double 'r' and double 's' -> Embarrass!"
+        explanation: "The Supreme Court of India is the highest judicial authority located at Tilak Marg, New Delhi."
     }
 ];
 
@@ -1193,21 +1212,21 @@ function initQuizGame() {
 function setQuizMode(mode) {
     quizState.mode = mode;
     const btnMath = document.getElementById('btn-quiz-mode-math');
-    const btnSpelling = document.getElementById('btn-quiz-mode-spelling');
+    const btnIndia = document.getElementById('btn-quiz-mode-india');
     
     if (mode === 'math') {
         if (btnMath) {
             btnMath.style.background = 'var(--color-primary)';
             btnMath.style.color = 'white';
         }
-        if (btnSpelling) {
-            btnSpelling.style.background = 'transparent';
-            btnSpelling.style.color = 'var(--text-secondary)';
+        if (btnIndia) {
+            btnIndia.style.background = 'transparent';
+            btnIndia.style.color = 'var(--text-secondary)';
         }
     } else {
-        if (btnSpelling) {
-            btnSpelling.style.background = 'var(--color-primary)';
-            btnSpelling.style.color = 'white';
+        if (btnIndia) {
+            btnIndia.style.background = 'var(--color-primary)';
+            btnIndia.style.color = 'white';
         }
         if (btnMath) {
             btnMath.style.background = 'transparent';
@@ -1280,7 +1299,7 @@ function renderNextQuestion() {
     if (quizState.mode === 'math') {
         q = generateMathQuestion();
     } else {
-        q = spellingTriviaBank[Math.floor(Math.random() * spellingTriviaBank.length)];
+        q = indiaTriviaBank[Math.floor(Math.random() * indiaTriviaBank.length)];
     }
     quizState.currentQuestion = q;
 
@@ -1394,4 +1413,9 @@ function selectQuizAnswer(selectedIndex, clickedBtn) {
     }, isCorrect ? 1200 : 2000);
 }
 
+function skipQuizQuestion() {
+    renderNextQuestion();
+}
+
 window.setQuizMode = setQuizMode;
+window.skipQuizQuestion = skipQuizQuestion;
