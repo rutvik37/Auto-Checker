@@ -2251,7 +2251,7 @@ function getDefaultAdminFooterFallback() {
         enabled: true,
         brand: {
             appName: "Auto-Checker",
-            tagline: "Automated Website QA & Spelling Engine",
+            tagline: "Automated Website Spelling Engine",
             description: "Verify spelling issues and QA defects on websites instantly with automated content analysis.",
             logoIcon: "fa-solid fa-wand-magic-sparkles"
         },
@@ -2901,7 +2901,7 @@ function renderAdminFooterPreview() {
                         <div class="footer-logo-icon"><i class="${escapeHtml(brand.logoIcon || 'fa-solid fa-wand-magic-sparkles')}"></i></div>
                         <div>
                             <div class="footer-brand-title">${escapeHtml(brand.appName || 'Auto-Checker')}</div>
-                            <div class="footer-brand-tagline">${escapeHtml(brand.tagline || 'Automated Website QA & Spelling Engine')}</div>
+                            <div class="footer-brand-tagline">${escapeHtml(brand.tagline || 'Automated Website Spelling Engine')}</div>
                         </div>
                     </div>
                     <p class="footer-brand-desc">${escapeHtml(brand.description || '')}</p>
