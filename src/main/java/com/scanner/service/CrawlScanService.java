@@ -321,7 +321,7 @@ public class CrawlScanService {
                             } while (!maxConcurrentWorkers.compareAndSet(maxVal, running));
 
                             try {
-                                if (scan.getMaxPages() != null && pagesScannedCount.get() >= scan.getMaxPages()) {
+                                if (scan.getMaxPages() != null && scan.getMaxPages() > 0 && pagesScannedCount.get() >= scan.getMaxPages()) {
                                     synchronized (concurrentQueue) {
                                         concurrentQueue.clear();
                                         concurrentQueue.notifyAll();
@@ -375,7 +375,7 @@ public class CrawlScanService {
                                             currentUrl);
 
                                     // Discover internal links
-                                    if (scan.getCrawlDepth() == null || currentDepth < scan.getCrawlDepth()) {
+                                    if (scan.getCrawlDepth() == null || scan.getCrawlDepth() <= 0 || currentDepth < scan.getCrawlDepth()) {
                                         Elements links = doc.select("a[href]");
                                         for (Element link : links) {
                                             String absUrl = link.absUrl("href");
@@ -478,6 +478,7 @@ public class CrawlScanService {
                         && !scanCancellationTokens.getOrDefault(scanId, false)) {
 
                     if (scan.getMaxPages() != null
+                            && scan.getMaxPages() > 0
                             && pagesScannedCount.get() >= scan.getMaxPages()) {
                         logInfo(scanId, "Reached max page limit (" + scan.getMaxPages() + "). Stopping crawler.",
                                 finalLogWriter);
@@ -532,7 +533,7 @@ public class CrawlScanService {
                         broadcastProgress(scanId, pagesScannedCount, wordsCheckedCount, totalIssuesCount, currentUrl);
 
                         // Discover internal links
-                        if (scan.getCrawlDepth() == null || currentDepth < scan.getCrawlDepth()) {
+                        if (scan.getCrawlDepth() == null || scan.getCrawlDepth() <= 0 || currentDepth < scan.getCrawlDepth()) {
                             Elements links = doc.select("a[href]");
                             for (Element link : links) {
                                 String absUrl = link.absUrl("href");

@@ -74,12 +74,28 @@
                                 </div>
                             </div>
                             
+                            <div class="form-row" style="margin-bottom: 14px; margin-top: -2px;">
+                                <div class="form-group" style="width: 100%;">
+                                    <label for="scan-all-pages" class="scan-all-checkbox-card" style="display: flex; align-items: center; gap: 12px; padding: 12px 18px; background: rgba(139, 92, 246, 0.1); border: 1px solid rgba(168, 85, 247, 0.25); border-radius: 12px; cursor: pointer; user-select: none; transition: all 0.25s ease;">
+                                        <input type="checkbox" id="scan-all-pages" onchange="toggleScanAllPagesMode(this.checked)" style="width: 20px; height: 20px; accent-color: #a855f7; cursor: pointer; flex-shrink: 0;">
+                                        <div style="display: flex; flex-direction: column;">
+                                            <span style="font-size: 14px; font-weight: 700; color: #ffffff; display: flex; align-items: center; gap: 6px;">
+                                                <i class="fa-solid fa-globe" style="color: #c084fc;"></i> Scan Entire Website (Include All Pages & Unlimited Depth)
+                                            </span>
+                                            <span style="font-size: 11px; color: #a5b4fc; font-weight: 500; margin-top: 2px;">
+                                                Automatically crawl all internal pages discovered across the website without page or depth limits.
+                                            </span>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+
                             <div class="form-row">
-                                <div class="form-group">
+                                <div class="form-group" id="max-pages-group">
                                     <label for="max-pages" style="font-size: 14px; font-weight: 600;">Max Pages</label>
                                     <input type="number" id="max-pages" placeholder="Enter maximum pages to scan" value="100" style="padding: 14px; font-size: 15px;">
                                 </div>
-                                <div class="form-group">
+                                <div class="form-group" id="crawl-depth-group">
                                     <label for="crawl-depth" style="font-size: 14px; font-weight: 600;">Crawl Depth</label>
                                     <input type="number" id="crawl-depth" placeholder="Enter crawl depth" value="3" style="padding: 14px; font-size: 15px;">
                                 </div>

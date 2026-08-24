@@ -305,9 +305,15 @@ async function startScan(event) {
         // Trigger the scan on the project
         const url = document.getElementById('scan-url').value.trim();
         const scanName = document.getElementById('scan-name').value.trim();
-        const maxPages = document.getElementById('max-pages').value.trim();
-        const crawlDepth = document.getElementById('crawl-depth').value.trim();
+        const scanAllPagesCheckbox = document.getElementById('scan-all-pages');
+        const isScanAllPages = scanAllPagesCheckbox ? scanAllPagesCheckbox.checked : false;
+
+        const maxPagesVal = document.getElementById('max-pages').value.trim();
+        const crawlDepthVal = document.getElementById('crawl-depth').value.trim();
         const respectRobots = document.getElementById('respect-robots').checked;
+
+        const finalMaxPages = isScanAllPages ? 0 : (maxPagesVal ? parseInt(maxPagesVal) : null);
+        const finalCrawlDepth = isScanAllPages ? 0 : (crawlDepthVal ? parseInt(crawlDepthVal) : null);
 
         const response = await fetch(`/api/projects/${activeProjectId}/scans`, {
             method: 'POST',
@@ -315,8 +321,8 @@ async function startScan(event) {
             body: JSON.stringify({
                 name: scanName,
                 url: url,
-                maxPages: maxPages ? parseInt(maxPages) : null,
-                crawlDepth: crawlDepth ? parseInt(crawlDepth) : null,
+                maxPages: finalMaxPages,
+                crawlDepth: finalCrawlDepth,
                 respectRobots: respectRobots
             })
         });
@@ -832,6 +838,11 @@ async function resetFormAndOutput(skipConfirm = false) {
     if (crawlDepthInput) {
         crawlDepthInput.value = '3';
         crawlDepthInput.disabled = false;
+    }
+    const scanAllPagesCheckbox = document.getElementById('scan-all-pages');
+    if (scanAllPagesCheckbox) {
+        scanAllPagesCheckbox.checked = false;
+        toggleScanAllPagesMode(false);
     }
 
     // 2. Stop active SSE stream if it exists
@@ -2184,3 +2195,53 @@ window.revealNextTechFact = revealNextTechFact;
 window.revealNextWorldWonder = revealNextWorldWonder;
 window.applyWidgetSettingsFromAdmin = applyWidgetSettingsFromAdmin;
 window.applyFooterSettingsFromAdmin = applyFooterSettingsFromAdmin;
+
+function toggleScanAllPagesMode(isChecked) {
+    const maxPagesInput = document.getElementById('max-pages');
+    const crawlDepthInput = document.getElementById('crawl-depth');
+    const maxPagesGroup = document.getElementById('max-pages-group');
+    const crawlDepthGroup = document.getElementById('crawl-depth-group');
+
+    if (isChecked) {
+        if (maxPagesInput) {
+            maxPagesInput.dataset.savedVal = maxPagesInput.value || '100';
+            maxPagesInput.value = '';
+            maxPagesInput.placeholder = 'Unlimited (Full Website Scan)';
+            maxPagesInput.disabled = true;
+            maxPagesInput.style.opacity = '0.4';
+            maxPagesInput.style.cursor = 'not-allowed';
+            maxPagesInput.style.background = 'rgba(0, 0, 0, 0.4)';
+        }
+        if (crawlDepthInput) {
+            crawlDepthInput.dataset.savedVal = crawlDepthInput.value || '3';
+            crawlDepthInput.value = '';
+            crawlDepthInput.placeholder = 'Unlimited (All Internal Levels)';
+            crawlDepthInput.disabled = true;
+            crawlDepthInput.style.opacity = '0.4';
+            crawlDepthInput.style.cursor = 'not-allowed';
+            crawlDepthInput.style.background = 'rgba(0, 0, 0, 0.4)';
+        }
+        if (maxPagesGroup) maxPagesGroup.style.opacity = '0.5';
+        if (crawlDepthGroup) crawlDepthGroup.style.opacity = '0.5';
+    } else {
+        if (maxPagesInput) {
+            maxPagesInput.value = maxPagesInput.dataset.savedVal || '100';
+            maxPagesInput.placeholder = 'Enter maximum pages to scan';
+            maxPagesInput.disabled = false;
+            maxPagesInput.style.opacity = '1';
+            maxPagesInput.style.cursor = 'text';
+            maxPagesInput.style.background = '';
+        }
+        if (crawlDepthInput) {
+            crawlDepthInput.value = crawlDepthInput.dataset.savedVal || '3';
+            crawlDepthInput.placeholder = 'Enter crawl depth';
+            crawlDepthInput.disabled = false;
+            crawlDepthInput.style.opacity = '1';
+            crawlDepthInput.style.cursor = 'text';
+            crawlDepthInput.style.background = '';
+        }
+        if (maxPagesGroup) maxPagesGroup.style.opacity = '1';
+        if (crawlDepthGroup) crawlDepthGroup.style.opacity = '1';
+    }
+}
+window.toggleScanAllPagesMode = toggleScanAllPagesMode;
