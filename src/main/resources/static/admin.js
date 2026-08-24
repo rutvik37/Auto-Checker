@@ -2250,10 +2250,10 @@ function getDefaultAdminFooterFallback() {
     return {
         enabled: true,
         brand: {
-            appName: "QA Spelling Auto-Checker",
-            tagline: "Automated Quality Assurance & Content Validation",
-            description: "Verify spelling issues on websites instantly with powerful automated website content analysis.",
-            logoIcon: "fa-solid fa-spell-check"
+            appName: "Auto-Checker",
+            tagline: "Automated Website QA & Spelling Engine",
+            description: "Verify spelling issues and QA defects on websites instantly with automated content analysis.",
+            logoIcon: "fa-solid fa-wand-magic-sparkles"
         },
         contact: {
             supportEmail: "support@example.com",
@@ -2898,10 +2898,10 @@ function renderAdminFooterPreview() {
             <div class="footer-top-grid">
                 <div class="footer-brand-col">
                     <div class="footer-brand-logo">
-                        <div class="footer-logo-icon"><i class="${escapeHtml(brand.logoIcon || 'fa-solid fa-spell-check')}"></i></div>
+                        <div class="footer-logo-icon"><i class="${escapeHtml(brand.logoIcon || 'fa-solid fa-wand-magic-sparkles')}"></i></div>
                         <div>
-                            <div class="footer-brand-title">${escapeHtml(brand.appName || 'QA Spelling Auto-Checker')}</div>
-                            <div class="footer-brand-tagline">${escapeHtml(brand.tagline || '')}</div>
+                            <div class="footer-brand-title">${escapeHtml(brand.appName || 'Auto-Checker')}</div>
+                            <div class="footer-brand-tagline">${escapeHtml(brand.tagline || 'Automated Website QA & Spelling Engine')}</div>
                         </div>
                     </div>
                     <p class="footer-brand-desc">${escapeHtml(brand.description || '')}</p>
@@ -2911,7 +2911,7 @@ function renderAdminFooterPreview() {
                 ${contactHtml}
             </div>
             <div class="footer-bottom-bar" style="border-top: 1px solid rgba(255,255,255,0.08); margin-top: 20px; padding-top: 16px;">
-                <div>© ${new Date().getFullYear()} ${escapeHtml(copyright.companyName || 'QA Spelling Auto-Checker')}. ${escapeHtml(copyright.suffixText || '')}</div>
+                <div>© ${new Date().getFullYear()} ${escapeHtml(copyright.companyName || 'Auto-Checker')}. ${escapeHtml(copyright.suffixText || '')}</div>
             </div>
         </div>
     `;

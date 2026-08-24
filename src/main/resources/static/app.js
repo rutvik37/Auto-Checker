@@ -1936,10 +1936,10 @@ function getDefaultFooterFallback() {
     return {
         enabled: true,
         brand: {
-            appName: "QA Spelling Auto-Checker",
-            tagline: "Automated Quality Assurance & Content Validation",
-            description: "Verify spelling issues on websites instantly with powerful automated website content analysis.",
-            logoIcon: "fa-solid fa-spell-check"
+            appName: "Auto-Checker",
+            tagline: "Automated Website QA & Spelling Engine",
+            description: "Verify spelling issues and QA defects on websites instantly with automated content analysis.",
+            logoIcon: "fa-solid fa-wand-magic-sparkles"
         },
         contact: {
             supportEmail: "support@example.com",
@@ -2018,9 +2018,9 @@ function renderFooterToDom(settings) {
     const copyright = settings.copyright || {};
     const newsletter = settings.newsletter || {};
 
-    const logoIcon = brand.logoIcon || 'fa-solid fa-spell-check';
-    const appName = brand.appName || 'QA Spelling Auto-Checker';
-    const tagline = brand.tagline || '';
+    const logoIcon = brand.logoIcon || 'fa-solid fa-wand-magic-sparkles';
+    const appName = brand.appName || 'Auto-Checker';
+    const tagline = brand.tagline || 'Automated Website QA & Spelling Engine';
     const desc = brand.description || '';
 
     // Build Social HTML
