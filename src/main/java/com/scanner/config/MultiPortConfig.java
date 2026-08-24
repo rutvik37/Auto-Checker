@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class MultiPortConfig {
 
-    @org.springframework.beans.factory.annotation.Value("${app.single-port:false}")
+    @org.springframework.beans.factory.annotation.Value("${app.single-port:true}")
     private boolean singlePort;
 
     @Bean

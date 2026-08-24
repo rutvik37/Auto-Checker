@@ -2523,7 +2523,7 @@ function renderAdminPagesList() {
             </div>
             <div style="display: flex; align-items: center; gap: 8px;">
                 <span style="font-size: 10px; background: rgba(52, 211, 153, 0.2); color: #34d399; padding: 2px 8px; border-radius: 10px; font-weight: 600;">${escapeHtml(p.status)}</span>
-                <a href="http://localhost:8080${p.slug}" target="_blank" class="btn btn-secondary btn-sm" style="padding: 4px 10px; font-size: 12px; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">
+                <a href="${p.slug}" target="_blank" class="btn btn-secondary btn-sm" style="padding: 4px 10px; font-size: 12px; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">
                     <i class="fa-solid fa-arrow-up-right-from-square"></i> Open
                 </a>
             </div>

@@ -10,7 +10,7 @@ import java.io.IOException;
 @Component
 public class PortRoutingFilter implements Filter {
 
-    @org.springframework.beans.factory.annotation.Value("${app.single-port:false}")
+    @org.springframework.beans.factory.annotation.Value("${app.single-port:true}")
     private boolean singlePort;
 
     @Override
