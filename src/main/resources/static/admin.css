@@ -226,22 +226,38 @@ body {
 }
 
 .theme-toggle button {
-    background: none;
-    border: 1px solid var(--border-color);
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     color: var(--text-primary);
-    width: 40px;
-    height: 40px;
-    border-radius: 8px;
+    padding: 8px 16px;
+    height: 38px;
+    border-radius: 20px;
     cursor: pointer;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
     transition: all var(--transition-speed);
+    white-space: nowrap;
 }
 
 .theme-toggle button:hover {
-    background-color: var(--table-header-bg);
-    border-color: var(--text-muted);
+    background-color: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-1px);
+}
+
+body.light-mode .theme-toggle button {
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    color: #1e293b;
+}
+
+body.light-mode .theme-toggle button:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+    border-color: rgba(0, 0, 0, 0.2);
 }
 
 /* Panes Styling */

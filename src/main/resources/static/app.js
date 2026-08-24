@@ -34,27 +34,27 @@ function initTheme() {
     if (savedTheme === 'light') {
         body.classList.remove('dark-mode');
         body.classList.add('light-mode');
-        themeBtn.innerHTML = '<i class="fa-solid fa-sun" style="color: #f59e0b;"></i>';
-        themeBtn.title = 'Light Appearance (Click to switch to Dark Mode)';
+        themeBtn.innerHTML = '<i class="fa-solid fa-moon" style="color: #6366f1;"></i> Dark Theme';
+        themeBtn.title = 'Switch to Dark Theme';
     } else {
         body.classList.add('dark-mode');
         body.classList.remove('light-mode');
-        themeBtn.innerHTML = '<i class="fa-solid fa-moon" style="color: #a5b4fc;"></i>';
-        themeBtn.title = 'Dark Appearance (Click to switch to Light Mode)';
+        themeBtn.innerHTML = '<i class="fa-regular fa-sun" style="color: #f59e0b;"></i> Light Theme';
+        themeBtn.title = 'Switch to Light Theme';
     }
 
     themeBtn.addEventListener('click', () => {
         if (body.classList.contains('light-mode')) {
             body.classList.remove('light-mode');
             body.classList.add('dark-mode');
-            themeBtn.innerHTML = '<i class="fa-solid fa-moon" style="color: #a5b4fc;"></i>';
-            themeBtn.title = 'Dark Appearance (Click to switch to Light Mode)';
+            themeBtn.innerHTML = '<i class="fa-regular fa-sun" style="color: #f59e0b;"></i> Light Theme';
+            themeBtn.title = 'Switch to Light Theme';
             localStorage.setItem('theme', 'dark');
         } else {
             body.classList.remove('dark-mode');
             body.classList.add('light-mode');
-            themeBtn.innerHTML = '<i class="fa-solid fa-sun" style="color: #f59e0b;"></i>';
-            themeBtn.title = 'Light Appearance (Click to switch to Dark Mode)';
+            themeBtn.innerHTML = '<i class="fa-solid fa-moon" style="color: #6366f1;"></i> Dark Theme';
+            themeBtn.title = 'Switch to Dark Theme';
             localStorage.setItem('theme', 'light');
         }
     });
@@ -503,6 +503,21 @@ function initSseStream(scanId) {
 async function cancelActiveScan() {
     if (!activeScanId) return;
     
+    // Check if scan is already completed/stopped before sending cancel signal
+    try {
+        const checkRes = await fetch(`/api/scans/${activeScanId}`);
+        if (checkRes.ok) {
+            const scanData = await checkRes.json();
+            if (scanData.status === 'COMPLETED' || scanData.status === 'STOPPED' || scanData.status === 'FAILED') {
+                console.log('Scan is already in terminal status:', scanData.status);
+                activeScanId = null;
+                return;
+            }
+        }
+    } catch (e) {
+        console.warn('Status check before cancel:', e);
+    }
+
     // Use custom styled confirm dialog
     const confirmed = await showCustomConfirm('Are you sure you want to stop the active crawl scan session?');
     if (!confirmed) return;
@@ -514,6 +529,7 @@ async function cancelActiveScan() {
         
         // Hide the stop button immediately upon sending cancel signal
         document.getElementById('btn-cancel-scan').style.display = 'none';
+        activeScanId = null;
     } catch (e) {
         console.error('Cancellation failed: ', e);
     }

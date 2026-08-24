@@ -124,6 +124,13 @@ public class CrawlScanService {
     // Cancellation
     // -------------------------------------------------------------------------
     public void cancelScan(Long scanId) {
+        if (scanId != null) {
+            Scan scan = scanRepository.findById(scanId).orElse(null);
+            if (scan != null && ("COMPLETED".equals(scan.getStatus()) || "FAILED".equals(scan.getStatus()))) {
+                logger.info("Scan {} is already in terminal state ({}), ignoring cancel request.", scanId, scan.getStatus());
+                return;
+            }
+        }
         scanCancellationTokens.put(scanId, true);
         logger.info("Cancellation requested for scan {}", scanId);
     }
@@ -880,11 +887,9 @@ public class CrawlScanService {
             logInfo(scanId, "Validated VALID: " + validFindings, finalLogWriter);
             logInfo(scanId, "Pending Validation: " + pendingFindings, finalLogWriter);
 
-            // Broadcast final status update
-            broadcastProgress(scanId, pagesScannedCount, wordsCheckedCount, totalIssuesCount, "Scan complete");
-
             // ---- Determine final status ----
-            if (scanCancellationTokens.getOrDefault(scanId, false)) {
+            boolean wasCancelled = scanCancellationTokens.getOrDefault(scanId, false);
+            if (wasCancelled) {
                 scan.setStatus("STOPPED");
                 logInfo(scanId, "Scan stopped by user.", finalLogWriter);
             } else {
@@ -893,16 +898,22 @@ public class CrawlScanService {
                         + " Issues=" + totalIssuesCount.get(), finalLogWriter);
             }
 
-        } catch (Exception e) {
-            logger.error("Scan {} failed with exception: ", scanId, e);
-            scan.setStatus("FAILED");
-            logError(scanId, "Scan failed: " + e.getMessage(), finalLogWriter);
-        } finally {
             scan.setEndedAt(LocalDateTime.now());
             scan.setPagesScanned(pagesScannedCount.get());
             scan.setWordsChecked(wordsCheckedCount.get());
             scan.setTotalIssues(totalIssuesCount.get());
+            scanRepository.save(scan);
 
+            // Broadcast final status update with true completion message
+            broadcastProgress(scanId, pagesScannedCount, wordsCheckedCount, totalIssuesCount, wasCancelled ? "Scan stopped" : "Scan complete");
+
+        } catch (Exception e) {
+            logger.error("Scan {} failed with exception: ", scanId, e);
+            scan.setStatus("FAILED");
+            scan.setEndedAt(LocalDateTime.now());
+            scanRepository.save(scan);
+            logError(scanId, "Scan failed: " + e.getMessage(), finalLogWriter);
+        } finally {
             long dbStartFinally = System.nanoTime();
             scanRepository.save(scan);
             long dbTimeFinally = (System.nanoTime() - dbStartFinally) / 1_000_000;

@@ -1,4 +1,14 @@
 // Auto-Checker Admin Panel SPA Engine
+function escapeHtml(str) {
+    if (str === null || str === undefined) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     // Apply saved theme preference instantly
     const savedTheme = localStorage.getItem('admin_theme');
@@ -312,28 +322,28 @@ function initTheme() {
     const themeBtn = document.getElementById('theme-switch');
     if (!themeBtn) return;
     
-    // Sync button icon first
+    // Sync button icon & text first
     const body = document.body;
     if (body.classList.contains('light-mode')) {
-        themeBtn.innerHTML = '<i class="fa-solid fa-sun" style="color: #f59e0b;"></i>';
-        themeBtn.title = 'Light Appearance (Click to switch to Dark Mode)';
+        themeBtn.innerHTML = '<i class="fa-solid fa-moon" style="color: #6366f1;"></i> Dark Theme';
+        themeBtn.title = 'Switch to Dark Theme';
     } else {
-        themeBtn.innerHTML = '<i class="fa-solid fa-moon" style="color: #a5b4fc;"></i>';
-        themeBtn.title = 'Dark Appearance (Click to switch to Light Mode)';
+        themeBtn.innerHTML = '<i class="fa-regular fa-sun" style="color: #f59e0b;"></i> Light Theme';
+        themeBtn.title = 'Switch to Light Theme';
     }
 
     themeBtn.addEventListener('click', () => {
         if (body.classList.contains('dark-mode')) {
             body.classList.remove('dark-mode');
             body.classList.add('light-mode');
-            themeBtn.innerHTML = '<i class="fa-solid fa-sun" style="color: #f59e0b;"></i>';
-            themeBtn.title = 'Light Appearance (Click to switch to Dark Mode)';
+            themeBtn.innerHTML = '<i class="fa-solid fa-moon" style="color: #6366f1;"></i> Dark Theme';
+            themeBtn.title = 'Switch to Dark Theme';
             localStorage.setItem('admin_theme', 'light');
         } else {
             body.classList.remove('light-mode');
             body.classList.add('dark-mode');
-            themeBtn.innerHTML = '<i class="fa-solid fa-moon" style="color: #a5b4fc;"></i>';
-            themeBtn.title = 'Dark Appearance (Click to switch to Light Mode)';
+            themeBtn.innerHTML = '<i class="fa-regular fa-sun" style="color: #f59e0b;"></i> Light Theme';
+            themeBtn.title = 'Switch to Light Theme';
             localStorage.setItem('admin_theme', 'dark');
         }
     });
@@ -380,7 +390,7 @@ function showPane(paneId) {
 
     // Update Title
     const titleMap = {
-        'dashboard': 'System Dashboard',
+        'dashboard': 'Dashboard',
         'projects': 'Projects Directory',
         'scans': 'Scan Runs History',
         'scan-details': 'Scan Execution Detail',
@@ -957,10 +967,14 @@ function loadDashboardStats() {
                 tr.addEventListener('click', () => {
                     window.location.hash = `scan-details/${s.id}`;
                 });
+                const scanUrl = s.url || '';
+                const scanLink = scanUrl.startsWith('http') ? scanUrl : (scanUrl ? 'http://' + scanUrl : '#');
+                const urlDisplay = scanUrl ? `<a href="${scanLink}" target="_blank" onclick="event.stopPropagation();" style="color: #38bdf8; font-weight: 600; text-decoration: underline; display: inline-flex; align-items: center; gap: 4px;">${escapeHtml(scanUrl)} <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 11px;"></i></a>` : 'N/A';
+
                 tr.innerHTML = `
                     <td>${s.id}</td>
-                    <td><strong>${s.projectName || s.name || 'Unnamed Project'}</strong></td>
-                    <td><span class="text-secondary">${s.url}</span></td>
+                    <td><strong>${escapeHtml(s.projectName || s.name || 'Unnamed Project')}</strong></td>
+                    <td>${urlDisplay}</td>
                     <td><span class="status-badge ${s.status.toLowerCase()}">${s.status}</span></td>
                     <td><strong>${s.totalIssues}</strong></td>
                 `;
@@ -1038,10 +1052,13 @@ function loadScans() {
                 tr.addEventListener('click', () => {
                     window.location.hash = `scan-details/${scan.id}`;
                 });
+                const scanUrl = scan.url || '';
+                const scanLink = scanUrl.startsWith('http') ? scanUrl : (scanUrl ? 'http://' + scanUrl : '#');
+                const urlDisplay = scanUrl ? `<a href="${scanLink}" target="_blank" onclick="event.stopPropagation();" style="color: #38bdf8; font-weight: 600; text-decoration: underline; display: inline-flex; align-items: center; gap: 4px;">${escapeHtml(scanUrl)} <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 11px;"></i></a>` : 'N/A';
                 
                 tr.innerHTML = `
                     <td>${scan.id}</td>
-                    <td><span class="text-secondary">${scan.url}</span></td>
+                    <td>${urlDisplay}</td>
                     <td><span class="status-badge ${scan.status.toLowerCase()}">${scan.status}</span></td>
                     <td>${scan.pagesScanned}</td>
                     <td>${scan.wordsChecked}</td>
@@ -2120,20 +2137,40 @@ function saveAdminWidgetSettings() {
     });
 }
 
-function resetAdminWidgetApiCounters() {
-    fetch('/api/admin/widget-settings/reset-counters', { method: 'POST' })
-        .then(res => res.json())
-        .then(data => {
-            if (data) {
-                renderAdminWidgetControls(data);
-                showToast('✨ API usage counters reset to 0!', 'success', 'Counters Reset');
-            }
-        })
-        .catch(() => {
-            if (document.getElementById('admin-sec2-api-count')) document.getElementById('admin-sec2-api-count').textContent = '0 Calls';
-            if (document.getElementById('admin-sec3-api-count')) document.getElementById('admin-sec3-api-count').textContent = '0 Calls';
-            showToast('✨ Counters reset locally!', 'info', 'Counters Reset');
+async function resetAdminWidgetApiCounters() {
+    const pin = await showAdminPrompt(
+        'Enter System Security PIN (Special Key) to authorize resetting Section 2 & Section 3 API usage statistics:',
+        'Security PIN Authorization',
+        '••••',
+        true
+    );
+    
+    if (!pin) return; // User cancelled or closed modal
+
+    try {
+        const res = await fetch('/api/admin/verify-pin', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ pin: pin })
         });
+
+        const data = await res.json();
+        if (res.ok && data.valid) {
+            // Correct PIN! Execute reset and show alert pop-up
+            const resetRes = await fetch('/api/admin/widget-settings/reset-counters', { method: 'POST' });
+            if (resetRes.ok) {
+                const resetData = await resetRes.json();
+                if (resetData) renderAdminWidgetControls(resetData);
+                showToast('✨ Section 2 & Section 3 API usage statistics reset to 0!', 'success', 'Counters Reset Successfully');
+                alert('✨ Section 2 & Section 3 API usage statistics reset to 0!');
+            }
+        } else {
+            // Incorrect PIN! Show notification and do nothing
+            showToast('Invalid Security PIN. Reset aborted.', 'error', 'Invalid PIN');
+        }
+    } catch (e) {
+        showToast('Error verifying PIN.', 'error');
+    }
 }
 
 window.resetAdminWidgetApiCounters = resetAdminWidgetApiCounters;

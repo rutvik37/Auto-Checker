@@ -1057,26 +1057,38 @@ small {
 
 /* Theme Switcher Button styling to match Admin Panel */
 .theme-toggle button {
-    background: none;
-    border: 1px solid var(--card-border);
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     color: var(--text-primary);
-    width: 40px;
-    height: 40px;
-    border-radius: 8px;
+    padding: 8px 16px;
+    height: 38px;
+    border-radius: 20px;
     cursor: pointer;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.3s ease;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.25s ease;
+    white-space: nowrap;
 }
 
 .theme-toggle button:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-    border-color: var(--text-muted);
+    background-color: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-1px);
+}
+
+.light-mode .theme-toggle button {
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    color: #1e293b;
 }
 
 .light-mode .theme-toggle button:hover {
-    background-color: rgba(0, 0, 0, 0.04);
+    background-color: rgba(0, 0, 0, 0.1);
+    border-color: rgba(0, 0, 0, 0.2);
 }
 
 .light-mode input[type="url"],
