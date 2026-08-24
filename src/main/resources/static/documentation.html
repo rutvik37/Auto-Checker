@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QA Spelling Auto-Checker | Documentation</title>
+    <meta name="description" content="Official documentation for QA Spelling Auto-Checker. Learn how to configure scans, set crawl depth, manage dictionaries, and integrate API validation.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/styles.css">
+    <style>
+        .page-container { max-width: 1100px; margin: 40px auto; padding: 0 20px; }
+        .page-hero { background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 32px; margin-bottom: 24px; backdrop-filter: blur(12px); }
+        .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #94a3b8; margin-bottom: 16px; }
+        .breadcrumb a { color: #6366f1; text-decoration: none; }
+        .page-title { font-family: 'Outfit', sans-serif; font-size: 32px; font-weight: 800; color: #ffffff; margin-bottom: 8px; }
+        .page-subtitle { color: #94a3b8; font-size: 16px; }
+        .page-card { background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 36px; color: #e2e8f0; line-height: 1.7; backdrop-filter: blur(12px); }
+        .doc-section { margin-bottom: 32px; padding-bottom: 24px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+        .doc-section:last-child { border-bottom: none; margin-bottom: 0; }
+        .doc-section h2 { font-family: 'Outfit', sans-serif; font-size: 20px; color: #fff; margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+        .doc-section h2 i { color: #6366f1; }
+        code { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px; color: #a5b4fc; font-family: monospace; font-size: 13px; }
+    </style>
+</head>
+<body>
+    <header class="navbar" style="background: rgba(15, 23, 42, 0.9); border-bottom: 1px solid rgba(255,255,255,0.08); padding: 16px 40px; display: flex; justify-content: space-between; align-items: center;">
+        <a href="/" style="display: flex; align-items: center; gap: 12px; text-decoration: none;">
+            <div style="width: 38px; height: 38px; border-radius: 10px; background: linear-gradient(135deg, #6366f1, #a855f7); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 18px;">
+                <i class="fa-solid fa-spell-check"></i>
+            </div>
+            <div>
+                <span style="font-family: 'Outfit', sans-serif; font-size: 18px; font-weight: 800; color: #fff;">QA Spelling Auto-Checker</span>
+            </div>
+        </a>
+        <nav style="display: flex; gap: 20px; align-items: center;">
+            <a href="/" style="color: #cbd5e1; text-decoration: none; font-size: 14px; font-weight: 500;">Home</a>
+            <a href="/documentation" style="color: #6366f1; text-decoration: none; font-size: 14px; font-weight: 600;">Documentation</a>
+            <a href="/help" style="color: #cbd5e1; text-decoration: none; font-size: 14px; font-weight: 500;">Help Center</a>
+            <a href="http://localhost:5555" target="_blank" style="padding: 8px 16px; border-radius: 8px; background: rgba(99,102,241,0.2); border: 1px solid rgba(99,102,241,0.4); color: #a5b4fc; text-decoration: none; font-size: 13px; font-weight: 600;">Admin Panel <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 11px;"></i></a>
+        </nav>
+    </header>
+
+    <main class="page-container">
+        <div class="page-hero">
+            <div class="breadcrumb"><a href="/">Home</a> <i class="fa-solid fa-chevron-right" style="font-size: 10px;"></i> <span>Documentation</span></div>
+            <h1 class="page-title">User & Engineering Documentation</h1>
+            <p class="page-subtitle">Complete guide to running automated spelling scans, managing projects, and exporting reports.</p>
+        </div>
+
+        <div class="page-card">
+            <div class="doc-section">
+                <h2><i class="fa-solid fa-rocket"></i> 1. Getting Started</h2>
+                <p>To start auditing a website, open the main website interface on <code>http://localhost:8080</code>. Enter the target website URL into the <strong>Website Spell Check</strong> card, configure your scan parameters, and click <strong>Start Scan</strong>.</p>
+            </div>
+
+            <div class="doc-section">
+                <h2><i class="fa-solid fa-sliders"></i> 2. Crawl Parameters</h2>
+                <ul>
+                    <li><strong>Max Pages:</strong> Controls the maximum number of unique URLs the crawler will discover and inspect (e.g., 50 to 500 pages).</li>
+                    <li><strong>Crawl Depth:</strong> Defines how many link levels deep from the seed URL the crawler will navigate (e.g., Depth 1 = target page only, Depth 3 = up to 3 link hops).</li>
+                </ul>
+            </div>
+
+            <div class="doc-section">
+                <h2><i class="fa-solid fa-microchip"></i> 3. Detection Pipeline</h2>
+                <p>The scanner processes pages through an 8-stage hybrid detection pipeline:</p>
+                <ol style="margin-left: 24px; color: #cbd5e1;">
+                    <li><strong>Jsoup Text Extraction:</strong> Parses HTML body and extracts visible text content while ignoring scripts and CSS.</li>
+                    <li><strong>LanguageTool Engine:</strong> Flags preliminary spelling candidates using American English dictionaries.</li>
+                    <li><strong>Pre-filtering & Space Normalization:</strong> Filters URLs, emails, numbers, and space variations.</li>
+                    <li><strong>Custom Dictionary Check:</strong> Verifies words against global and user custom dictionaries (`global.txt` and `user.txt`).</li>
+                    <li><strong>SQLite Local Cache:</strong> Checks local SQLite database (`validation_cache`) for pre-verified decision records.</li>
+                    <li><strong>Groq AI Batch Validation:</strong> Validates unresolved candidates using Groq LLM endpoint (`groq/compound`).</li>
+                    <li><strong>Database Issue Saving:</strong> Persists verified `TYPO` issues into SQLite database.</li>
+                    <li><strong>Live UI Streaming:</strong> Streams progress and detected issues to the web UI in real-time via Server-Sent Events (SSE).</li>
+                </ol>
+            </div>
+
+            <div class="doc-section">
+                <h2><i class="fa-solid fa-file-export"></i> 4. Exporting Reports</h2>
+                <p>Completed scan results can be exported directly from the public website or Admin Panel in multiple formats: <code>CSV</code>, <code>Excel (.xlsx)</code>, or <code>JSON</code>.</p>
+            </div>
+        </div>
+    </main>
+
+    <footer id="site-footer" class="site-footer"></footer>
+    <script src="/app.js"></script>
+</body>
+</html>

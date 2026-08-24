@@ -1311,5 +1311,38 @@ tr:hover td {
     color: var(--text-primary, #ffffff);
 }
 
+/* Footer Admin Sub-Tabs & Manager Styling */
+.footer-admin-tab-pane {
+    animation: fadeIn 0.25s ease-in-out;
+}
+
+#footer-admin-tabs .tab-btn {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-secondary);
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#footer-admin-tabs .tab-btn:hover {
+    background: rgba(99, 102, 241, 0.15);
+    border-color: rgba(99, 102, 241, 0.3);
+    color: #ffffff;
+}
+
+#footer-admin-tabs .tab-btn.active {
+    background: linear-gradient(135deg, #6366f1, #818cf8);
+    border-color: #6366f1;
+    color: #ffffff;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
 
 

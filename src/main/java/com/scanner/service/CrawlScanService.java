@@ -50,12 +50,12 @@ public class CrawlScanService {
     // Track audit reports for each scan session
     private final Map<Long, AuditReportCollector> scanAuditCollectors = new ConcurrentHashMap<>();
 
-    private static final java.util.concurrent.ExecutorService asyncReportExecutor = 
-        java.util.concurrent.Executors.newSingleThreadExecutor(r -> {
-            Thread t = new Thread(r, "audit-report-writer");
-            t.setDaemon(true);
-            return t;
-        });
+    private static final java.util.concurrent.ExecutorService asyncReportExecutor = java.util.concurrent.Executors
+            .newSingleThreadExecutor(r -> {
+                Thread t = new Thread(r, "audit-report-writer");
+                t.setDaemon(true);
+                return t;
+            });
 
     @Value("${app.projects-dir:C:/Users/suppo/Auto-Checker/Projects}")
     private String projectsDir;
@@ -209,7 +209,7 @@ public class CrawlScanService {
             }
 
             scanCancellationTokens.put(scanId, false);
-            
+
             // ---- Launch LanguageTool ----
             long ltInitStart = System.nanoTime();
             JLanguageTool langTool = new JLanguageTool(new AmericanEnglish());
@@ -261,7 +261,8 @@ public class CrawlScanService {
                 }
 
                 // Run workers in an ExecutorService
-                java.util.concurrent.ExecutorService executor = java.util.concurrent.Executors.newFixedThreadPool(workersCount);
+                java.util.concurrent.ExecutorService executor = java.util.concurrent.Executors
+                        .newFixedThreadPool(workersCount);
                 AtomicInteger activeWorkers = new AtomicInteger(0);
 
                 // For parallel metrics
@@ -324,7 +325,8 @@ public class CrawlScanService {
                                 String currentUrl = task.url;
                                 int currentDepth = task.depth;
 
-                                logInfo(scanId, "Scanning: " + currentUrl + " (depth=" + currentDepth + ")", finalLogWriter);
+                                logInfo(scanId, "Scanning: " + currentUrl + " (depth=" + currentDepth + ")",
+                                        finalLogWriter);
 
                                 try {
                                     org.jsoup.Connection conn = Jsoup.connect(currentUrl)
@@ -358,10 +360,12 @@ public class CrawlScanService {
 
                                     // Synchronize spell checking on JLanguageTool
                                     synchronized (langTool) {
-                                        runSpellingCheck(doc, langTool, currentUrl, title, extractedText, concurrentFindings, scanId, finalLogWriter);
+                                        runSpellingCheck(doc, langTool, currentUrl, title, extractedText,
+                                                concurrentFindings, scanId, finalLogWriter);
                                     }
 
-                                    broadcastProgress(scanId, pagesScannedCount, wordsCheckedCount, totalIssuesCount, currentUrl);
+                                    broadcastProgress(scanId, pagesScannedCount, wordsCheckedCount, totalIssuesCount,
+                                            currentUrl);
 
                                     // Discover internal links
                                     if (scan.getCrawlDepth() == null || currentDepth < scan.getCrawlDepth()) {
@@ -387,10 +391,12 @@ public class CrawlScanService {
                                     }
 
                                 } catch (Exception pageEx) {
-                                    logError(scanId, "Error processing " + currentUrl + ": " + pageEx.getMessage(), finalLogWriter);
+                                    logError(scanId, "Error processing " + currentUrl + ": " + pageEx.getMessage(),
+                                            finalLogWriter);
                                     savePage(scan, currentUrl, "Error", 500);
                                     pagesScannedCount.incrementAndGet();
-                                    broadcastProgress(scanId, pagesScannedCount, wordsCheckedCount, totalIssuesCount, currentUrl);
+                                    broadcastProgress(scanId, pagesScannedCount, wordsCheckedCount, totalIssuesCount,
+                                            currentUrl);
                                 }
                             } finally {
                                 // Extract thread-local performance metrics
@@ -438,7 +444,7 @@ public class CrawlScanService {
             } else {
                 // Serial crawling logic (Original Code)
                 logInfo(scanId, "Starting serial crawler.", finalLogWriter);
-                
+
                 // Seed crawl queue
                 if (!sitemapUrls.isEmpty()) {
                     logInfo(scanId, "Found " + sitemapUrls.size() + " URLs in sitemap.xml – queuing.", finalLogWriter);
@@ -506,14 +512,15 @@ public class CrawlScanService {
                         long wordCount = countWords(extractedText);
                         long textExtractTime = (System.nanoTime() - textExtractStart) / 1_000_000;
                         PerformanceTracker.add("text_extract", textExtractTime);
-                        
+
                         wordsCheckedCount.addAndGet(wordCount);
 
                         savePage(scan, currentUrl, title, 200);
                         pagesScannedCount.incrementAndGet();
 
                         // Collect spelling findings
-                        runSpellingCheck(doc, langTool, currentUrl, title, extractedText, rawFindings, scanId, finalLogWriter);
+                        runSpellingCheck(doc, langTool, currentUrl, title, extractedText, rawFindings, scanId,
+                                finalLogWriter);
 
                         broadcastProgress(scanId, pagesScannedCount, wordsCheckedCount, totalIssuesCount, currentUrl);
 
@@ -656,7 +663,9 @@ public class CrawlScanService {
             }
             long cacheEnd = System.nanoTime();
             cacheMisses = cacheCandidatesChecked - cacheHits;
-            cacheHitRate = cacheCandidatesChecked > 0 ? (int) Math.round(((double) cacheHits / cacheCandidatesChecked) * 100) : 0;
+            cacheHitRate = cacheCandidatesChecked > 0
+                    ? (int) Math.round(((double) cacheHits / cacheCandidatesChecked) * 100)
+                    : 0;
             groqCallsAvoided = cacheHits;
 
             System.out.println("[CACHE] Candidates Checked = " + cacheCandidatesChecked);
@@ -817,7 +826,7 @@ public class CrawlScanService {
                     long dbSaveEnd = System.nanoTime();
                     long dbSaveTime = dbSaveEnd - dbSaveStart;
                     dbSaveTimeInGen += dbSaveTime;
-                    
+
                     long dbSaveMs = dbSaveTime / 1_000_000;
                     DbPerformanceMonitor.recordBatchInsert(numInserts, 0);
                     DbPerformanceMonitor.recordBatchUpdate(numUpdates, dbSaveMs);
@@ -909,7 +918,8 @@ public class CrawlScanService {
                 asyncReportExecutor.submit(() -> {
                     scanCollector.writeReport("AuditReports");
                     logInfo(scanId,
-                            "Generated Dynamic Entity Audit Report at: AuditReports/audit_report_scan_" + scanId + ".txt",
+                            "Generated Dynamic Entity Audit Report at: AuditReports/audit_report_scan_" + scanId
+                                    + ".txt",
                             finalLogWriter);
                     cleanOldAuditReports("AuditReports");
                 });
@@ -949,17 +959,17 @@ public class CrawlScanService {
             summaryMap.put("Issue Generation", PerformanceTracker.get("issue_gen"));
             summaryMap.put("Database Save", PerformanceTracker.get("db_save"));
             summaryMap.put("Report Generation", PerformanceTracker.get("report_gen"));
- 
+
             long sumOfComponents = 0;
             for (long val : summaryMap.values()) {
                 sumOfComponents += val;
             }
             long unaccountedTime = totalScanTime - sumOfComponents;
             summaryMap.put("Unaccounted Time", unaccountedTime);
- 
+
             List<Map.Entry<String, Long>> sortedMetrics = new ArrayList<>(summaryMap.entrySet());
             sortedMetrics.sort((a, b) -> b.getValue().compareTo(a.getValue()));
- 
+
             System.out.println("================ PERFORMANCE SUMMARY ================");
             System.out.println("[PERF] Pages Crawled = " + pagesCrawled);
             for (Map.Entry<String, Long> entry : sortedMetrics) {
@@ -968,7 +978,7 @@ public class CrawlScanService {
             System.out.println("");
             System.out.println("[PERF] Total Scan Time = " + totalScanTime + " ms");
             System.out.println("=====================================================");
- 
+
             logInfo(scanId, "================ PERFORMANCE SUMMARY ================", finalLogWriter);
             logInfo(scanId, "[PERF] Pages Crawled = " + pagesCrawled, finalLogWriter);
             for (Map.Entry<String, Long> entry : sortedMetrics) {
@@ -1067,6 +1077,7 @@ public class CrawlScanService {
             logger.error("Failed to save scanned page {}: {}", url, e.getMessage());
         }
     }
+
     // Spelling check + save issues
     // -------------------------------------------------------------------------
     private void runSpellingCheck(Document doc, JLanguageTool langTool,
@@ -1177,12 +1188,12 @@ public class CrawlScanService {
         }
 
         // URLs
-        if (t.toLowerCase().startsWith("http://") || 
-            t.toLowerCase().startsWith("https://") || 
-            t.toLowerCase().startsWith("www.") ||
-            t.toLowerCase().startsWith("file://") ||
-            t.matches("(?i)^[a-z0-9]+([\\-\\.]{1}[a-z0-9]+)*\\.[a-z]{2,5}(:[0-9]{1,5})?(\\/.*)?$") ||
-            t.contains("localhost:")) {
+        if (t.toLowerCase().startsWith("http://") ||
+                t.toLowerCase().startsWith("https://") ||
+                t.toLowerCase().startsWith("www.") ||
+                t.toLowerCase().startsWith("file://") ||
+                t.matches("(?i)^[a-z0-9]+([\\-\\.]{1}[a-z0-9]+)*\\.[a-z]{2,5}(:[0-9]{1,5})?(\\/.*)?$") ||
+                t.contains("localhost:")) {
             return true;
         }
 
@@ -1207,7 +1218,8 @@ public class CrawlScanService {
         }
 
         // Script / Style content fragments
-        if (t.contains("javascript:") || t.contains("console.log") || t.contains("function(") || t.contains("var ") || t.contains("const ") || t.contains("let ")) {
+        if (t.contains("javascript:") || t.contains("console.log") || t.contains("function(") || t.contains("var ")
+                || t.contains("const ") || t.contains("let ")) {
             return true;
         }
 
@@ -1348,7 +1360,7 @@ public class CrawlScanService {
             URI uri = new URI(rootUrl);
             String robotsUrl = uri.getScheme() + "://" + uri.getAuthority() + "/robots.txt";
             logInfo(scanId, "Fetching robots.txt: " + robotsUrl, writer);
- 
+
             HttpClient client = buildHttpClient();
             long robotsFetchStart = System.nanoTime();
             HttpResponse<String> resp = client.send(
@@ -1362,7 +1374,7 @@ public class CrawlScanService {
             PerformanceTracker.add("robots_txt_fetch", robotsFetchTime);
             System.out.println("[PERF] robots.txt Fetch = " + robotsFetchTime + " ms");
             logInfo(scanId, "[PERF] robots.txt Fetch = " + robotsFetchTime + " ms", writer);
- 
+
             if (resp.statusCode() == 200) {
                 boolean userAgentApplies = false;
                 for (String line : resp.body().split("\n")) {
@@ -1373,8 +1385,11 @@ public class CrawlScanService {
                     } else if (userAgentApplies && line.toLowerCase().startsWith("disallow:")) {
                         String path = line.substring(9).trim();
                         if (!path.isEmpty()) {
-                            // Log but do not add to disallowed prefixes (QA spelling tool must crawl staging/UAT environments which typically disallow crawlers)
-                            logInfo(scanId, "robots.txt disallow rule found: '" + path + "' (bypassed for QA spelling scan)", writer);
+                            // Log but do not add to disallowed prefixes (QA spelling tool must crawl
+                            // staging/UAT environments which typically disallow crawlers)
+                            logInfo(scanId,
+                                    "robots.txt disallow rule found: '" + path + "' (bypassed for QA spelling scan)",
+                                    writer);
                         }
                     } else if (line.toLowerCase().startsWith("sitemap:")) {
                         String sUrl = line.substring(8).trim();
@@ -1382,7 +1397,9 @@ public class CrawlScanService {
                             sitemaps.add(sUrl);
                     }
                 }
-                logInfo(scanId, "robots.txt parsed. Bypassing all disallow rules to allow staging/UAT environment crawling.", writer);
+                logInfo(scanId,
+                        "robots.txt parsed. Bypassing all disallow rules to allow staging/UAT environment crawling.",
+                        writer);
             } else {
                 logInfo(scanId, "robots.txt not found (HTTP " + resp.statusCode() + "). Crawling all paths.", writer);
             }
@@ -1397,7 +1414,7 @@ public class CrawlScanService {
             } catch (Exception ignored) {
             }
         }
- 
+
         // Parse sitemaps
         Set<String> sitemapLinks = new HashSet<>();
         for (String sitemapUrl : sitemaps) {
@@ -1416,7 +1433,7 @@ public class CrawlScanService {
                 PerformanceTracker.add("sitemap_fetch", sitemapFetchTime);
                 System.out.println("[PERF] Sitemap Fetch = " + sitemapFetchTime + " ms");
                 logInfo(scanId, "[PERF] Sitemap Fetch = " + sitemapFetchTime + " ms", writer);
- 
+
                 if (resp.statusCode() == 200) {
                     Document doc = Jsoup.parse(resp.body());
                     Elements locs = doc.select("loc");
@@ -1584,7 +1601,8 @@ public class CrawlScanService {
         try {
             java.io.File dir = new java.io.File(directory);
             if (dir.exists() && dir.isDirectory()) {
-                java.io.File[] files = dir.listFiles((d, name) -> name.startsWith("audit_report_scan_") || name.startsWith("validation_debug_report_scan_"));
+                java.io.File[] files = dir.listFiles((d, name) -> name.startsWith("audit_report_scan_")
+                        || name.startsWith("validation_debug_report_scan_"));
                 if (files != null && files.length > 10) {
                     java.util.Arrays.sort(files, java.util.Comparator.comparingLong(java.io.File::lastModified));
                     int filesToDelete = files.length - 10;

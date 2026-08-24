@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- FontAwesome for Premium Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="styles.css">
@@ -36,8 +36,8 @@
                 </div>
                 <div style="display: flex; align-items: center; gap: 15px;">
                     <div class="theme-toggle">
-                        <button id="theme-switch" title="Toggle theme">
-                            <i class="fa-solid fa-sun"></i>
+                        <button id="theme-switch" title="Dark Appearance (Click to switch to Light Mode)">
+                            <i class="fa-solid fa-moon" style="color: #a5b4fc;"></i>
                         </button>
                     </div>
                     <div class="project-selector-wrapper" style="display: none;">
@@ -136,7 +136,55 @@
                             <div id="live-logs-terminal"></div>
                         </div>
 
-                        <!-- Interactive Brain Break & Trivia Quiz Section (Keeps users entertained during active scan) -->
+                        <!-- Detected Typos Live Table -->
+                        <div style="margin-top: 25px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+                                <h3 style="font-size: 16px; font-family: var(--font-header); margin: 0; color: var(--color-warning); display: flex; align-items: center; gap: 8px;">
+                                    <i class="fa-solid fa-list-check"></i> Spelling Mistakes Log
+                                </h3>
+                                <div style="display: flex; gap: 10px;" id="export-buttons-container">
+                                    <button class="btn btn-outline btn-sm" onclick="exportData('csv')" style="padding: 6px 12px; font-size: 12px; display: inline-flex; align-items: center; gap: 5px; height: 32px;">
+                                        <i class="fa-solid fa-file-csv"></i> Export CSV
+                                    </button>
+                                    <button class="btn btn-outline btn-sm" onclick="exportData('excel')" style="padding: 6px 12px; font-size: 12px; display: inline-flex; align-items: center; gap: 5px; height: 32px;">
+                                        <i class="fa-solid fa-file-excel"></i> Export Excel
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="table-responsive" id="live-issues-table-wrapper" style="max-height: 400px; overflow-y: auto; background: rgba(0, 0, 0, 0.2); border-radius: 8px; border: 1px solid var(--card-border);">
+                                <table class="table" id="live-issues-table" style="font-size: 13px;">
+                                    <thead>
+                                        <tr>
+                                            <th>Spelling Mistake Word</th>
+                                            <th>Expected Correct Word</th>
+                                            <th>Page URL</th>
+                                            <th>Page Title</th>
+                                            <th>Sentence</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="live-issues-table-body">
+                                        <tr><td colspan="6" class="text-center" style="color: var(--text-muted); padding: 20px;">No typos detected yet...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <!-- Friendly Celebratory Zero-Issue Container -->
+                            <div id="zero-issues-celebration-container" style="display: none;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Empty State for Scan Progress -->
+                    <div class="card glass-card scan-empty-card" id="scan-empty-state" style="height: 250px; margin-top: 20px;">
+                        <div class="empty-state-content">
+                            <i class="fa-solid fa-spell-check icon-radar" style="font-size: 48px; color: var(--color-primary);"></i>
+                            <h3 style="margin-top: 15px;">Ready to Scan</h3>
+                            <p>Enter a website URL above and click "Start Spelling Check" to begin crawling and finding spelling typos.</p>
+                        </div>
+                    </div>
+
+                    <!-- Interactive Widgets & Games Section (Managed via Admin Panel) -->
+                    <div id="interactive-widgets-section" style="margin-top: 20px;">
+                        <!-- Interactive Brain Break & Trivia Quiz Section (Section 1) -->
                         <div id="scan-mini-game-card" style="margin-top: 20px; background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 14px; padding: 22px 24px; box-shadow: 0 8px 24px rgba(0,0,0,0.3); backdrop-filter: blur(12px);">
                             <!-- Top Header: Title & Score Badge -->
                             <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 14px; margin-bottom: 18px; flex-wrap: wrap; gap: 10px;">
@@ -153,7 +201,7 @@
                                     </div>
                                 </div>
                                 
-                                <!-- Score Badge Only (Streak removed as requested) -->
+                                <!-- Score Badge Only -->
                                 <div style="display: flex; align-items: center; gap: 10px;">
                                     <span id="quiz-score-badge" style="padding: 6px 14px; border-radius: 20px; background: rgba(99, 102, 241, 0.15); border: 1px solid rgba(99, 102, 241, 0.3); font-size: 13px; color: #a5b4fc; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
                                         <i class="fa-solid fa-trophy" style="color: #f59e0b;"></i> Total Score: <span id="quiz-score" style="color: #ffffff; font-weight: 700;">0</span>
@@ -200,7 +248,7 @@
                                 </div>
                             </div>
 
-                            <!-- Quiz Question & Options Body (Smooth non-blinking container) -->
+                            <!-- Quiz Question & Options Body -->
                             <div id="quiz-body-container" style="background: rgba(0, 0, 0, 0.3); border-radius: 12px; padding: 20px; border: 1px solid rgba(255, 255, 255, 0.05); text-align: center; min-height: 240px; transition: opacity 0.2s ease;">
                                 <div id="quiz-category-tag" style="display: inline-block; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 12px; background: rgba(168, 85, 247, 0.2); color: #c084fc; margin-bottom: 10px;">
                                     Speed Math Challenge
@@ -256,10 +304,10 @@
                                 </div>
                                 <div style="flex: 1;">
                                     <div id="fact-category-badge" style="display: inline-block; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #fbbf24; margin-bottom: 4px;">
-                                        💡 Tech History & Secrets
+                                        ⚡ Dynamic Tech Fact Loading...
                                     </div>
                                     <div id="fact-text-elem" style="font-size: 14px; font-weight: 500; color: #f3f4f6; line-height: 1.5;">
-                                        The first computer bug was an actual real moth found trapped inside a Harvard Mark II relay in 1947 by Grace Hopper's team!
+                                        Fetching random dynamic tech discovery...
                                     </div>
                                 </div>
                             </div>
@@ -295,58 +343,13 @@
                                 </div>
                                 <div style="flex: 1;">
                                     <div id="wonder-category-badge" style="display: inline-block; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #38bdf8; margin-bottom: 4px;">
-                                        🏛️ Ancient Engineering & Wonders
+                                        🌍 Dynamic World Wonder Loading...
                                     </div>
                                     <div id="wonder-text-elem" style="font-size: 14px; font-weight: 500; color: #f3f4f6; line-height: 1.5;">
-                                        The Great Pyramid of Giza was constructed with over 2.3 million giant stone blocks fitting together so precisely that a single razor blade cannot pass between them!
+                                        Fetching random world wonder curiosity...
                                     </div>
                                 </div>
                             </div>
-                        </div>
-
-                        <!-- Detected Typos Live Table -->
-                        <div style="margin-top: 25px;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
-                                <h3 style="font-size: 16px; font-family: var(--font-header); margin: 0; color: var(--color-warning); display: flex; align-items: center; gap: 8px;">
-                                    <i class="fa-solid fa-list-check"></i> Spelling Mistakes Log
-                                </h3>
-                                <div style="display: flex; gap: 10px;" id="export-buttons-container">
-                                    <button class="btn btn-outline btn-sm" onclick="exportData('csv')" style="padding: 6px 12px; font-size: 12px; display: inline-flex; align-items: center; gap: 5px; height: 32px;">
-                                        <i class="fa-solid fa-file-csv"></i> Export CSV
-                                    </button>
-                                    <button class="btn btn-outline btn-sm" onclick="exportData('excel')" style="padding: 6px 12px; font-size: 12px; display: inline-flex; align-items: center; gap: 5px; height: 32px;">
-                                        <i class="fa-solid fa-file-excel"></i> Export Excel
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="table-responsive" id="live-issues-table-wrapper" style="max-height: 400px; overflow-y: auto; background: rgba(0, 0, 0, 0.2); border-radius: 8px; border: 1px solid var(--card-border);">
-                                <table class="table" id="live-issues-table" style="font-size: 13px;">
-                                    <thead>
-                                        <tr>
-                                            <th>Spelling Mistake Word</th>
-                                            <th>Expected Correct Word</th>
-                                            <th>Page URL</th>
-                                            <th>Page Title</th>
-                                            <th>Sentence</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="live-issues-table-body">
-                                        <tr><td colspan="6" class="text-center" style="color: var(--text-muted); padding: 20px;">No typos detected yet...</td></tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <!-- Friendly Celebratory Zero-Issue Container -->
-                            <div id="zero-issues-celebration-container" style="display: none;"></div>
-                        </div>
-                    </div>
-                    
-                    <!-- Empty State for Scan Progress -->
-                    <div class="card glass-card scan-empty-card" id="scan-empty-state" style="height: 250px;">
-                        <div class="empty-state-content">
-                            <i class="fa-solid fa-spell-check icon-radar" style="font-size: 48px; color: var(--color-primary);"></i>
-                            <h3 style="margin-top: 15px;">Ready to Scan</h3>
-                            <p>Enter a website URL above and click "Start Spelling Check" to begin crawling and finding spelling typos.</p>
                         </div>
                     </div>
 
@@ -367,6 +370,8 @@
                 </div>
             </section>
 
+            <!-- Global Admin-Managed Footer Component -->
+            <footer id="site-footer" class="site-footer"></footer>
         </main>
     </div>
 

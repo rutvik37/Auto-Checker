@@ -315,21 +315,25 @@ function initTheme() {
     // Sync button icon first
     const body = document.body;
     if (body.classList.contains('light-mode')) {
-        themeBtn.innerHTML = '<i class="fa-solid fa-moon"></i>';
+        themeBtn.innerHTML = '<i class="fa-solid fa-sun" style="color: #f59e0b;"></i>';
+        themeBtn.title = 'Light Appearance (Click to switch to Dark Mode)';
     } else {
-        themeBtn.innerHTML = '<i class="fa-solid fa-sun"></i>';
+        themeBtn.innerHTML = '<i class="fa-solid fa-moon" style="color: #a5b4fc;"></i>';
+        themeBtn.title = 'Dark Appearance (Click to switch to Light Mode)';
     }
 
     themeBtn.addEventListener('click', () => {
         if (body.classList.contains('dark-mode')) {
             body.classList.remove('dark-mode');
             body.classList.add('light-mode');
-            themeBtn.innerHTML = '<i class="fa-solid fa-moon"></i>';
+            themeBtn.innerHTML = '<i class="fa-solid fa-sun" style="color: #f59e0b;"></i>';
+            themeBtn.title = 'Light Appearance (Click to switch to Dark Mode)';
             localStorage.setItem('admin_theme', 'light');
         } else {
             body.classList.remove('light-mode');
             body.classList.add('dark-mode');
-            themeBtn.innerHTML = '<i class="fa-solid fa-sun"></i>';
+            themeBtn.innerHTML = '<i class="fa-solid fa-moon" style="color: #a5b4fc;"></i>';
+            themeBtn.title = 'Dark Appearance (Click to switch to Light Mode)';
             localStorage.setItem('admin_theme', 'dark');
         }
     });
@@ -387,6 +391,7 @@ function showPane(paneId) {
         'exports': 'System Data Exports',
         'dictionaries': 'Custom Whitelist Dictionaries',
         'widgets': 'Widget & Game Controls',
+        'footer': 'Footer System Management',
         'settings': 'System Configurations',
         'profile': 'Edit Profile'
     };
@@ -394,6 +399,8 @@ function showPane(paneId) {
 
     if (paneId === 'widgets') {
         loadAdminWidgetSettings();
+    } else if (paneId === 'footer') {
+        loadAdminFooterSettings();
     }
 
     // Teardown log stream when leaving details
@@ -1980,8 +1987,7 @@ function startAutoRefreshPolling() {
 
 // --- Entertainment & Interactive Widget Admin Manager ---
 function loadAdminWidgetSettings() {
-    fetch('/api/admin/settings')
-        .then(res => res.json())
+    fetchApi('/api/admin/settings')
         .then(data => {
             if (data && data.widgetSettings) {
                 localStorage.setItem('admin_widget_settings', JSON.stringify(data.widgetSettings));
@@ -2003,6 +2009,7 @@ function isWidgetTruthy(val) {
 }
 
 function renderAdminWidgetControls(settings) {
+    if (!settings) return;
     const sec1 = document.getElementById('admin-toggle-sec1');
     if (sec1) sec1.checked = isWidgetTruthy(settings.sec1_visible);
 
@@ -2011,6 +2018,24 @@ function renderAdminWidgetControls(settings) {
 
     const sec3 = document.getElementById('admin-toggle-sec3');
     if (sec3) sec3.checked = isWidgetTruthy(settings.sec3_visible);
+
+    // Section 2 fields
+    if (document.getElementById('admin-sec2-title')) document.getElementById('admin-sec2-title').value = settings.sec2_title || 'Daily Tech Mind-Booster & Fun Facts';
+    if (document.getElementById('admin-sec2-badge')) document.getElementById('admin-sec2-badge').value = settings.sec2_badge || 'Did You Know?';
+    if (document.getElementById('admin-sec2-subtitle')) document.getElementById('admin-sec2-subtitle').value = settings.sec2_subtitle || 'Discover fascinating computing history, tech secrets, and easter eggs while your scan runs!';
+    if (document.getElementById('admin-sec2-data-mode')) document.getElementById('admin-sec2-data-mode').value = settings.sec2_data_mode || 'api';
+    if (document.getElementById('admin-sec2-auto-rotate')) document.getElementById('admin-sec2-auto-rotate').value = settings.sec2_auto_rotate || 0;
+    if (document.getElementById('admin-sec2-api-enabled')) document.getElementById('admin-sec2-api-enabled').checked = isWidgetTruthy(settings.sec2_api_enabled);
+    if (document.getElementById('admin-sec2-api-count')) document.getElementById('admin-sec2-api-count').textContent = (settings.sec2_api_call_count || 0) + ' Calls';
+
+    // Section 3 fields
+    if (document.getElementById('admin-sec3-title')) document.getElementById('admin-sec3-title').value = settings.sec3_title || 'World Wonders, Mysteries & Curiosities';
+    if (document.getElementById('admin-sec3-badge')) document.getElementById('admin-sec3-badge').value = settings.sec3_badge || 'Global Edition';
+    if (document.getElementById('admin-sec3-subtitle')) document.getElementById('admin-sec3-subtitle').value = settings.sec3_subtitle || 'Explore mind-bending natural phenomena, ancient human achievements, space mysteries & world records!';
+    if (document.getElementById('admin-sec3-data-mode')) document.getElementById('admin-sec3-data-mode').value = settings.sec3_data_mode || 'api';
+    if (document.getElementById('admin-sec3-auto-rotate')) document.getElementById('admin-sec3-auto-rotate').value = settings.sec3_auto_rotate || 0;
+    if (document.getElementById('admin-sec3-api-enabled')) document.getElementById('admin-sec3-api-enabled').checked = isWidgetTruthy(settings.sec3_api_enabled);
+    if (document.getElementById('admin-sec3-api-count')) document.getElementById('admin-sec3-api-count').textContent = (settings.sec3_api_call_count || 0) + ' Calls';
 
     document.querySelectorAll('.admin-mode-toggle').forEach(chk => {
         const mode = chk.getAttribute('data-mode');
@@ -2026,6 +2051,20 @@ function renderAdminWidgetControlsFromLocal() {
         sec1_visible: true,
         sec2_visible: true,
         sec3_visible: true,
+        sec2_title: 'Daily Tech Mind-Booster & Fun Facts',
+        sec2_badge: 'Did You Know?',
+        sec2_subtitle: 'Discover fascinating computing history, tech secrets, and easter eggs while your scan runs!',
+        sec2_data_mode: 'api',
+        sec2_auto_rotate: 0,
+        sec2_api_enabled: true,
+        sec2_api_call_count: 0,
+        sec3_title: 'World Wonders, Mysteries & Curiosities',
+        sec3_badge: 'Global Edition',
+        sec3_subtitle: 'Explore mind-bending natural phenomena, ancient human achievements, space mysteries & world records!',
+        sec3_data_mode: 'api',
+        sec3_auto_rotate: 0,
+        sec3_api_enabled: true,
+        sec3_api_call_count: 0,
         modes: {
             math: true, india: true, ai: true, history: true, science: true,
             cinema: true, sports: true, geography: true, coding: true, riddles: true
@@ -2046,6 +2085,18 @@ function saveAdminWidgetSettings() {
         sec1_visible: sec1 ? sec1.checked : true,
         sec2_visible: sec2 ? sec2.checked : true,
         sec3_visible: sec3 ? sec3.checked : true,
+        sec2_title: document.getElementById('admin-sec2-title') ? document.getElementById('admin-sec2-title').value : 'Daily Tech Mind-Booster & Fun Facts',
+        sec2_badge: document.getElementById('admin-sec2-badge') ? document.getElementById('admin-sec2-badge').value : 'Did You Know?',
+        sec2_subtitle: document.getElementById('admin-sec2-subtitle') ? document.getElementById('admin-sec2-subtitle').value : 'Discover fascinating computing history, tech secrets, and easter eggs while your scan runs!',
+        sec2_data_mode: document.getElementById('admin-sec2-data-mode') ? document.getElementById('admin-sec2-data-mode').value : 'api',
+        sec2_auto_rotate: document.getElementById('admin-sec2-auto-rotate') ? parseInt(document.getElementById('admin-sec2-auto-rotate').value, 10) : 0,
+        sec2_api_enabled: document.getElementById('admin-sec2-api-enabled') ? document.getElementById('admin-sec2-api-enabled').checked : true,
+        sec3_title: document.getElementById('admin-sec3-title') ? document.getElementById('admin-sec3-title').value : 'World Wonders, Mysteries & Curiosities',
+        sec3_badge: document.getElementById('admin-sec3-badge') ? document.getElementById('admin-sec3-badge').value : 'Global Edition',
+        sec3_subtitle: document.getElementById('admin-sec3-subtitle') ? document.getElementById('admin-sec3-subtitle').value : 'Explore mind-bending natural phenomena, ancient human achievements, space mysteries & world records!',
+        sec3_data_mode: document.getElementById('admin-sec3-data-mode') ? document.getElementById('admin-sec3-data-mode').value : 'api',
+        sec3_auto_rotate: document.getElementById('admin-sec3-auto-rotate') ? parseInt(document.getElementById('admin-sec3-auto-rotate').value, 10) : 0,
+        sec3_api_enabled: document.getElementById('admin-sec3-api-enabled') ? document.getElementById('admin-sec3-api-enabled').checked : true,
         modes: {}
     };
 
@@ -2058,22 +2109,798 @@ function saveAdminWidgetSettings() {
 
     localStorage.setItem('admin_widget_settings', JSON.stringify(settings));
 
-    fetch('/api/admin/settings', {
+    fetch('/api/admin/widget-settings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ widgetSettings: settings })
+        body: JSON.stringify(settings)
     }).then(res => {
-        showToast('✨ Interactive widget & mode settings saved to server successfully!', 'success', 'Widget Settings Saved');
-        setTimeout(() => {
-            window.location.hash = '#dashboard';
-        }, 600);
-    }).catch(err => {
-        showToast('✨ Interactive widget & mode settings saved locally!', 'success', 'Widget Settings Saved');
-        setTimeout(() => {
-            window.location.hash = '#dashboard';
-        }, 600);
+        showToast('✨ Section 2 & Section 3 settings & API toggles saved successfully!', 'success', 'Widget Settings Saved');
+    }).catch(() => {
+        showToast('✨ Settings saved locally!', 'info', 'Saved Locally');
     });
 }
 
+function resetAdminWidgetApiCounters() {
+    fetch('/api/admin/widget-settings/reset-counters', { method: 'POST' })
+        .then(res => res.json())
+        .then(data => {
+            if (data) {
+                renderAdminWidgetControls(data);
+                showToast('✨ API usage counters reset to 0!', 'success', 'Counters Reset');
+            }
+        })
+        .catch(() => {
+            if (document.getElementById('admin-sec2-api-count')) document.getElementById('admin-sec2-api-count').textContent = '0 Calls';
+            if (document.getElementById('admin-sec3-api-count')) document.getElementById('admin-sec3-api-count').textContent = '0 Calls';
+            showToast('✨ Counters reset locally!', 'info', 'Counters Reset');
+        });
+}
+
+window.resetAdminWidgetApiCounters = resetAdminWidgetApiCounters;
+
 window.loadAdminWidgetSettings = loadAdminWidgetSettings;
+
+// --- Footer System Admin Manager ---
+let adminFooterState = null;
+
+function ensureCompleteFooterState(data) {
+    const fallback = getDefaultAdminFooterFallback();
+    if (!data || typeof data !== 'object') return fallback;
+
+    data.enabled = data.enabled !== false;
+
+    if (!data.brand || typeof data.brand !== 'object') {
+        data.brand = fallback.brand;
+    }
+    if (!data.contact || typeof data.contact !== 'object') {
+        data.contact = fallback.contact;
+    }
+    if (!data.copyright || typeof data.copyright !== 'object') {
+        data.copyright = fallback.copyright;
+    }
+    if (!data.socialLinks || !Array.isArray(data.socialLinks) || data.socialLinks.length === 0) {
+        data.socialLinks = fallback.socialLinks;
+    }
+    if (!data.columns || !Array.isArray(data.columns) || data.columns.length === 0) {
+        data.columns = fallback.columns;
+    } else {
+        data.columns.forEach((col, i) => {
+            if (!col.links || !Array.isArray(col.links) || col.links.length === 0) {
+                const fbCol = (fallback.columns || [])[i] || fallback.columns[0];
+                if (fbCol && fbCol.links) {
+                    col.links = fbCol.links;
+                }
+            }
+        });
+    }
+    return data;
+}
+
+function loadAdminFooterSettings() {
+    fetchApi('/api/admin/footer-settings')
+        .then(data => {
+            if (data && typeof data === 'object') {
+                adminFooterState = ensureCompleteFooterState(data);
+                localStorage.setItem('admin_footer_settings', JSON.stringify(adminFooterState));
+                renderAdminFooterControls();
+            } else {
+                loadAdminFooterFromLocal();
+            }
+        })
+        .catch(() => {
+            loadAdminFooterFromLocal();
+        });
+}
+
+function loadAdminFooterFromLocal() {
+    const raw = localStorage.getItem('admin_footer_settings');
+    if (raw) {
+        try {
+            const parsed = JSON.parse(raw);
+            if (parsed && typeof parsed === 'object') {
+                adminFooterState = ensureCompleteFooterState(parsed);
+            }
+        } catch (e) {}
+    }
+    if (!adminFooterState) {
+        adminFooterState = getDefaultAdminFooterFallback();
+    }
+    adminFooterState = ensureCompleteFooterState(adminFooterState);
+    renderAdminFooterControls();
+}
+
+function getDefaultAdminFooterFallback() {
+    return {
+        enabled: true,
+        brand: {
+            appName: "QA Spelling Auto-Checker",
+            tagline: "Automated Quality Assurance & Content Validation",
+            description: "Verify spelling issues on websites instantly with powerful automated website content analysis.",
+            logoIcon: "fa-solid fa-spell-check"
+        },
+        contact: {
+            supportEmail: "support@example.com",
+            contactEmail: "info@example.com",
+            phone: "+1 (800) 555-0199",
+            address: "100 Tech Plaza, Suite 500, San Francisco, CA 94105",
+            supportUrl: "https://example.com/support",
+            businessHours: "Mon - Fri: 9:00 AM - 6:00 PM EST",
+            enabled: true
+        },
+        socialLinks: [
+            { id: "soc-1", platform: "GitHub", icon: "fa-brands fa-github", url: "https://github.com", enabled: true, order: 1 },
+            { id: "soc-2", platform: "LinkedIn", icon: "fa-brands fa-linkedin", url: "https://linkedin.com", enabled: true, order: 2 },
+            { id: "soc-3", platform: "X / Twitter", icon: "fa-brands fa-x-twitter", url: "https://x.com", enabled: true, order: 3 },
+            { id: "soc-4", platform: "YouTube", icon: "fa-brands fa-youtube", url: "https://youtube.com", enabled: true, order: 4 },
+            { id: "soc-5", platform: "Facebook", icon: "fa-brands fa-facebook", url: "https://facebook.com", enabled: false, order: 5 },
+            { id: "soc-6", platform: "Instagram", icon: "fa-brands fa-instagram", url: "https://instagram.com", enabled: false, order: 6 }
+        ],
+        columns: [
+            {
+                id: "col-product", title: "Product", enabled: true, order: 1,
+                links: [
+                    { id: "lnk-1", title: "Website Spell Check", url: "/", targetBlank: false, enabled: true, order: 1 },
+                    { id: "lnk-2", title: "Scan Website", url: "/#scan-form", targetBlank: false, enabled: true, order: 2 },
+                    { id: "lnk-3", title: "Projects & Reports", url: "/#tab-projects", targetBlank: false, enabled: true, order: 3 },
+                    { id: "lnk-4", title: "Spelling Mistakes Log", url: "/#live-issues-table", targetBlank: false, enabled: true, order: 4 }
+                ]
+            },
+            {
+                id: "col-resources", title: "Resources", enabled: true, order: 2,
+                links: [
+                    { id: "lnk-5", title: "Documentation", url: "/documentation", targetBlank: false, enabled: true, order: 1 },
+                    { id: "lnk-6", title: "Help Center & FAQ", url: "/faq", targetBlank: false, enabled: true, order: 2 },
+                    { id: "lnk-7", title: "API Reference", url: "/api-docs", targetBlank: false, enabled: true, order: 3 },
+                    { id: "lnk-8", title: "Knowledge Base", url: "/kb", targetBlank: false, enabled: true, order: 4 }
+                ]
+            },
+            {
+                id: "col-company", title: "Company", enabled: true, order: 3,
+                links: [
+                    { id: "lnk-9", title: "About Us", url: "/about", targetBlank: false, enabled: true, order: 1 },
+                    { id: "lnk-10", title: "Contact Support", url: "/contact", targetBlank: false, enabled: true, order: 2 },
+                    { id: "lnk-11", title: "Latest Blog", url: "/blog", targetBlank: false, enabled: true, order: 3 },
+                    { id: "lnk-12", title: "Careers", url: "/careers", targetBlank: false, enabled: true, order: 4 }
+                ]
+            },
+            {
+                id: "col-legal", title: "Legal", enabled: true, order: 4,
+                links: [
+                    { id: "lnk-13", title: "Privacy Policy", url: "/privacy", targetBlank: false, enabled: true, order: 1 },
+                    { id: "lnk-14", title: "Terms & Conditions", url: "/terms", targetBlank: false, enabled: true, order: 2 },
+                    { id: "lnk-15", title: "Cookie Policy", url: "/cookie-policy", targetBlank: false, enabled: true, order: 3 },
+                    { id: "lnk-16", title: "Disclaimer", url: "/disclaimer", targetBlank: false, enabled: true, order: 4 }
+                ]
+            }
+        ],
+        copyright: {
+            companyName: "QA Spelling Auto-Checker",
+            year: "2026",
+            autoYear: true,
+            suffixText: "All rights reserved."
+        }
+    };
+}
+
+function switchFooterAdminTab(tabName) {
+    const panes = ['brand', 'columns', 'social', 'contact', 'copyright', 'pages', 'preview'];
+    panes.forEach(p => {
+        const btn = document.getElementById(`btn-ftab-${p}`);
+        const pane = document.getElementById(`footer-admin-pane-${p}`);
+        if (btn) btn.classList.remove('active');
+        if (pane) pane.style.display = 'none';
+    });
+
+    const activeBtn = document.getElementById(`btn-ftab-${tabName}`);
+    const activePane = document.getElementById(`footer-admin-pane-${tabName}`);
+    if (activeBtn) activeBtn.classList.add('active');
+    if (activePane) activePane.style.display = 'block';
+
+    if (tabName === 'preview') {
+        renderAdminFooterPreview();
+    } else if (tabName === 'pages') {
+        renderAdminPagesList();
+    }
+}
+
+function renderAdminFooterControls() {
+    if (!adminFooterState) adminFooterState = getDefaultAdminFooterFallback();
+    adminFooterState = ensureCompleteFooterState(adminFooterState);
+
+    // Master Toggle
+    const masterTgl = document.getElementById('admin-footer-master-toggle');
+    if (masterTgl) masterTgl.checked = isWidgetTruthy(adminFooterState.enabled);
+
+    // Brand
+    const b = adminFooterState.brand || {};
+    if (document.getElementById('admin-footer-app-name')) document.getElementById('admin-footer-app-name').value = b.appName || '';
+    if (document.getElementById('admin-footer-logo-icon')) document.getElementById('admin-footer-logo-icon').value = b.logoIcon || '';
+    if (document.getElementById('admin-footer-tagline')) document.getElementById('admin-footer-tagline').value = b.tagline || '';
+    if (document.getElementById('admin-footer-description')) document.getElementById('admin-footer-description').value = b.description || '';
+
+    // Contact
+    const c = adminFooterState.contact || {};
+    if (document.getElementById('admin-footer-contact-enabled')) document.getElementById('admin-footer-contact-enabled').checked = isWidgetTruthy(c.enabled);
+    if (document.getElementById('admin-footer-support-email')) document.getElementById('admin-footer-support-email').value = c.supportEmail || '';
+    if (document.getElementById('admin-footer-contact-email')) document.getElementById('admin-footer-contact-email').value = c.contactEmail || '';
+    if (document.getElementById('admin-footer-phone')) document.getElementById('admin-footer-phone').value = c.phone || '';
+    if (document.getElementById('admin-footer-support-url')) document.getElementById('admin-footer-support-url').value = c.supportUrl || '';
+    if (document.getElementById('admin-footer-address')) document.getElementById('admin-footer-address').value = c.address || '';
+    if (document.getElementById('admin-footer-hours')) document.getElementById('admin-footer-hours').value = c.businessHours || '';
+
+    // Copyright
+    const cp = adminFooterState.copyright || {};
+    if (document.getElementById('admin-footer-company-name')) document.getElementById('admin-footer-company-name').value = cp.companyName || '';
+    if (document.getElementById('admin-footer-copyright-year')) document.getElementById('admin-footer-copyright-year').value = cp.year || '2026';
+    if (document.getElementById('admin-footer-auto-year')) document.getElementById('admin-footer-auto-year').checked = isWidgetTruthy(cp.autoYear);
+    if (document.getElementById('admin-footer-suffix')) document.getElementById('admin-footer-suffix').value = cp.suffixText || '';
+
+    renderAdminFooterColumnsList();
+    renderAdminFooterSocialList();
+    renderAdminPagesList();
+}
+
+function collectAdminFooterFormValues() {
+    if (!adminFooterState) adminFooterState = getDefaultAdminFooterFallback();
+    adminFooterState = ensureCompleteFooterState(adminFooterState);
+
+    const masterTgl = document.getElementById('admin-footer-master-toggle');
+    adminFooterState.enabled = masterTgl ? masterTgl.checked : true;
+
+    adminFooterState.brand = {
+        appName: document.getElementById('admin-footer-app-name') ? document.getElementById('admin-footer-app-name').value : '',
+        logoIcon: document.getElementById('admin-footer-logo-icon') ? document.getElementById('admin-footer-logo-icon').value : '',
+        tagline: document.getElementById('admin-footer-tagline') ? document.getElementById('admin-footer-tagline').value : '',
+        description: document.getElementById('admin-footer-description') ? document.getElementById('admin-footer-description').value : ''
+    };
+
+    adminFooterState.contact = {
+        enabled: document.getElementById('admin-footer-contact-enabled') ? document.getElementById('admin-footer-contact-enabled').checked : true,
+        supportEmail: document.getElementById('admin-footer-support-email') ? document.getElementById('admin-footer-support-email').value : '',
+        contactEmail: document.getElementById('admin-footer-contact-email') ? document.getElementById('admin-footer-contact-email').value : '',
+        phone: document.getElementById('admin-footer-phone') ? document.getElementById('admin-footer-phone').value : '',
+        supportUrl: document.getElementById('admin-footer-support-url') ? document.getElementById('admin-footer-support-url').value : '',
+        address: document.getElementById('admin-footer-address') ? document.getElementById('admin-footer-address').value : '',
+        businessHours: document.getElementById('admin-footer-hours') ? document.getElementById('admin-footer-hours').value : ''
+    };
+
+    adminFooterState.copyright = {
+        companyName: document.getElementById('admin-footer-company-name') ? document.getElementById('admin-footer-company-name').value : '',
+        year: document.getElementById('admin-footer-copyright-year') ? document.getElementById('admin-footer-copyright-year').value : '2026',
+        autoYear: document.getElementById('admin-footer-auto-year') ? document.getElementById('admin-footer-auto-year').checked : true,
+        suffixText: document.getElementById('admin-footer-suffix') ? document.getElementById('admin-footer-suffix').value : ''
+    };
+}
+
+function saveAdminFooterSettings() {
+    collectAdminFooterFormValues();
+    localStorage.setItem('admin_footer_settings', JSON.stringify(adminFooterState));
+
+    fetch('/api/admin/footer-settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify(adminFooterState)
+    }).then(res => {
+        if (!res.ok) throw new Error('Save failed');
+        showToast('✨ Footer configuration saved to server successfully!', 'success', 'Footer Saved');
+    }).catch(err => {
+        showToast('✨ Footer configuration saved locally!', 'info', 'Footer Saved');
+    });
+}
+
+function renderAdminFooterColumnsList() {
+    const listContainer = document.getElementById('admin-footer-columns-list');
+    if (!listContainer) return;
+    if (!adminFooterState) adminFooterState = getDefaultAdminFooterFallback();
+    adminFooterState = ensureCompleteFooterState(adminFooterState);
+
+    const columns = adminFooterState.columns || [];
+    if (columns.length === 0) {
+        listContainer.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 20px; font-size: 13px;">No footer columns defined yet. Click "Add New Column" to create one.</div>`;
+        return;
+    }
+
+    listContainer.innerHTML = columns.map((col, cIdx) => {
+        const links = col.links || [];
+        const linksHtml = links.map((l, lIdx) => `
+            <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 8px 12px; font-size: 13px;">
+                <div style="display: flex; align-items: center; gap: 10px; flex: 1;">
+                    <i class="${escapeHtml(l.icon || 'fa-solid fa-link')}" style="color: #a5b4fc; font-size: 12px;"></i>
+                    <strong style="color: #fff;">${escapeHtml(l.title)}</strong>
+                    <span style="color: var(--text-muted); font-size: 12px;">(${escapeHtml(l.url)})</span>
+                    ${l.targetBlank ? '<span style="font-size: 10px; background: rgba(99,102,241,0.2); color: #a5b4fc; padding: 2px 6px; border-radius: 4px;">New Tab</span>' : ''}
+                </div>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <button type="button" class="btn btn-secondary btn-sm" style="padding: 4px 8px;" onclick="toggleAdminFooterLink('${col.id}', '${l.id}')" title="${l.enabled !== false ? 'Disable Link' : 'Enable Link'}">
+                        <i class="fa-solid ${l.enabled !== false ? 'fa-eye' : 'fa-eye-slash'}" style="color: ${l.enabled !== false ? '#34d399' : '#9ca3af'};"></i>
+                    </button>
+                    <button type="button" class="btn btn-secondary btn-sm" style="padding: 4px 8px;" onclick="openAdminEditLinkModal('${col.id}', '${l.id}')">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                    </button>
+                    <button type="button" class="btn btn-danger btn-sm" style="padding: 4px 8px;" onclick="deleteAdminFooterLink('${col.id}', '${l.id}')">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                </div>
+            </div>
+        `).join('');
+
+        return `
+            <div class="glass-panel" style="padding: 16px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); background: rgba(15,23,42,0.6);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 10px;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <h4 style="margin: 0; font-size: 15px; color: #fff;">${escapeHtml(col.title)}</h4>
+                        <span style="font-size: 11px; background: rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 10px; color: var(--text-secondary);">Order: ${col.order || cIdx + 1}</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <button type="button" class="btn btn-secondary btn-sm" onclick="openAdminAddLinkModal('${col.id}')">
+                            <i class="fa-solid fa-plus"></i> Add Link
+                        </button>
+                        <button type="button" class="btn btn-secondary btn-sm" onclick="openAdminEditColumnModal('${col.id}')">
+                            <i class="fa-solid fa-pen-to-square"></i> Edit
+                        </button>
+                        <button type="button" class="btn btn-danger btn-sm" onclick="deleteAdminFooterColumn('${col.id}')">
+                            <i class="fa-solid fa-trash-can"></i> Delete
+                        </button>
+                    </div>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    ${linksHtml || '<div style="font-size: 12px; color: var(--text-muted); padding: 6px 0;">No links in this column yet.</div>'}
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function renderAdminFooterSocialList() {
+    const listContainer = document.getElementById('admin-footer-social-list');
+    if (!listContainer) return;
+    if (!adminFooterState) adminFooterState = getDefaultAdminFooterFallback();
+    adminFooterState = ensureCompleteFooterState(adminFooterState);
+
+    const socialLinks = adminFooterState.socialLinks || [];
+    if (socialLinks.length === 0) {
+        listContainer.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 20px; font-size: 13px;">No social media channels configured. Click "Add Social Link" above.</div>`;
+        return;
+    }
+
+    listContainer.innerHTML = socialLinks.map(s => `
+        <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 14px; display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="width: 36px; height: 36px; border-radius: 8px; background: rgba(99,102,241,0.2); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 16px;">
+                    <i class="${escapeHtml(s.icon || 'fa-solid fa-share-nodes')}"></i>
+                </div>
+                <div>
+                    <div style="font-weight: 600; color: #fff; font-size: 14px;">${escapeHtml(s.platform)}</div>
+                    <div style="font-size: 11px; color: var(--text-muted); text-overflow: ellipsis; overflow: hidden; max-width: 160px; white-space: nowrap;">${escapeHtml(s.url)}</div>
+                </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 6px;">
+                <button type="button" class="btn btn-secondary btn-sm" style="padding: 4px 8px;" onclick="toggleAdminFooterSocial('${s.id}')">
+                    <i class="fa-solid ${s.enabled !== false ? 'fa-eye' : 'fa-eye-slash'}" style="color: ${s.enabled !== false ? '#34d399' : '#9ca3af'};"></i>
+                </button>
+                <button type="button" class="btn btn-secondary btn-sm" style="padding: 4px 8px;" onclick="openAdminEditSocialModal('${s.id}')">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                </button>
+                <button type="button" class="btn btn-danger btn-sm" style="padding: 4px 8px;" onclick="deleteAdminFooterSocial('${s.id}')">
+                    <i class="fa-solid fa-trash-can"></i>
+                </button>
+            </div>
+        </div>
+    `).join('');
+}
+
+const defaultAdminPublicPages = [
+    { title: "About Us", slug: "/about", status: "Published", description: "Product overview, capabilities, and automated QA mission." },
+    { title: "Contact Support", slug: "/contact", status: "Published", description: "Technical support, contact emails, phone, and office address." },
+    { title: "Latest Blog", slug: "/blog", status: "Published", description: "Articles, technical tutorials, and product updates." },
+    { title: "Careers", slug: "/careers", status: "Published", description: "Job listings and career opportunities." },
+    { title: "Documentation", slug: "/documentation", status: "Published", description: "User guides, crawl parameters, and hybrid pipeline architecture." },
+    { title: "Help Center & FAQ", slug: "/help", status: "Published", description: "Frequently Asked Questions and troubleshooting guide." },
+    { title: "API Reference", slug: "/api-reference", status: "Published", description: "Developer REST API endpoints and integration reference." },
+    { title: "Knowledge Base", slug: "/knowledge-base", status: "Published", description: "QA knowledge base, scanning patterns, and best practices." },
+    { title: "Privacy Policy", slug: "/privacy-policy", status: "Published", description: "Data collection, text extraction retention, and privacy policy." },
+    { title: "Terms & Conditions", slug: "/terms-and-conditions", status: "Published", description: "Service usage terms, scanning rights, and legal guidelines." },
+    { title: "Cookie Policy", slug: "/cookie-policy", status: "Published", description: "Essential browser local storage and cookie usage declaration." },
+    { title: "Disclaimer", slug: "/disclaimer", status: "Published", description: "Automated analysis limitations and verification notice." },
+    { title: "Projects & Reports", slug: "/projects", status: "Published", description: "Overview of project organization and scan reporting." }
+];
+
+function renderAdminPagesList() {
+    const listContainer = document.getElementById('admin-footer-pages-list');
+    if (!listContainer) return;
+
+    listContainer.innerHTML = defaultAdminPublicPages.map(p => `
+        <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 14px; display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="width: 36px; height: 36px; border-radius: 8px; background: rgba(99,102,241,0.2); display: flex; align-items: center; justify-content: center; color: #a5b4fc; font-size: 16px;">
+                    <i class="fa-solid fa-file-code"></i>
+                </div>
+                <div>
+                    <div style="font-weight: 600; color: #fff; font-size: 14px;">${escapeHtml(p.title)}</div>
+                    <div style="font-size: 11px; color: var(--text-muted);">${escapeHtml(p.slug)}</div>
+                </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 10px; background: rgba(52, 211, 153, 0.2); color: #34d399; padding: 2px 8px; border-radius: 10px; font-weight: 600;">${escapeHtml(p.status)}</span>
+                <a href="http://localhost:8080${p.slug}" target="_blank" class="btn btn-secondary btn-sm" style="padding: 4px 10px; font-size: 12px; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i> Open
+                </a>
+            </div>
+        </div>
+    `).join('');
+}
+
+function openAdminAddColumnModal() {
+    if (!adminFooterState) adminFooterState = getDefaultAdminFooterFallback();
+    adminFooterState = ensureCompleteFooterState(adminFooterState);
+    const modal = document.getElementById('admin-footer-column-modal');
+    if (!modal) return;
+    document.getElementById('admin-col-modal-title').textContent = "Add Footer Column";
+    document.getElementById('admin-col-modal-id').value = "";
+    document.getElementById('admin-col-modal-title-input').value = "";
+    document.getElementById('admin-col-modal-order-input').value = (adminFooterState.columns || []).length + 1;
+    document.getElementById('admin-col-modal-enabled-input').checked = true;
+    modal.style.display = 'flex';
+    modal.classList.add('active');
+}
+
+function openAdminEditColumnModal(colId) {
+    const modal = document.getElementById('admin-footer-column-modal');
+    if (!modal) return;
+    const col = (adminFooterState && adminFooterState.columns || []).find(c => c.id === colId);
+    if (!col) return;
+    document.getElementById('admin-col-modal-title').textContent = "Edit Footer Column";
+    document.getElementById('admin-col-modal-id').value = col.id;
+    document.getElementById('admin-col-modal-title-input').value = col.title;
+    document.getElementById('admin-col-modal-order-input').value = col.order || 1;
+    document.getElementById('admin-col-modal-enabled-input').checked = col.enabled !== false;
+    modal.style.display = 'flex';
+    modal.classList.add('active');
+}
+
+function closeAdminColumnModal() {
+    const modal = document.getElementById('admin-footer-column-modal');
+    if (modal) {
+        modal.style.display = 'none';
+        modal.classList.remove('active');
+    }
+}
+
+function saveAdminColumnModal(e) {
+    e.preventDefault();
+    const id = document.getElementById('admin-col-modal-id').value;
+    const title = document.getElementById('admin-col-modal-title-input').value.trim();
+    const order = parseInt(document.getElementById('admin-col-modal-order-input').value, 10) || 1;
+    const enabled = document.getElementById('admin-col-modal-enabled-input').checked;
+
+    if (!adminFooterState.columns) adminFooterState.columns = [];
+
+    if (id) {
+        const col = adminFooterState.columns.find(c => c.id === id);
+        if (col) {
+            col.title = title;
+            col.order = order;
+            col.enabled = enabled;
+        }
+    } else {
+        adminFooterState.columns.push({
+            id: 'col-' + Date.now(),
+            title: title,
+            order: order,
+            enabled: enabled,
+            links: []
+        });
+    }
+
+    closeAdminColumnModal();
+    renderAdminFooterColumnsList();
+    showToast('Column updated successfully', 'success');
+}
+
+function deleteAdminFooterColumn(colId) {
+    showAdminConfirm("Are you sure you want to delete this footer column and all its links?", "Delete Column")
+        .then(ok => {
+            if (ok && adminFooterState.columns) {
+                adminFooterState.columns = adminFooterState.columns.filter(c => c.id !== colId);
+                renderAdminFooterColumnsList();
+                showToast('Column deleted', 'info');
+            }
+        });
+}
+
+function openAdminAddLinkModal(colId) {
+    if (!adminFooterState) adminFooterState = getDefaultAdminFooterFallback();
+    adminFooterState = ensureCompleteFooterState(adminFooterState);
+    const modal = document.getElementById('admin-footer-link-modal');
+    if (!modal) return;
+    document.getElementById('admin-lnk-modal-title').textContent = "Add Footer Link";
+    document.getElementById('admin-lnk-modal-col-id').value = colId;
+    document.getElementById('admin-lnk-modal-id').value = "";
+    document.getElementById('admin-lnk-modal-title-input').value = "";
+    document.getElementById('admin-lnk-modal-url-input').value = "";
+    document.getElementById('admin-lnk-modal-icon-input').value = "";
+    document.getElementById('admin-lnk-modal-target-input').checked = false;
+    document.getElementById('admin-lnk-modal-enabled-input').checked = true;
+    modal.style.display = 'flex';
+    modal.classList.add('active');
+}
+
+function openAdminEditLinkModal(colId, linkId) {
+    const modal = document.getElementById('admin-footer-link-modal');
+    if (!modal) return;
+    const col = (adminFooterState && adminFooterState.columns || []).find(c => c.id === colId);
+    if (!col) return;
+    const link = (col.links || []).find(l => l.id === linkId);
+    if (!link) return;
+
+    document.getElementById('admin-lnk-modal-title').textContent = "Edit Footer Link";
+    document.getElementById('admin-lnk-modal-col-id').value = colId;
+    document.getElementById('admin-lnk-modal-id').value = link.id;
+    document.getElementById('admin-lnk-modal-title-input').value = link.title;
+    document.getElementById('admin-lnk-modal-url-input').value = link.url;
+    document.getElementById('admin-lnk-modal-icon-input').value = link.icon || "";
+    document.getElementById('admin-lnk-modal-target-input').checked = !!link.targetBlank;
+    document.getElementById('admin-lnk-modal-enabled-input').checked = link.enabled !== false;
+    modal.style.display = 'flex';
+    modal.classList.add('active');
+}
+
+function closeAdminLinkModal() {
+    const modal = document.getElementById('admin-footer-link-modal');
+    if (modal) {
+        modal.style.display = 'none';
+        modal.classList.remove('active');
+    }
+}
+
+function saveAdminLinkModal(e) {
+    e.preventDefault();
+    const colId = document.getElementById('admin-lnk-modal-col-id').value;
+    const linkId = document.getElementById('admin-lnk-modal-id').value;
+    const title = document.getElementById('admin-lnk-modal-title-input').value.trim();
+    const url = document.getElementById('admin-lnk-modal-url-input').value.trim();
+    const icon = document.getElementById('admin-lnk-modal-icon-input').value.trim();
+    const targetBlank = document.getElementById('admin-lnk-modal-target-input').checked;
+    const enabled = document.getElementById('admin-lnk-modal-enabled-input').checked;
+
+    const col = (adminFooterState.columns || []).find(c => c.id === colId);
+    if (!col) return;
+    if (!col.links) col.links = [];
+
+    if (linkId) {
+        const link = col.links.find(l => l.id === linkId);
+        if (link) {
+            link.title = title;
+            link.url = url;
+            link.icon = icon;
+            link.targetBlank = targetBlank;
+            link.enabled = enabled;
+        }
+    } else {
+        col.links.push({
+            id: 'lnk-' + Date.now(),
+            title: title,
+            url: url,
+            icon: icon,
+            targetBlank: targetBlank,
+            enabled: enabled,
+            order: col.links.length + 1
+        });
+    }
+
+    closeAdminLinkModal();
+    renderAdminFooterColumnsList();
+    showToast('Link saved successfully', 'success');
+}
+
+function toggleAdminFooterLink(colId, linkId) {
+    const col = (adminFooterState.columns || []).find(c => c.id === colId);
+    if (!col) return;
+    const link = (col.links || []).find(l => l.id === linkId);
+    if (!link) return;
+    link.enabled = (link.enabled === false);
+    renderAdminFooterColumnsList();
+}
+
+function deleteAdminFooterLink(colId, linkId) {
+    showAdminConfirm("Are you sure you want to delete this footer link?", "Delete Link")
+        .then(ok => {
+            if (ok) {
+                const col = (adminFooterState.columns || []).find(c => c.id === colId);
+                if (col && col.links) {
+                    col.links = col.links.filter(l => l.id !== linkId);
+                    renderAdminFooterColumnsList();
+                    showToast('Link deleted', 'info');
+                }
+            }
+        });
+}
+
+function openAdminAddSocialModal() {
+    if (!adminFooterState) adminFooterState = getDefaultAdminFooterFallback();
+    adminFooterState = ensureCompleteFooterState(adminFooterState);
+    const modal = document.getElementById('admin-footer-social-modal');
+    if (!modal) return;
+    document.getElementById('admin-soc-modal-title').textContent = "Add Social Channel";
+    document.getElementById('admin-soc-modal-id').value = "";
+    document.getElementById('admin-soc-modal-platform-input').value = "";
+    document.getElementById('admin-soc-modal-icon-input').value = "";
+    document.getElementById('admin-soc-modal-url-input').value = "";
+    document.getElementById('admin-soc-modal-enabled-input').checked = true;
+    modal.style.display = 'flex';
+    modal.classList.add('active');
+}
+
+function openAdminEditSocialModal(socId) {
+    const modal = document.getElementById('admin-footer-social-modal');
+    if (!modal) return;
+    const s = (adminFooterState && adminFooterState.socialLinks || []).find(item => item.id === socId);
+    if (!s) return;
+    document.getElementById('admin-soc-modal-title').textContent = "Edit Social Channel";
+    document.getElementById('admin-soc-modal-id').value = s.id;
+    document.getElementById('admin-soc-modal-platform-input').value = s.platform;
+    document.getElementById('admin-soc-modal-icon-input').value = s.icon || "";
+    document.getElementById('admin-soc-modal-url-input').value = s.url;
+    document.getElementById('admin-soc-modal-enabled-input').checked = s.enabled !== false;
+    modal.style.display = 'flex';
+    modal.classList.add('active');
+}
+
+function closeAdminSocialModal() {
+    const modal = document.getElementById('admin-footer-social-modal');
+    if (modal) {
+        modal.style.display = 'none';
+        modal.classList.remove('active');
+    }
+}
+
+function saveAdminSocialModal(e) {
+    e.preventDefault();
+    const id = document.getElementById('admin-soc-modal-id').value;
+    const platform = document.getElementById('admin-soc-modal-platform-input').value.trim();
+    const icon = document.getElementById('admin-soc-modal-icon-input').value.trim();
+    const url = document.getElementById('admin-soc-modal-url-input').value.trim();
+    const enabled = document.getElementById('admin-soc-modal-enabled-input').checked;
+
+    if (!adminFooterState.socialLinks) adminFooterState.socialLinks = [];
+
+    if (id) {
+        const s = adminFooterState.socialLinks.find(item => item.id === id);
+        if (s) {
+            s.platform = platform;
+            s.icon = icon;
+            s.url = url;
+            s.enabled = enabled;
+        }
+    } else {
+        adminFooterState.socialLinks.push({
+            id: 'soc-' + Date.now(),
+            platform: platform,
+            icon: icon,
+            url: url,
+            enabled: enabled,
+            order: adminFooterState.socialLinks.length + 1
+        });
+    }
+
+    closeAdminSocialModal();
+    renderAdminFooterSocialList();
+    showToast('Social channel saved', 'success');
+}
+
+function toggleAdminFooterSocial(socId) {
+    const s = (adminFooterState.socialLinks || []).find(item => item.id === socId);
+    if (!s) return;
+    s.enabled = (s.enabled === false);
+    renderAdminFooterSocialList();
+}
+
+function deleteAdminFooterSocial(socId) {
+    showAdminConfirm("Are you sure you want to delete this social link?", "Delete Social Link")
+        .then(ok => {
+            if (ok && adminFooterState.socialLinks) {
+                adminFooterState.socialLinks = adminFooterState.socialLinks.filter(s => s.id !== socId);
+                renderAdminFooterSocialList();
+                showToast('Social channel deleted', 'info');
+            }
+        });
+}
+
+function renderAdminFooterPreview() {
+    collectAdminFooterFormValues();
+    const previewContainer = document.getElementById('admin-footer-live-preview-box');
+    if (!previewContainer) return;
+    
+    // Construct preview footer HTML
+    const f = adminFooterState;
+    if (!f || f.enabled === false) {
+        previewContainer.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 30px; font-size: 14px;"><i class="fa-solid fa-eye-slash" style="font-size: 24px; margin-bottom: 8px; display: block;"></i> Footer is currently disabled in General Settings.</div>';
+        return;
+    }
+
+    const brand = f.brand || {};
+    const contact = f.contact || {};
+    const socialLinks = (f.socialLinks || []).filter(s => s.enabled !== false);
+    const columns = (f.columns || []).filter(c => c.enabled !== false);
+    const copyright = f.copyright || {};
+
+    let socialHtml = socialLinks.map(s => {
+        let iconClass = s.icon || 'fa-solid fa-link';
+        if (iconClass.includes('x-twitter') || iconClass.includes('twitter')) {
+            iconClass = 'fa-brands fa-x-twitter';
+        }
+        return `<span class="footer-social-btn"><i class="${escapeHtml(iconClass)}"></i></span>`;
+    }).join(' ');
+    
+    let columnsHtml = columns.map(c => {
+        const links = (c.links || []).filter(l => l.enabled !== false);
+        return `
+            <div class="footer-nav-col">
+                <div class="footer-col-title">${escapeHtml(c.title)}</div>
+                <ul class="footer-link-list">
+                    ${links.map(l => `<li class="footer-link-item"><a href="#">${escapeHtml(l.title)}</a></li>`).join('')}
+                </ul>
+            </div>
+        `;
+    }).join('');
+
+    let contactHtml = '';
+    if (contact.enabled !== false) {
+        const items = [];
+        if (contact.supportEmail) items.push(`<div class="footer-contact-item"><i class="fa-solid fa-envelope"></i> <div>Support: ${escapeHtml(contact.supportEmail)}</div></div>`);
+        if (contact.phone) items.push(`<div class="footer-contact-item"><i class="fa-solid fa-phone"></i> <div>Phone: ${escapeHtml(contact.phone)}</div></div>`);
+        if (contact.address) items.push(`<div class="footer-contact-item"><i class="fa-solid fa-location-dot"></i> <div>${escapeHtml(contact.address)}</div></div>`);
+        if (items.length > 0) {
+            contactHtml = `<div class="footer-nav-col footer-contact-col"><div class="footer-col-title">Contact & Support</div><div class="footer-contact-block">${items.join('')}</div></div>`;
+        }
+    }
+
+    previewContainer.innerHTML = `
+        <div class="site-footer" style="margin-top: 0; background: transparent; border: none; padding: 0;">
+            <div class="footer-top-grid">
+                <div class="footer-brand-col">
+                    <div class="footer-brand-logo">
+                        <div class="footer-logo-icon"><i class="${escapeHtml(brand.logoIcon || 'fa-solid fa-spell-check')}"></i></div>
+                        <div>
+                            <div class="footer-brand-title">${escapeHtml(brand.appName || 'QA Spelling Auto-Checker')}</div>
+                            <div class="footer-brand-tagline">${escapeHtml(brand.tagline || '')}</div>
+                        </div>
+                    </div>
+                    <p class="footer-brand-desc">${escapeHtml(brand.description || '')}</p>
+                    <div class="footer-social-links">${socialHtml}</div>
+                </div>
+                ${columnsHtml}
+                ${contactHtml}
+            </div>
+            <div class="footer-bottom-bar" style="border-top: 1px solid rgba(255,255,255,0.08); margin-top: 20px; padding-top: 16px;">
+                <div>© ${new Date().getFullYear()} ${escapeHtml(copyright.companyName || 'QA Spelling Auto-Checker')}. ${escapeHtml(copyright.suffixText || '')}</div>
+            </div>
+        </div>
+    `;
+}
+
+window.loadAdminFooterSettings = loadAdminFooterSettings;
+window.saveAdminFooterSettings = saveAdminFooterSettings;
+window.switchFooterAdminTab = switchFooterAdminTab;
+window.openAdminAddColumnModal = openAdminAddColumnModal;
+window.openAdminEditColumnModal = openAdminEditColumnModal;
+window.closeAdminColumnModal = closeAdminColumnModal;
+window.saveAdminColumnModal = saveAdminColumnModal;
+window.deleteAdminFooterColumn = deleteAdminFooterColumn;
+window.openAdminAddLinkModal = openAdminAddLinkModal;
+window.openAdminEditLinkModal = openAdminEditLinkModal;
+window.closeAdminLinkModal = closeAdminLinkModal;
+window.saveAdminLinkModal = saveAdminLinkModal;
+window.toggleAdminFooterLink = toggleAdminFooterLink;
+window.deleteAdminFooterLink = deleteAdminFooterLink;
+window.openAdminAddSocialModal = openAdminAddSocialModal;
+window.openAdminEditSocialModal = openAdminEditSocialModal;
+window.closeAdminSocialModal = closeAdminSocialModal;
+window.saveAdminSocialModal = saveAdminSocialModal;
+window.toggleAdminFooterSocial = toggleAdminFooterSocial;
+window.deleteAdminFooterSocial = deleteAdminFooterSocial;
+window.renderAdminFooterPreview = renderAdminFooterPreview;
+window.renderAdminPagesList = renderAdminPagesList;
+window.deleteAdminFooterSocial = deleteAdminFooterSocial;
 window.saveAdminWidgetSettings = saveAdminWidgetSettings;

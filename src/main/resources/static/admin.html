@@ -9,7 +9,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- Charts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="admin.css">
@@ -89,6 +89,9 @@
                     <a href="#widgets" class="nav-item" data-pane="widgets">
                         <i class="fa-solid fa-gamepad"></i><span>Widget Controls</span>
                     </a>
+                    <a href="#footer" class="nav-item" data-pane="footer">
+                        <i class="fa-solid fa-rectangle-list"></i><span>Footer Management</span>
+                    </a>
                     <a href="#settings" class="nav-item" data-pane="settings">
                         <i class="fa-solid fa-gears"></i><span>System Settings</span>
                     </a>
@@ -112,8 +115,8 @@
                     </div>
                     <div class="top-bar-actions">
                         <div class="theme-toggle">
-                            <button id="theme-switch" title="Toggle theme">
-                                <i class="fa-solid fa-sun"></i>
+                            <button id="theme-switch" title="Dark Appearance (Click to switch to Light Mode)">
+                                <i class="fa-solid fa-moon" style="color: #a5b4fc;"></i>
                             </button>
                         </div>
                         <a href="#profile" class="topbar-profile-link" title="Edit Profile"
@@ -955,11 +958,16 @@
                                 <h2 style="font-size: 18px; color: #fff; margin: 0; display: flex; align-items: center; gap: 10px;">
                                     <i class="fa-solid fa-gamepad" style="color: #c084fc;"></i> Entertainment & Interactive Widgets Manager
                                 </h2>
-                                <p style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;">Control visibility and active game modes across all 3 sections on the main scanner frontend.</p>
+                                <p style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;">Control visibility, free API data integration, API usage statistics, and active game modes across all 3 sections on the main scanner frontend.</p>
                             </div>
-                            <button class="btn btn-primary" onclick="saveAdminWidgetSettings()" style="padding: 10px 20px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px;">
-                                <i class="fa-solid fa-floppy-disk"></i> Save & Apply Changes
-                            </button>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <button type="button" class="btn btn-secondary btn-sm" onclick="resetAdminWidgetApiCounters()" style="padding: 8px 14px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
+                                    <i class="fa-solid fa-rotate-left"></i> Reset API Usage Stats
+                                </button>
+                                <button class="btn btn-primary" onclick="saveAdminWidgetSettings()" style="padding: 10px 20px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px;">
+                                    <i class="fa-solid fa-floppy-disk"></i> Save & Apply Changes
+                                </button>
+                            </div>
                         </div>
 
                         <!-- Section 1 Management -->
@@ -1025,34 +1033,286 @@
                         </div>
 
                         <!-- Section 2 Management -->
-                        <div style="background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                        <div style="background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: 12px; padding: 20px; margin-bottom: 24px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
                                 <div>
                                     <h3 style="font-size: 15px; color: #fbbf24; margin: 0; display: flex; align-items: center; gap: 8px;">
                                         <i class="fa-solid fa-wand-magic-sparkles"></i> Section 2: Daily Tech Mind-Booster & Fun Facts
                                     </h3>
-                                    <p style="font-size: 12px; color: var(--text-secondary); margin-top: 2px;">Control visibility of the tech trivia mind booster card on the scanner page.</p>
+                                    <p style="font-size: 12px; color: var(--text-secondary); margin-top: 2px;">Configure dynamic free API data fetching, non-repeating trivia, title customization, and auto-rotate interval.</p>
                                 </div>
-                                <label style="display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; color: #fff; font-weight: 600;">
-                                    <input type="checkbox" id="admin-toggle-sec2" checked style="width: 18px; height: 18px; accent-color: #f59e0b; cursor: pointer;">
-                                    Show Section 2
-                                </label>
+                                <div style="display: flex; align-items: center; gap: 14px;">
+                                    <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-secondary);">
+                                        <i class="fa-solid fa-chart-line" style="color: #fbbf24;"></i> API Usage:
+                                        <strong id="admin-sec2-api-count" style="color: #fbbf24; background: rgba(245, 158, 11, 0.2); padding: 2px 8px; border-radius: 6px; border: 1px solid rgba(245, 158, 11, 0.4);">0 Calls</strong>
+                                    </div>
+                                    <label style="display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; color: #fff; font-weight: 600;">
+                                        <input type="checkbox" id="admin-toggle-sec2" checked style="width: 18px; height: 18px; accent-color: #f59e0b; cursor: pointer;">
+                                        Enable Section 2
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-bottom: 14px;">
+                                <div>
+                                    <label style="font-size: 12px; color: var(--text-secondary); display: block; margin-bottom: 4px;">Section Title</label>
+                                    <input type="text" id="admin-sec2-title" class="form-control" value="Daily Tech Mind-Booster & Fun Facts">
+                                </div>
+                                <div>
+                                    <label style="font-size: 12px; color: var(--text-secondary); display: block; margin-bottom: 4px;">Badge Tag</label>
+                                    <input type="text" id="admin-sec2-badge" class="form-control" value="Did You Know?">
+                                </div>
+                                <div>
+                                    <label style="font-size: 12px; color: var(--text-secondary); display: block; margin-bottom: 4px;">Free API Integration</label>
+                                    <label style="display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); padding: 8px 12px; border-radius: 8px; cursor: pointer; color: #fff; font-size: 13px; margin-top: 2px;">
+                                        <input type="checkbox" id="admin-sec2-api-enabled" checked style="width: 16px; height: 16px; accent-color: #f59e0b; cursor: pointer;">
+                                        Enable Free API Calls
+                                    </label>
+                                </div>
+                                <div>
+                                    <label style="font-size: 12px; color: var(--text-secondary); display: block; margin-bottom: 4px;">Auto-Flip Timer</label>
+                                    <select id="admin-sec2-auto-rotate" class="form-control">
+                                        <option value="0">Disabled (Manual Button Click)</option>
+                                        <option value="10">Every 10 Seconds</option>
+                                        <option value="15">Every 15 Seconds</option>
+                                        <option value="30">Every 30 Seconds</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
+                                <label style="font-size: 12px; color: var(--text-secondary); display: block; margin-bottom: 4px;">Card Subtitle Description</label>
+                                <input type="text" id="admin-sec2-subtitle" class="form-control" value="Discover fascinating computing history, tech secrets, and easter eggs while your scan runs!">
                             </div>
                         </div>
 
                         <!-- Section 3 Management -->
-                        <div style="background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 20px;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                        <div style="background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 12px; padding: 20px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
                                 <div>
                                     <h3 style="font-size: 15px; color: #38bdf8; margin: 0; display: flex; align-items: center; gap: 8px;">
                                         <i class="fa-solid fa-earth-americas"></i> Section 3: World Wonders, Mysteries & Curiosities
                                     </h3>
-                                    <p style="font-size: 12px; color: var(--text-secondary); margin-top: 2px;">Control visibility of the global wonders and mind-benders card on the scanner page.</p>
+                                    <p style="font-size: 12px; color: var(--text-secondary); margin-top: 2px;">Configure dynamic free API data fetching, non-repeating world mysteries, title customization, and auto-discover interval.</p>
                                 </div>
-                                <label style="display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; color: #fff; font-weight: 600;">
-                                    <input type="checkbox" id="admin-toggle-sec3" checked style="width: 18px; height: 18px; accent-color: #38bdf8; cursor: pointer;">
-                                    Show Section 3
+                                <div style="display: flex; align-items: center; gap: 14px;">
+                                    <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-secondary);">
+                                        <i class="fa-solid fa-chart-line" style="color: #38bdf8;"></i> API Usage:
+                                        <strong id="admin-sec3-api-count" style="color: #38bdf8; background: rgba(56, 189, 248, 0.2); padding: 2px 8px; border-radius: 6px; border: 1px solid rgba(56, 189, 248, 0.4);">0 Calls</strong>
+                                    </div>
+                                    <label style="display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; color: #fff; font-weight: 600;">
+                                        <input type="checkbox" id="admin-toggle-sec3" checked style="width: 18px; height: 18px; accent-color: #38bdf8; cursor: pointer;">
+                                        Enable Section 3
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-bottom: 14px;">
+                                <div>
+                                    <label style="font-size: 12px; color: var(--text-secondary); display: block; margin-bottom: 4px;">Section Title</label>
+                                    <input type="text" id="admin-sec3-title" class="form-control" value="World Wonders, Mysteries & Curiosities">
+                                </div>
+                                <div>
+                                    <label style="font-size: 12px; color: var(--text-secondary); display: block; margin-bottom: 4px;">Badge Tag</label>
+                                    <input type="text" id="admin-sec3-badge" class="form-control" value="Global Edition">
+                                </div>
+                                <div>
+                                    <label style="font-size: 12px; color: var(--text-secondary); display: block; margin-bottom: 4px;">Free API Integration</label>
+                                    <label style="display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); padding: 8px 12px; border-radius: 8px; cursor: pointer; color: #fff; font-size: 13px; margin-top: 2px;">
+                                        <input type="checkbox" id="admin-sec3-api-enabled" checked style="width: 16px; height: 16px; accent-color: #38bdf8; cursor: pointer;">
+                                        Enable Free API Calls
+                                    </label>
+                                </div>
+                                <div>
+                                    <label style="font-size: 12px; color: var(--text-secondary); display: block; margin-bottom: 4px;">Auto-Discover Timer</label>
+                                    <select id="admin-sec3-auto-rotate" class="form-control">
+                                        <option value="0">Disabled (Manual Button Click)</option>
+                                        <option value="10">Every 10 Seconds</option>
+                                        <option value="15">Every 15 Seconds</option>
+                                        <option value="30">Every 30 Seconds</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
+                                <label style="font-size: 12px; color: var(--text-secondary); display: block; margin-bottom: 4px;">Card Subtitle Description</label>
+                                <input type="text" id="admin-sec3-subtitle" class="form-control" value="Explore mind-bending natural phenomena, ancient human achievements, space mysteries & world records!">
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Pane: Footer System Management -->
+                <section id="pane-footer" class="pane">
+                    <div class="glass-panel" style="padding: 24px; margin-bottom: 24px; border: 1px solid rgba(99, 102, 241, 0.35); border-radius: 14px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 16px; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+                            <div>
+                                <h2 style="font-size: 18px; color: #fff; margin: 0; display: flex; align-items: center; gap: 10px;">
+                                    <i class="fa-solid fa-rectangle-list" style="color: #818cf8;"></i> Global Footer System Manager
+                                </h2>
+                                <p style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;">Dynamically configure brand identity, columns, links, social channels, contact info, and copyright on the website.</p>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 14px;">
+                                <label style="display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; color: #fff; font-weight: 600; background: rgba(255,255,255,0.05); padding: 8px 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);">
+                                    <input type="checkbox" id="admin-footer-master-toggle" checked style="width: 18px; height: 18px; accent-color: var(--color-primary); cursor: pointer;">
+                                    Enable Footer
                                 </label>
+                                <button class="btn btn-primary" onclick="saveAdminFooterSettings()" style="padding: 10px 20px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px;">
+                                    <i class="fa-solid fa-floppy-disk"></i> Save Footer Configuration
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Footer Navigation Sub-Tabs -->
+                        <div style="display: flex; gap: 8px; margin-bottom: 24px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 10px; flex-wrap: wrap;" id="footer-admin-tabs">
+                            <button type="button" class="tab-btn active" onclick="switchFooterAdminTab('brand')" id="btn-ftab-brand">
+                                <i class="fa-solid fa-id-card"></i> Brand & Identity
+                            </button>
+                            <button type="button" class="tab-btn" onclick="switchFooterAdminTab('columns')" id="btn-ftab-columns">
+                                <i class="fa-solid fa-table-columns"></i> Columns & Links
+                            </button>
+                            <button type="button" class="tab-btn" onclick="switchFooterAdminTab('social')" id="btn-ftab-social">
+                                <i class="fa-solid fa-share-nodes"></i> Social Media
+                            </button>
+                            <button type="button" class="tab-btn" onclick="switchFooterAdminTab('contact')" id="btn-ftab-contact">
+                                <i class="fa-solid fa-address-book"></i> Contact Info
+                            </button>
+                            <button type="button" class="tab-btn" onclick="switchFooterAdminTab('copyright')" id="btn-ftab-copyright">
+                                <i class="fa-solid fa-copyright"></i> Copyright & Bottom
+                            </button>
+                            <button type="button" class="tab-btn" onclick="switchFooterAdminTab('pages')" id="btn-ftab-pages">
+                                <i class="fa-solid fa-file-lines"></i> Public Pages Management
+                            </button>
+                            <button type="button" class="tab-btn" onclick="switchFooterAdminTab('preview')" id="btn-ftab-preview">
+                                <i class="fa-solid fa-eye"></i> Live Preview
+                            </button>
+                        </div>
+
+                        <!-- Tab 1: Brand & Identity -->
+                        <div id="footer-admin-pane-brand" class="footer-admin-tab-pane">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                                <div class="form-group">
+                                    <label for="admin-footer-app-name" style="font-weight: 600; font-size: 13px; color: #fff;">Application / Brand Name</label>
+                                    <input type="text" id="admin-footer-app-name" class="form-control" placeholder="QA Spelling Auto-Checker" style="background: rgba(0,0,0,0.3); color: #fff;">
+                                </div>
+                                <div class="form-group">
+                                    <label for="admin-footer-logo-icon" style="font-weight: 600; font-size: 13px; color: #fff;">Logo Icon (FontAwesome Class)</label>
+                                    <input type="text" id="admin-footer-logo-icon" class="form-control" placeholder="fa-solid fa-spell-check" style="background: rgba(0,0,0,0.3); color: #fff;">
+                                </div>
+                            </div>
+                            <div class="form-group" style="margin-top: 15px;">
+                                <label for="admin-footer-tagline" style="font-weight: 600; font-size: 13px; color: #fff;">Brand Tagline / Slogan</label>
+                                <input type="text" id="admin-footer-tagline" class="form-control" placeholder="Automated Quality Assurance & Content Validation" style="background: rgba(0,0,0,0.3); color: #fff;">
+                            </div>
+                            <div class="form-group" style="margin-top: 15px;">
+                                <label for="admin-footer-description" style="font-weight: 600; font-size: 13px; color: #fff;">Footer Product Description</label>
+                                <textarea id="admin-footer-description" class="form-control" rows="3" placeholder="Verify spelling issues on websites instantly with powerful automated website content analysis." style="background: rgba(0,0,0,0.3); color: #fff; line-height: 1.5;"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Tab 2: Columns & Links -->
+                        <div id="footer-admin-pane-columns" class="footer-admin-tab-pane" style="display: none;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                                <h3 style="font-size: 15px; color: #a5b4fc; margin: 0;">Footer Columns & Navigation Links</h3>
+                                <button type="button" class="btn btn-secondary btn-sm" onclick="openAdminAddColumnModal()">
+                                    <i class="fa-solid fa-plus"></i> Add New Column
+                                </button>
+                            </div>
+                            <div id="admin-footer-columns-list" style="display: flex; flex-direction: column; gap: 20px;">
+                                <!-- Columns dynamically populated by admin.js -->
+                            </div>
+                        </div>
+
+                        <!-- Tab 3: Social Media -->
+                        <div id="footer-admin-pane-social" class="footer-admin-tab-pane" style="display: none;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                                <h3 style="font-size: 15px; color: #fbbf24; margin: 0;">Social Media Platform Links</h3>
+                                <button type="button" class="btn btn-secondary btn-sm" onclick="openAdminAddSocialModal()">
+                                    <i class="fa-solid fa-plus"></i> Add Social Link
+                                </button>
+                            </div>
+                            <div id="admin-footer-social-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px;">
+                                <!-- Social items dynamically populated by admin.js -->
+                            </div>
+                        </div>
+
+                        <!-- Tab 4: Contact Info -->
+                        <div id="footer-admin-pane-contact" class="footer-admin-tab-pane" style="display: none;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                                <h3 style="font-size: 15px; color: #34d399; margin: 0;">Contact & Support Details</h3>
+                                <label style="display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; color: #fff;">
+                                    <input type="checkbox" id="admin-footer-contact-enabled" checked style="width: 16px; height: 16px; accent-color: #34d399;">
+                                    Show Contact Section
+                                </label>
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                                <div class="form-group">
+                                    <label for="admin-footer-support-email" style="font-size: 13px; color: #fff;">Support Email</label>
+                                    <input type="email" id="admin-footer-support-email" class="form-control" placeholder="support@example.com" style="background: rgba(0,0,0,0.3); color: #fff;">
+                                </div>
+                                <div class="form-group">
+                                    <label for="admin-footer-contact-email" style="font-size: 13px; color: #fff;">Contact / General Email</label>
+                                    <input type="email" id="admin-footer-contact-email" class="form-control" placeholder="info@example.com" style="background: rgba(0,0,0,0.3); color: #fff;">
+                                </div>
+                                <div class="form-group">
+                                    <label for="admin-footer-phone" style="font-size: 13px; color: #fff;">Phone Number</label>
+                                    <input type="text" id="admin-footer-phone" class="form-control" placeholder="+1 (800) 555-0199" style="background: rgba(0,0,0,0.3); color: #fff;">
+                                </div>
+                                <div class="form-group">
+                                    <label for="admin-footer-support-url" style="font-size: 13px; color: #fff;">Support Page URL</label>
+                                    <input type="text" id="admin-footer-support-url" class="form-control" placeholder="https://example.com/support" style="background: rgba(0,0,0,0.3); color: #fff;">
+                                </div>
+                            </div>
+                            <div class="form-group" style="margin-top: 14px;">
+                                <label for="admin-footer-address" style="font-size: 13px; color: #fff;">Office Address</label>
+                                <input type="text" id="admin-footer-address" class="form-control" placeholder="100 Tech Plaza, Suite 500, San Francisco, CA 94105" style="background: rgba(0,0,0,0.3); color: #fff;">
+                            </div>
+                            <div class="form-group" style="margin-top: 14px;">
+                                <label for="admin-footer-hours" style="font-size: 13px; color: #fff;">Business Hours</label>
+                                <input type="text" id="admin-footer-hours" class="form-control" placeholder="Mon - Fri: 9:00 AM - 6:00 PM EST" style="background: rgba(0,0,0,0.3); color: #fff;">
+                            </div>
+                        </div>
+
+                        <!-- Tab 5: Copyright & Bottom Bar -->
+                        <div id="footer-admin-pane-copyright" class="footer-admin-tab-pane" style="display: none;">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                                <div class="form-group">
+                                    <label for="admin-footer-company-name" style="font-size: 13px; color: #fff;">Copyright Company / Product Name</label>
+                                    <input type="text" id="admin-footer-company-name" class="form-control" placeholder="QA Spelling Auto-Checker" style="background: rgba(0,0,0,0.3); color: #fff;">
+                                </div>
+                                <div class="form-group">
+                                    <label for="admin-footer-copyright-year" style="font-size: 13px; color: #fff;">Copyright Year</label>
+                                    <input type="text" id="admin-footer-copyright-year" class="form-control" placeholder="2026" style="background: rgba(0,0,0,0.3); color: #fff;">
+                                </div>
+                            </div>
+                            <div style="margin-top: 12px;">
+                                <label style="display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; color: #fff;">
+                                    <input type="checkbox" id="admin-footer-auto-year" checked style="width: 16px; height: 16px; accent-color: var(--color-primary);">
+                                    Automatically display current year dynamically
+                                </label>
+                            </div>
+                            <div class="form-group" style="margin-top: 16px;">
+                                <label for="admin-footer-suffix" style="font-size: 13px; color: #fff;">Copyright Suffix Text</label>
+                                <input type="text" id="admin-footer-suffix" class="form-control" placeholder="All rights reserved." style="background: rgba(0,0,0,0.3); color: #fff;">
+                            </div>
+                        </div>
+
+                        <!-- Tab 6: Public Pages Management -->
+                        <div id="footer-admin-pane-pages" class="footer-admin-tab-pane" style="display: none;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                                <h3 style="font-size: 15px; color: #818cf8; margin: 0;"><i class="fa-solid fa-file-lines"></i> Public Footer Destination Pages</h3>
+                                <span style="font-size: 12px; color: var(--text-muted);">13 Managed Public Pages</span>
+                            </div>
+                            <div id="admin-footer-pages-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px;">
+                                <!-- Pages list dynamically rendered by admin.js -->
+                            </div>
+                        </div>
+
+                        <!-- Tab 6: Live Preview -->
+                        <div id="footer-admin-pane-preview" class="footer-admin-tab-pane" style="display: none;">
+                            <div style="font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #a5b4fc; font-weight: 700; margin-bottom: 12px;">
+                                <i class="fa-solid fa-desktop"></i> Website Public Footer Preview:
+                            </div>
+                            <div id="admin-footer-live-preview-box" style="border: 1px solid rgba(255,255,255,0.15); border-radius: 14px; overflow: hidden; background: #0b1120; padding: 20px;">
+                                <!-- Live preview populated by admin.js -->
                             </div>
                         </div>
                     </div>
@@ -1168,6 +1428,110 @@
                 <div style="display: flex; justify-content: center; gap: 12px;">
                     <button type="button" class="btn btn-secondary btn-sm" onclick="closeAdminPrompt(null)">Cancel</button>
                     <button type="submit" class="btn btn-primary btn-sm" id="admin-prompt-submit-btn">Authorize & Reset</button>
+                </div>
+            </form>
+    <!-- Admin Footer Modals -->
+    <!-- Add/Edit Column Modal -->
+    <div class="modal" id="admin-footer-column-modal">
+        <div class="modal-content glass-card" style="width: 440px;">
+            <div class="modal-header">
+                <h2 id="admin-col-modal-title">Add Footer Column</h2>
+                <button class="modal-close-btn" onclick="closeAdminColumnModal()">&times;</button>
+            </div>
+            <form onsubmit="saveAdminColumnModal(event)">
+                <input type="hidden" id="admin-col-modal-id">
+                <div class="form-group" style="margin-bottom: 16px;">
+                    <label for="admin-col-modal-title-input">Column Title <span style="color:#ef4444;">*</span></label>
+                    <input type="text" id="admin-col-modal-title-input" required class="form-control" placeholder="e.g. Products, Legal, Resources">
+                </div>
+                <div class="form-group" style="margin-bottom: 16px;">
+                    <label for="admin-col-modal-order-input">Display Order</label>
+                    <input type="number" id="admin-col-modal-order-input" value="1" min="1" class="form-control">
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <label style="display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; color: #fff;">
+                        <input type="checkbox" id="admin-col-modal-enabled-input" checked style="width: 16px; height: 16px; accent-color: var(--color-primary);">
+                        Enable Column
+                    </label>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeAdminColumnModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Column</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add/Edit Link Modal -->
+    <div class="modal" id="admin-footer-link-modal">
+        <div class="modal-content glass-card" style="width: 460px;">
+            <div class="modal-header">
+                <h2 id="admin-lnk-modal-title">Add Footer Link</h2>
+                <button class="modal-close-btn" onclick="closeAdminLinkModal()">&times;</button>
+            </div>
+            <form onsubmit="saveAdminLinkModal(event)">
+                <input type="hidden" id="admin-lnk-modal-col-id">
+                <input type="hidden" id="admin-lnk-modal-id">
+                <div class="form-group" style="margin-bottom: 14px;">
+                    <label for="admin-lnk-modal-title-input">Link Title / Label <span style="color:#ef4444;">*</span></label>
+                    <input type="text" id="admin-lnk-modal-title-input" required class="form-control" placeholder="e.g. Privacy Policy, Scan Website">
+                </div>
+                <div class="form-group" style="margin-bottom: 14px;">
+                    <label for="admin-lnk-modal-url-input">URL / Path <span style="color:#ef4444;">*</span></label>
+                    <input type="text" id="admin-lnk-modal-url-input" required class="form-control" placeholder="e.g. /privacy or https://example.com">
+                </div>
+                <div class="form-group" style="margin-bottom: 14px;">
+                    <label for="admin-lnk-modal-icon-input">Optional Icon Class</label>
+                    <input type="text" id="admin-lnk-modal-icon-input" class="form-control" placeholder="e.g. fa-solid fa-arrow-right">
+                </div>
+                <div style="display: flex; gap: 20px; margin-bottom: 20px;">
+                    <label style="display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; color: #fff;">
+                        <input type="checkbox" id="admin-lnk-modal-target-input" style="width: 16px; height: 16px; accent-color: var(--color-primary);">
+                        Open in New Tab
+                    </label>
+                    <label style="display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; color: #fff;">
+                        <input type="checkbox" id="admin-lnk-modal-enabled-input" checked style="width: 16px; height: 16px; accent-color: var(--color-primary);">
+                        Enabled
+                    </label>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeAdminLinkModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Link</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add/Edit Social Link Modal -->
+    <div class="modal" id="admin-footer-social-modal">
+        <div class="modal-content glass-card" style="width: 460px;">
+            <div class="modal-header">
+                <h2 id="admin-soc-modal-title">Add Social Channel</h2>
+                <button class="modal-close-btn" onclick="closeAdminSocialModal()">&times;</button>
+            </div>
+            <form onsubmit="saveAdminSocialModal(event)">
+                <input type="hidden" id="admin-soc-modal-id">
+                <div class="form-group" style="margin-bottom: 14px;">
+                    <label for="admin-soc-modal-platform-input">Platform Name <span style="color:#ef4444;">*</span></label>
+                    <input type="text" id="admin-soc-modal-platform-input" required class="form-control" placeholder="e.g. GitHub, LinkedIn, X/Twitter">
+                </div>
+                <div class="form-group" style="margin-bottom: 14px;">
+                    <label for="admin-soc-modal-icon-input">Icon Class (FontAwesome)</label>
+                    <input type="text" id="admin-soc-modal-icon-input" required class="form-control" placeholder="e.g. fa-brands fa-github">
+                </div>
+                <div class="form-group" style="margin-bottom: 14px;">
+                    <label for="admin-soc-modal-url-input">Social Profile URL <span style="color:#ef4444;">*</span></label>
+                    <input type="text" id="admin-soc-modal-url-input" required class="form-control" placeholder="https://github.com/your-repo">
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <label style="display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; color: #fff;">
+                        <input type="checkbox" id="admin-soc-modal-enabled-input" checked style="width: 16px; height: 16px; accent-color: var(--color-primary);">
+                        Enabled
+                    </label>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeAdminSocialModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Social Channel</button>
                 </div>
             </form>
         </div>

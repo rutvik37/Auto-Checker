@@ -35,3 +35,6 @@ bin/
 tools/
 CustomDictionaries/settings.json
 CustomDictionaries/groq_metrics.json
+
+# Test session files
+cookies.txt

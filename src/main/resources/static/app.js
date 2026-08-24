@@ -13,7 +13,10 @@ let dialogResolve = null;
 document.addEventListener('DOMContentLoaded', () => {
     initTheme();
     applyWidgetSettingsFromAdmin();
+    applyFooterSettingsFromAdmin();
     initQuizGame();
+    revealNextTechFact();
+    revealNextWorldWonder();
     loadProjects().then(() => {
         checkForActiveScan();
     });
@@ -31,23 +34,27 @@ function initTheme() {
     if (savedTheme === 'light') {
         body.classList.remove('dark-mode');
         body.classList.add('light-mode');
-        themeBtn.innerHTML = '<i class="fa-solid fa-moon"></i>';
+        themeBtn.innerHTML = '<i class="fa-solid fa-sun" style="color: #f59e0b;"></i>';
+        themeBtn.title = 'Light Appearance (Click to switch to Dark Mode)';
     } else {
         body.classList.add('dark-mode');
         body.classList.remove('light-mode');
-        themeBtn.innerHTML = '<i class="fa-solid fa-sun"></i>';
+        themeBtn.innerHTML = '<i class="fa-solid fa-moon" style="color: #a5b4fc;"></i>';
+        themeBtn.title = 'Dark Appearance (Click to switch to Light Mode)';
     }
 
     themeBtn.addEventListener('click', () => {
         if (body.classList.contains('light-mode')) {
             body.classList.remove('light-mode');
             body.classList.add('dark-mode');
-            themeBtn.innerHTML = '<i class="fa-solid fa-sun"></i>';
+            themeBtn.innerHTML = '<i class="fa-solid fa-moon" style="color: #a5b4fc;"></i>';
+            themeBtn.title = 'Dark Appearance (Click to switch to Light Mode)';
             localStorage.setItem('theme', 'dark');
         } else {
             body.classList.remove('dark-mode');
             body.classList.add('light-mode');
-            themeBtn.innerHTML = '<i class="fa-solid fa-moon"></i>';
+            themeBtn.innerHTML = '<i class="fa-solid fa-sun" style="color: #f59e0b;"></i>';
+            themeBtn.title = 'Light Appearance (Click to switch to Dark Mode)';
             localStorage.setItem('theme', 'light');
         }
     });
@@ -779,8 +786,16 @@ async function loadLiveIssues(scanId) {
     }
 }
 
-// UI Function: Reset all inputs and scan outputs
-function resetFormAndOutput() {
+// UI Function: Reset all inputs and scan outputs with confirmation popup / alert box
+async function resetFormAndOutput(skipConfirm = false) {
+    if (!skipConfirm) {
+        const confirmed = await showCustomConfirm(
+            'Are you sure you want to reset all form input fields and clear current scan results?',
+            'Reset Scanner Confirmation'
+        );
+        if (!confirmed) return;
+    }
+
     // 1. Clear input
     const urlInput = document.getElementById('scan-url');
     if (urlInput) {
@@ -853,6 +868,10 @@ function resetFormAndOutput() {
     if (btn) {
         btn.disabled = false;
         btn.innerHTML = '<i class="fa-solid fa-play"></i> Start Spelling Check';
+    }
+
+    if (!skipConfirm) {
+        showCustomAlert('The scanner inputs and scan results display have been successfully reset.', 'Reset Complete');
     }
 }
 
@@ -1578,9 +1597,13 @@ const techFactsBank = [
     }
 ];
 
-let lastTechFactIndex = 0;
+const sessionSeenTechFactTexts = new Set();
+const sessionSeenWorldWonderTexts = new Set();
 
-function revealNextTechFact() {
+let sec2AutoRotateTimer = null;
+let sec3AutoRotateTimer = null;
+
+async function revealNextTechFact() {
     const box = document.getElementById('tech-fact-display-box');
     const categoryElem = document.getElementById('fact-category-badge');
     const textElem = document.getElementById('fact-text-elem');
@@ -1588,19 +1611,39 @@ function revealNextTechFact() {
 
     if (!box || !textElem) return;
 
-    let nextIndex = Math.floor(Math.random() * techFactsBank.length);
-    if (nextIndex === lastTechFactIndex) {
-        nextIndex = (nextIndex + 1) % techFactsBank.length;
-    }
-    lastTechFactIndex = nextIndex;
-
-    const factObj = techFactsBank[nextIndex];
-
     box.style.opacity = '0.3';
+
+    try {
+        const res = await fetch('/api/public/facts/tech/random?t=' + Date.now());
+        if (res.ok) {
+            const data = await res.json();
+            if (data && data.fact) {
+                if (!sessionSeenTechFactTexts.has(data.fact)) {
+                    sessionSeenTechFactTexts.add(data.fact);
+                    setTimeout(() => {
+                        if (categoryElem) categoryElem.textContent = data.category || '⚡ Live Free API Fact';
+                        if (textElem) textElem.textContent = data.fact;
+                        if (iconElem) iconElem.className = data.icon || 'fa-solid fa-wand-magic-sparkles';
+                        box.style.opacity = '1';
+                    }, 150);
+                    return;
+                }
+            }
+        }
+    } catch (e) {}
+
+    let unseenFacts = techFactsBank.filter(f => !sessionSeenTechFactTexts.has(f.fact));
+    if (unseenFacts.length === 0) {
+        sessionSeenTechFactTexts.clear();
+        unseenFacts = techFactsBank;
+    }
+    const chosen = unseenFacts[Math.floor(Math.random() * unseenFacts.length)];
+    sessionSeenTechFactTexts.add(chosen.fact);
+
     setTimeout(() => {
-        if (categoryElem) categoryElem.textContent = factObj.category;
-        if (textElem) textElem.textContent = factObj.fact;
-        if (iconElem) iconElem.className = `fa-solid ${factObj.icon}`;
+        if (categoryElem) categoryElem.textContent = chosen.category;
+        if (textElem) textElem.textContent = chosen.fact;
+        if (iconElem) iconElem.className = `fa-solid ${chosen.icon}`;
         box.style.opacity = '1';
     }, 150);
 }
@@ -1659,9 +1702,7 @@ const worldWondersBank = [
     }
 ];
 
-let lastWorldWonderIndex = 0;
-
-function revealNextWorldWonder() {
+async function revealNextWorldWonder() {
     const box = document.getElementById('world-wonder-display-box');
     const categoryElem = document.getElementById('wonder-category-badge');
     const textElem = document.getElementById('wonder-text-elem');
@@ -1669,19 +1710,39 @@ function revealNextWorldWonder() {
 
     if (!box || !textElem) return;
 
-    let nextIndex = Math.floor(Math.random() * worldWondersBank.length);
-    if (nextIndex === lastWorldWonderIndex) {
-        nextIndex = (nextIndex + 1) % worldWondersBank.length;
-    }
-    lastWorldWonderIndex = nextIndex;
-
-    const wonderObj = worldWondersBank[nextIndex];
-
     box.style.opacity = '0.3';
+
+    try {
+        const res = await fetch('/api/public/facts/world/random?t=' + Date.now());
+        if (res.ok) {
+            const data = await res.json();
+            if (data && data.wonder) {
+                if (!sessionSeenWorldWonderTexts.has(data.wonder)) {
+                    sessionSeenWorldWonderTexts.add(data.wonder);
+                    setTimeout(() => {
+                        if (categoryElem) categoryElem.textContent = data.category || '🌍 Live World Wonder';
+                        if (textElem) textElem.textContent = data.wonder;
+                        if (iconElem) iconElem.className = data.icon || 'fa-solid fa-earth-americas';
+                        box.style.opacity = '1';
+                    }, 150);
+                    return;
+                }
+            }
+        }
+    } catch (e) {}
+
+    let unseenWonders = worldWondersBank.filter(w => !sessionSeenWorldWonderTexts.has(w.wonder));
+    if (unseenWonders.length === 0) {
+        sessionSeenWorldWonderTexts.clear();
+        unseenWonders = worldWondersBank;
+    }
+    const chosen = unseenWonders[Math.floor(Math.random() * unseenWonders.length)];
+    sessionSeenWorldWonderTexts.add(chosen.wonder);
+
     setTimeout(() => {
-        if (categoryElem) categoryElem.textContent = wonderObj.category;
-        if (textElem) textElem.textContent = wonderObj.wonder;
-        if (iconElem) iconElem.className = `fa-solid ${wonderObj.icon}`;
+        if (categoryElem) categoryElem.textContent = chosen.category;
+        if (textElem) textElem.textContent = chosen.wonder;
+        if (iconElem) iconElem.className = `fa-solid ${chosen.icon}`;
         box.style.opacity = '1';
     }, 150);
 }
@@ -1709,6 +1770,16 @@ function renderWidgetSettingsFromLocal() {
         sec1_visible: true,
         sec2_visible: true,
         sec3_visible: true,
+        sec2_title: 'Daily Tech Mind-Booster & Fun Facts',
+        sec2_badge: 'Did You Know?',
+        sec2_subtitle: 'Discover fascinating computing history, tech secrets, and easter eggs while your scan runs!',
+        sec2_data_mode: 'api',
+        sec2_auto_rotate: 0,
+        sec3_title: 'World Wonders, Mysteries & Curiosities',
+        sec3_badge: 'Global Edition',
+        sec3_subtitle: 'Explore mind-bending natural phenomena, ancient human achievements, space mysteries & world records!',
+        sec3_data_mode: 'api',
+        sec3_auto_rotate: 0,
         modes: {
             math: true, india: true, ai: true, history: true, science: true,
             cinema: true, sports: true, geography: true, coding: true, riddles: true
@@ -1730,22 +1801,69 @@ function isWidgetTruthy(val) {
 function renderWidgetSettingsToDom(settings) {
     if (!settings) return;
 
+    const sec1Visible = isWidgetTruthy(settings.sec1_visible);
+    const sec2Visible = isWidgetTruthy(settings.sec2_visible);
+    const sec3Visible = isWidgetTruthy(settings.sec3_visible);
+
+    // Outer container visibility
+    const widgetsSection = document.getElementById('interactive-widgets-section');
+    if (widgetsSection) {
+        widgetsSection.style.display = (sec1Visible || sec2Visible || sec3Visible) ? 'block' : 'none';
+    }
+
     // Manage Section 1 Visibility
     const sec1 = document.getElementById('scan-mini-game-card');
     if (sec1) {
-        sec1.style.display = isWidgetTruthy(settings.sec1_visible) ? 'block' : 'none';
+        sec1.style.display = sec1Visible ? 'block' : 'none';
     }
 
-    // Manage Section 2 Visibility
+    // Manage Section 2 Visibility & Dynamic Texts
     const sec2 = document.getElementById('tech-fortune-card');
     if (sec2) {
-        sec2.style.display = isWidgetTruthy(settings.sec2_visible) ? 'block' : 'none';
+        sec2.style.display = sec2Visible ? 'block' : 'none';
+        const sec2Header = sec2.querySelector('h3');
+        if (sec2Header && sec2Header.childNodes[0]) {
+            sec2Header.childNodes[0].textContent = (settings.sec2_title || 'Daily Tech Mind-Booster & Fun Facts') + ' ';
+        }
+        const sec2Badge = sec2.querySelector('h3 span');
+        if (sec2Badge) {
+            sec2Badge.textContent = settings.sec2_badge || 'Did You Know?';
+        }
+        const sec2Subtitle = sec2.querySelector('p');
+        if (sec2Subtitle) {
+            sec2Subtitle.textContent = settings.sec2_subtitle || 'Discover fascinating computing history, tech secrets, and easter eggs while your scan runs!';
+        }
     }
 
-    // Manage Section 3 Visibility
+    // Manage Section 3 Visibility & Dynamic Texts
     const sec3 = document.getElementById('world-wonders-card');
     if (sec3) {
-        sec3.style.display = isWidgetTruthy(settings.sec3_visible) ? 'block' : 'none';
+        sec3.style.display = sec3Visible ? 'block' : 'none';
+        const sec3Header = sec3.querySelector('h3');
+        if (sec3Header && sec3Header.childNodes[0]) {
+            sec3Header.childNodes[0].textContent = (settings.sec3_title || 'World Wonders, Mysteries & Curiosities') + ' ';
+        }
+        const sec3Badge = sec3.querySelector('h3 span');
+        if (sec3Badge) {
+            sec3Badge.textContent = settings.sec3_badge || 'Global Edition';
+        }
+        const sec3Subtitle = sec3.querySelector('p');
+        if (sec3Subtitle) {
+            sec3Subtitle.textContent = settings.sec3_subtitle || 'Explore mind-bending natural phenomena, ancient human achievements, space mysteries & world records!';
+        }
+    }
+
+    // Manage Auto-Rotation Timers
+    if (sec2AutoRotateTimer) clearInterval(sec2AutoRotateTimer);
+    const sec2Secs = parseInt(settings.sec2_auto_rotate, 10) || 0;
+    if (sec2Secs > 0 && sec2Visible) {
+        sec2AutoRotateTimer = setInterval(() => revealNextTechFact(), sec2Secs * 1000);
+    }
+
+    if (sec3AutoRotateTimer) clearInterval(sec3AutoRotateTimer);
+    const sec3Secs = parseInt(settings.sec3_auto_rotate, 10) || 0;
+    if (sec3Secs > 0 && sec3Visible) {
+        sec3AutoRotateTimer = setInterval(() => revealNextWorldWonder(), sec3Secs * 1000);
     }
 
     // Manage individual mode buttons
@@ -1764,7 +1882,277 @@ window.addEventListener('storage', (e) => {
     if (e.key === 'admin_widget_settings') {
         renderWidgetSettingsFromLocal();
     }
+    if (e.key === 'admin_footer_settings') {
+        renderFooterFromLocal();
+    }
 });
+
+// --- Public Footer Controller & Dynamic Render Engine ---
+function applyFooterSettingsFromAdmin() {
+    fetch('/api/public/footer-settings')
+        .then(res => res.json())
+        .then(settings => {
+            if (settings) {
+                localStorage.setItem('admin_footer_settings', JSON.stringify(settings));
+                renderFooterToDom(settings);
+            } else {
+                renderFooterFromLocal();
+            }
+        })
+        .catch(() => {
+            renderFooterFromLocal();
+        });
+}
+
+function renderFooterFromLocal() {
+    const raw = localStorage.getItem('admin_footer_settings');
+    if (raw) {
+        try {
+            const settings = JSON.parse(raw);
+            renderFooterToDom(settings);
+            return;
+        } catch (e) {}
+    }
+    renderFooterToDom(getDefaultFooterFallback());
+}
+
+function getDefaultFooterFallback() {
+    return {
+        enabled: true,
+        brand: {
+            appName: "QA Spelling Auto-Checker",
+            tagline: "Automated Quality Assurance & Content Validation",
+            description: "Verify spelling issues on websites instantly with powerful automated website content analysis.",
+            logoIcon: "fa-solid fa-spell-check"
+        },
+        contact: {
+            supportEmail: "support@example.com",
+            contactEmail: "info@example.com",
+            phone: "+1 (800) 555-0199",
+            address: "100 Tech Plaza, Suite 500, San Francisco, CA 94105",
+            businessHours: "Mon - Fri: 9:00 AM - 6:00 PM EST",
+            enabled: true
+        },
+        socialLinks: [
+            { id: "soc-1", platform: "GitHub", icon: "fa-brands fa-github", url: "https://github.com", enabled: true, order: 1 },
+            { id: "soc-2", platform: "LinkedIn", icon: "fa-brands fa-linkedin", url: "https://linkedin.com", enabled: true, order: 2 },
+            { id: "soc-3", platform: "X / Twitter", icon: "fa-brands fa-x-twitter", url: "https://x.com", enabled: true, order: 3 },
+            { id: "soc-4", platform: "YouTube", icon: "fa-brands fa-youtube", url: "https://youtube.com", enabled: true, order: 4 }
+        ],
+        columns: [
+            {
+                id: "col-product", title: "Product", enabled: true, order: 1,
+                links: [
+                    { id: "lnk-1", title: "Website Spell Check", url: "/", targetBlank: false, enabled: true },
+                    { id: "lnk-2", title: "Scan Website", url: "/#scan-form", targetBlank: false, enabled: true },
+                    { id: "lnk-3", title: "Projects & Reports", url: "/#tab-projects", targetBlank: false, enabled: true }
+                ]
+            },
+            {
+                id: "col-resources", title: "Resources", enabled: true, order: 2,
+                links: [
+                    { id: "lnk-5", title: "Documentation", url: "/documentation", targetBlank: false, enabled: true },
+                    { id: "lnk-6", title: "Help Center & FAQ", url: "/faq", targetBlank: false, enabled: true }
+                ]
+            },
+            {
+                id: "col-company", title: "Company", enabled: true, order: 3,
+                links: [
+                    { id: "lnk-9", title: "About Us", url: "/about", targetBlank: false, enabled: true },
+                    { id: "lnk-10", title: "Contact Support", url: "/contact", targetBlank: false, enabled: true }
+                ]
+            },
+            {
+                id: "col-legal", title: "Legal", enabled: true, order: 4,
+                links: [
+                    { id: "lnk-13", title: "Privacy Policy", url: "/privacy", targetBlank: false, enabled: true },
+                    { id: "lnk-14", title: "Terms & Conditions", url: "/terms", targetBlank: false, enabled: true }
+                ]
+            }
+        ],
+        copyright: {
+            companyName: "QA Spelling Auto-Checker",
+            year: "2026",
+            autoYear: true,
+            suffixText: "All rights reserved.",
+            bottomLinks: [
+                { id: "bot-1", title: "Privacy", url: "/privacy", enabled: true },
+                { id: "bot-2", title: "Terms", url: "/terms", enabled: true }
+            ]
+        }
+    };
+}
+
+function renderFooterToDom(settings) {
+    const footerContainer = document.getElementById('site-footer');
+    if (!footerContainer) return;
+
+    if (!settings || settings.enabled === false || settings.enabled === 'false') {
+        footerContainer.style.display = 'none';
+        footerContainer.innerHTML = '';
+        return;
+    }
+
+    footerContainer.style.display = 'block';
+
+    const brand = settings.brand || {};
+    const contact = settings.contact || {};
+    const socialLinks = (settings.socialLinks || []).filter(s => s.enabled !== false).sort((a,b) => (a.order || 0) - (b.order || 0));
+    const columns = (settings.columns || []).filter(c => c.enabled !== false).sort((a,b) => (a.order || 0) - (b.order || 0));
+    const copyright = settings.copyright || {};
+    const newsletter = settings.newsletter || {};
+
+    const logoIcon = brand.logoIcon || 'fa-solid fa-spell-check';
+    const appName = brand.appName || 'QA Spelling Auto-Checker';
+    const tagline = brand.tagline || '';
+    const desc = brand.description || '';
+
+    // Build Social HTML
+    let socialHtml = '';
+    if (socialLinks.length > 0) {
+        socialHtml = `<div class="footer-social-links">` +
+            socialLinks.map(s => {
+                const target = s.url && s.url.startsWith('http') ? 'target="_blank" rel="noopener noreferrer"' : '';
+                let iconClass = s.icon || 'fa-solid fa-link';
+                if (iconClass.includes('x-twitter') || iconClass.includes('twitter')) {
+                    iconClass = 'fa-brands fa-x-twitter';
+                }
+                return `<a href="${escapeHtml(s.url || '#')}" class="footer-social-btn" title="${escapeHtml(s.platform || '')}" ${target}>
+                    <i class="${escapeHtml(iconClass)}"></i>
+                </a>`;
+            }).join('') +
+            `</div>`;
+    }
+
+    // Build Brand Column HTML
+    let brandHtml = `
+        <div class="footer-brand-col">
+            <a href="/" class="footer-brand-logo">
+                <div class="footer-logo-icon">
+                    <i class="${escapeHtml(logoIcon)}"></i>
+                </div>
+                <div>
+                    <div class="footer-brand-title">${escapeHtml(appName)}</div>
+                    ${tagline ? `<div class="footer-brand-tagline">${escapeHtml(tagline)}</div>` : ''}
+                </div>
+            </a>
+            ${desc ? `<p class="footer-brand-desc">${escapeHtml(desc)}</p>` : ''}
+            ${socialHtml}
+        </div>
+    `;
+
+    // Build Nav Columns HTML
+    let columnsHtml = columns.map(col => {
+        const links = (col.links || []).filter(l => l.enabled !== false).sort((a,b) => (a.order || 0) - (b.order || 0));
+        const linksHtml = links.map(l => {
+            const target = l.targetBlank ? 'target="_blank" rel="noopener noreferrer"' : '';
+            return `<li class="footer-link-item">
+                <a href="${escapeHtml(l.url || '#')}" ${target}>
+                    ${l.icon ? `<i class="${escapeHtml(l.icon)}"></i>` : ''}
+                    ${escapeHtml(l.title || 'Link')}
+                </a>
+            </li>`;
+        }).join('');
+
+        return `
+            <div class="footer-nav-col">
+                <div class="footer-col-title">${escapeHtml(col.title || 'Navigation')}</div>
+                <ul class="footer-link-list">
+                    ${linksHtml}
+                </ul>
+            </div>
+        `;
+    }).join('');
+
+    // Build Contact Block HTML
+    let contactHtml = '';
+    if (contact.enabled !== false) {
+        const items = [];
+        if (contact.supportEmail) {
+            items.push(`<div class="footer-contact-item"><i class="fa-solid fa-envelope"></i> <div>Support: <a href="mailto:${escapeHtml(contact.supportEmail)}">${escapeHtml(contact.supportEmail)}</a></div></div>`);
+        }
+        if (contact.contactEmail) {
+            items.push(`<div class="footer-contact-item"><i class="fa-solid fa-paper-plane"></i> <div>Contact: <a href="mailto:${escapeHtml(contact.contactEmail)}">${escapeHtml(contact.contactEmail)}</a></div></div>`);
+        }
+        if (contact.phone) {
+            items.push(`<div class="footer-contact-item"><i class="fa-solid fa-phone"></i> <div>Phone: <a href="tel:${escapeHtml(contact.phone)}">${escapeHtml(contact.phone)}</a></div></div>`);
+        }
+        if (contact.address) {
+            items.push(`<div class="footer-contact-item"><i class="fa-solid fa-location-dot"></i> <div>${escapeHtml(contact.address)}</div></div>`);
+        }
+        if (contact.businessHours) {
+            items.push(`<div class="footer-contact-item"><i class="fa-solid fa-clock"></i> <div>${escapeHtml(contact.businessHours)}</div></div>`);
+        }
+
+        if (items.length > 0) {
+            contactHtml = `
+                <div class="footer-nav-col footer-contact-col">
+                    <div class="footer-col-title">Contact & Support</div>
+                    <div class="footer-contact-block">
+                        ${items.join('')}
+                    </div>
+                </div>
+            `;
+        }
+    }
+
+    // Build Newsletter Section HTML
+    let newsletterHtml = '';
+    if (newsletter.enabled) {
+        newsletterHtml = `
+            <div class="footer-newsletter-card">
+                <div>
+                    <div class="footer-newsletter-title">${escapeHtml(newsletter.title || 'Stay Updated')}</div>
+                    <div class="footer-newsletter-desc">${escapeHtml(newsletter.description || 'Get updates and improvements directly to your inbox.')}</div>
+                </div>
+                <form class="footer-newsletter-form" onsubmit="event.preventDefault(); showToast('Thank you for your interest! Newsletter service is configured.', 'info');">
+                    <input type="email" class="footer-newsletter-input" placeholder="${escapeHtml(newsletter.placeholder || 'Enter your email')}" required>
+                    <button type="submit" class="btn btn-primary btn-sm">${escapeHtml(newsletter.buttonText || 'Subscribe')}</button>
+                </form>
+            </div>
+        `;
+    }
+
+    // Build Copyright & Bottom Bar HTML
+    const yearDisplay = (copyright.autoYear !== false) ? new Date().getFullYear() : (copyright.year || new Date().getFullYear());
+    const compName = copyright.companyName || appName;
+    const suffix = copyright.suffixText || 'All rights reserved.';
+
+    const botLinks = (copyright.bottomLinks || []).filter(l => l.enabled !== false);
+    const botLinksHtml = botLinks.map(l => {
+        const target = l.targetBlank ? 'target="_blank" rel="noopener noreferrer"' : '';
+        return `<li><a href="${escapeHtml(l.url || '#')}" ${target}>${escapeHtml(l.title || '')}</a></li>`;
+    }).join('');
+
+    const bottomBarHtml = `
+        <div class="footer-bottom-bar">
+            <div>
+                © ${escapeHtml(String(yearDisplay))} <strong>${escapeHtml(compName)}</strong>. ${escapeHtml(suffix)}
+            </div>
+            ${botLinks.length > 0 ? `<ul class="footer-bottom-links">${botLinksHtml}</ul>` : ''}
+        </div>
+    `;
+
+    footerContainer.innerHTML = `
+        <div class="footer-top-grid">
+            ${brandHtml}
+            ${columnsHtml}
+            ${contactHtml}
+        </div>
+        ${newsletterHtml}
+        ${bottomBarHtml}
+    `;
+}
+
+function escapeHtml(str) {
+    if (!str) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
 
 window.setQuizMode = setQuizMode;
 window.skipQuizQuestion = skipQuizQuestion;
@@ -1772,3 +2160,4 @@ window.closeQuizFeedbackInstant = closeQuizFeedbackInstant;
 window.revealNextTechFact = revealNextTechFact;
 window.revealNextWorldWonder = revealNextWorldWonder;
 window.applyWidgetSettingsFromAdmin = applyWidgetSettingsFromAdmin;
+window.applyFooterSettingsFromAdmin = applyFooterSettingsFromAdmin;

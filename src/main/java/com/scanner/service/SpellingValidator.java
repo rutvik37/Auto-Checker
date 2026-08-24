@@ -308,17 +308,41 @@ public class SpellingValidator {
             requestsSent.incrementAndGet();
             callGroqForBatch(batch, apiKey, scanId, logWriter, parallelPrepTime, parallelApiTime, parallelParseTime);
         } catch (Exception e) {
-            logger.warn("Groq validation failed for batch of size {}: {}. Retrying with fallback...", batch.size(),
-                    e.getMessage());
-            logError(scanId, "Groq validation failed for batch of size " + batch.size() + ": " + e.getMessage()
+            String errMsg = e.getMessage() != null ? e.getMessage() : "";
+            if (errMsg.contains("429") || errMsg.toLowerCase().contains("rate limit")) {
+                logger.warn("Groq API rate limit hit (429). Backing off for 1500ms before retry...");
+                try {
+                    Thread.sleep(1500);
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                }
+                try {
+                    callGroqForBatch(batch, apiKey, scanId, logWriter, parallelPrepTime, parallelApiTime, parallelParseTime);
+                    return;
+                } catch (Exception retryEx) {
+                    e = retryEx;
+                    errMsg = e.getMessage() != null ? e.getMessage() : "";
+                }
+            }
+
+            logger.warn("Groq validation failed for batch of size {}: {}. Retrying with fallback...", batch.size(), errMsg);
+            logError(scanId, "Groq validation failed for batch of size " + batch.size() + ": " + errMsg
                     + ". Retrying with smaller batch...", logWriter);
 
             if (batch.size() <= 1) {
-                // Cannot split further, mark remaining as PENDING
+                // Cannot split further, handle fallback
                 for (SpellingCandidate c : batch) {
-                    c.setDecision("PENDING");
-                    c.setReason("Groq call error: " + e.getMessage());
-                    saveToCache(c.getWord(), c.getSuggestion(), "PENDING", "Groq call error: " + e.getMessage());
+                    String sugg = c.getSuggestion() != null ? c.getSuggestion().trim() : "";
+                    String primarySugg = sugg.contains(",") ? sugg.split(",")[0].trim() : sugg;
+                    if (!primarySugg.isEmpty() && !primarySugg.contains(" ") && c.getWord() != null && c.getWord().length() > 2) {
+                        c.setDecision("TYPO");
+                        c.setReason("LanguageTool High-Confidence Fallback (Groq API Unavailable: " + errMsg + ")");
+                        saveToCache(c.getWord(), c.getSuggestion(), "TYPO", c.getReason());
+                    } else {
+                        c.setDecision("PENDING");
+                        c.setReason("Groq call error: " + errMsg);
+                        saveToCache(c.getWord(), c.getSuggestion(), "PENDING", "Groq call error: " + errMsg);
+                    }
                 }
                 return;
             }

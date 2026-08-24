@@ -1,0 +1,176 @@
+{
+  "testPage": "/spelling-test.html",
+  "fullUrl": "http://localhost:8080/spelling-test.html",
+  "expectedPrimaryUniqueMistakes": 20,
+  "expectedTotalUniqueMistakes": 23,
+  "expectedTotalOccurrences": 53,
+  "expectedFalsePositives": 0,
+  "expectedCorrectWordsReported": 0,
+  "expectedMistakes": [
+    {
+      "incorrect": "recieve",
+      "correct": "receive",
+      "expectedOccurrences": 14,
+      "elements": ["p", "td"],
+      "caseVariations": ["recieve", "Recieve", "RECIEVE"],
+      "punctuationVariations": ["recieve.", "recieve!", "recieve?", "\"recieve\"", "(recieve)", "recieve,"]
+    },
+    {
+      "incorrect": "seperate",
+      "correct": "separate",
+      "expectedOccurrences": 5,
+      "elements": ["p", "li", "td"]
+    },
+    {
+      "incorrect": "definately",
+      "correct": "definitely",
+      "expectedOccurrences": 4,
+      "elements": ["p", "td"]
+    },
+    {
+      "incorrect": "occured",
+      "correct": "occurred",
+      "expectedOccurrences": 2,
+      "elements": ["p", "blockquote"]
+    },
+    {
+      "incorrect": "accomodate",
+      "correct": "accommodate",
+      "expectedOccurrences": 2,
+      "elements": ["p", "td"]
+    },
+    {
+      "incorrect": "enviroment",
+      "correct": "environment",
+      "expectedOccurrences": 3,
+      "elements": ["p", "td"]
+    },
+    {
+      "incorrect": "responsiblity",
+      "correct": "responsibility",
+      "expectedOccurrences": 2,
+      "elements": ["p", "td"]
+    },
+    {
+      "incorrect": "maintanance",
+      "correct": "maintenance",
+      "expectedOccurrences": 3,
+      "elements": ["p"]
+    },
+    {
+      "incorrect": "succesful",
+      "correct": "successful",
+      "expectedOccurrences": 5,
+      "elements": ["p", "li", "td"]
+    },
+    {
+      "incorrect": "independant",
+      "correct": "independent",
+      "expectedOccurrences": 1,
+      "elements": ["p"]
+    },
+    {
+      "incorrect": "existance",
+      "correct": "existence",
+      "expectedOccurrences": 1,
+      "elements": ["p"]
+    },
+    {
+      "incorrect": "begining",
+      "correct": "beginning",
+      "expectedOccurrences": 2,
+      "elements": ["p", "blockquote"]
+    },
+    {
+      "incorrect": "calender",
+      "correct": "calendar",
+      "expectedOccurrences": 1,
+      "elements": ["p"]
+    },
+    {
+      "incorrect": "adress",
+      "correct": "address",
+      "expectedOccurrences": 2,
+      "elements": ["p", "label"]
+    },
+    {
+      "incorrect": "avaliable",
+      "correct": "available",
+      "expectedOccurrences": 4,
+      "elements": ["p", "li"]
+    },
+    {
+      "incorrect": "necesary",
+      "correct": "necessary",
+      "expectedOccurrences": 1,
+      "elements": ["p"]
+    },
+    {
+      "incorrect": "recomend",
+      "correct": "recommend",
+      "expectedOccurrences": 1,
+      "elements": ["p"]
+    },
+    {
+      "incorrect": "privilage",
+      "correct": "privilege",
+      "expectedOccurrences": 1,
+      "elements": ["p"]
+    },
+    {
+      "incorrect": "occurence",
+      "correct": "occurrence",
+      "expectedOccurrences": 1,
+      "elements": ["p"]
+    },
+    {
+      "incorrect": "goverment",
+      "correct": "government",
+      "expectedOccurrences": 1,
+      "elements": ["p"]
+    },
+    {
+      "incorrect": "testng",
+      "correct": "testing",
+      "expectedOccurrences": 1,
+      "elements": ["h1"]
+    },
+    {
+      "incorrect": "configuraton",
+      "correct": "configuration",
+      "expectedOccurrences": 1,
+      "elements": ["h2"]
+    },
+    {
+      "incorrect": "submt",
+      "correct": "submit",
+      "expectedOccurrences": 1,
+      "elements": ["button"]
+    }
+  ],
+  "expectedWhitelistedTerms": [
+    "JavaScript",
+    "TypeScript",
+    "Playwright",
+    "Selenium",
+    "API",
+    "HTTP",
+    "HTTPS",
+    "JSON",
+    "PostgreSQL",
+    "SQLite",
+    "automation",
+    "authentication",
+    "authorization",
+    "configuration",
+    "validation",
+    "regression",
+    "deployment",
+    "localhost",
+    "OAuth",
+    "WebSocket",
+    "GitHub",
+    "CSS",
+    "HTML"
+  ]
+}

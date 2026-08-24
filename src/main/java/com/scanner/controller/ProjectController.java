@@ -22,6 +22,8 @@ import java.util.Arrays;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import com.scanner.service.SettingsService;
+
 @RestController
 @RequestMapping("/api")
 @CrossOrigin(origins = "*")
@@ -32,18 +34,103 @@ public class ProjectController {
     private final LiveLogService liveLogService;
     private final IssueRepository issueRepository;
     private final SpellingValidator spellingValidator;
+    private final SettingsService settingsService;
 
     @Autowired
     public ProjectController(ProjectService projectService,
             CrawlScanService crawlScanService,
             LiveLogService liveLogService,
             IssueRepository issueRepository,
-            SpellingValidator spellingValidator) {
+            SpellingValidator spellingValidator,
+            SettingsService settingsService) {
         this.projectService = projectService;
         this.crawlScanService = crawlScanService;
         this.liveLogService = liveLogService;
         this.issueRepository = issueRepository;
         this.spellingValidator = spellingValidator;
+        this.settingsService = settingsService;
+    }
+
+    @GetMapping("/public/widget-settings")
+    public ResponseEntity<?> getPublicWidgetSettings() {
+        return ResponseEntity.ok(settingsService.getWidgetSettings());
+    }
+
+    @GetMapping("/public/footer-settings")
+    public ResponseEntity<?> getPublicFooterSettings() {
+        return ResponseEntity.ok(settingsService.getFooterSettings());
+    }
+
+    private static final List<Map<String, String>> TECH_FACTS_POOL = List.of(
+        Map.of("category", "💡 Tech Secrets", "icon", "fa-solid fa-lightbulb", "fact", "The first computer bug was an actual real moth trapped inside a Harvard Mark II relay in 1947 by Grace Hopper's team!"),
+        Map.of("category", "🌐 Web History", "icon", "fa-solid fa-globe", "fact", "The very first website ever created (info.cern.ch) went live on August 6, 1991 by Tim Berners-Lee!"),
+        Map.of("category", "🔑 Security Secrets", "icon", "fa-solid fa-key", "fact", "For 20 years (1962 to 1977), the launch code for US nuclear missiles was set to '00000000' for maximum speed!"),
+        Map.of("category", "🇮🇳 Indian Supercomputers", "icon", "fa-solid fa-microchip", "fact", "PARAM 8000, built by C-DAC in 1991 under Dr. Vijay Bhatkar, made India a global supercomputing power!"),
+        Map.of("category", "🤖 AI Milestones", "icon", "fa-solid fa-brain", "fact", "In 1997, IBM's Deep Blue defeated World Chess Champion Garry Kasparov in a 6-game match!"),
+        Map.of("category", "📱 Mobile History", "icon", "fa-solid fa-mobile-screen", "fact", "The first mobile phone call was made in 1973 by Martin Cooper using a 2-pound Motorola DynaTAC!"),
+        Map.of("category", "💾 Hardware Tech", "icon", "fa-solid fa-hard-drive", "fact", "In 1956, IBM shipped the RAMAC 305 with 5MB of storage—the hard drive weighed over 1 ton!"),
+        Map.of("category", "🚀 Space Computing", "icon", "fa-solid fa-rocket", "fact", "The Apollo 11 Lunar Module guidance computer had only 4KB of RAM and ran at 1.024 MHz!")
+    );
+
+    private static final List<Map<String, String>> WORLD_WONDERS_POOL = List.of(
+        Map.of("category", "🏛️ Ancient Engineering", "icon", "fa-solid fa-landmark-dome", "wonder", "The Great Pyramid of Giza was constructed with over 2.3 million giant stone blocks fitting together razor-sharp!"),
+        Map.of("category", "🌊 Deep Ocean Secrets", "icon", "fa-solid fa-water", "wonder", "The Mariana Trench is 11,000 meters deep—placing Mount Everest inside leaves 2km of ocean water above it!"),
+        Map.of("category", "🍯 Biological Marvels", "icon", "fa-solid fa-jar", "wonder", "Honey never spoils! Archaeologists found 3,000-year-old Egyptian honey pots that are still perfectly edible!"),
+        Map.of("category", "🐋 Wildlife Records", "icon", "fa-solid fa-fish", "wonder", "A Blue Whale's heart weighs 400 lbs and its heartbeat can be detected 2 miles underwater!"),
+        Map.of("category", "⚡ Natural Phenomena", "icon", "fa-solid fa-bolt-lightning", "wonder", "Lightning strikes Planet Earth approximately 8.6 million times every single day!"),
+        Map.of("category", "🧠 Brain Mysteries", "icon", "fa-solid fa-brain", "wonder", "The human brain generates about 20 watts of electrical power when awake—enough to power an LED light bulb!"),
+        Map.of("category", "🌲 Nature Curiosities", "icon", "fa-solid fa-tree", "wonder", "There are more trees on Earth (~3 trillion) than there are stars in the Milky Way galaxy (~100 billion)!"),
+        Map.of("category", "🌋 Geological Wonders", "icon", "fa-solid fa-mountain-sun", "wonder", "Mount Everest grows about 4mm taller every single year due to ongoing continental plate collision!")
+    );
+
+    @GetMapping("/public/facts/tech/random")
+    public ResponseEntity<?> getRandomTechFact() {
+        if (settingsService.isSec2ApiEnabled()) {
+            settingsService.incrementSec2ApiCount();
+            try {
+                org.springframework.web.client.RestTemplate rest = new org.springframework.web.client.RestTemplate();
+                @SuppressWarnings("unchecked")
+                Map<String, Object> resp = rest.getForObject("https://uselessfacts.jsph.pl/api/v2/facts/random", Map.class);
+                if (resp != null && resp.containsKey("text")) {
+                    Map<String, Object> factMap = new HashMap<>();
+                    factMap.put("category", "⚡ Live Free API Fact");
+                    factMap.put("icon", "fa-solid fa-wand-magic-sparkles");
+                    factMap.put("fact", resp.get("text").toString());
+                    factMap.put("id", resp.get("id") != null ? resp.get("id").toString() : "api-" + System.currentTimeMillis());
+                    return ResponseEntity.ok(factMap);
+                }
+            } catch (Exception ignored) {}
+        }
+
+        Map<String, String> picked = TECH_FACTS_POOL.get(java.util.concurrent.ThreadLocalRandom.current().nextInt(TECH_FACTS_POOL.size()));
+        Map<String, Object> fallback = new HashMap<>(picked);
+        fallback.put("id", "pool-" + System.currentTimeMillis() + "-" + java.util.concurrent.ThreadLocalRandom.current().nextInt(1000));
+        return ResponseEntity.ok(fallback);
+    }
+
+    @GetMapping("/public/facts/world/random")
+    public ResponseEntity<?> getRandomWorldWonder() {
+        if (settingsService.isSec3ApiEnabled()) {
+            settingsService.incrementSec3ApiCount();
+            try {
+                org.springframework.web.client.RestTemplate rest = new org.springframework.web.client.RestTemplate();
+                @SuppressWarnings("unchecked")
+                Map<String, Object> resp = rest.getForObject("https://uselessfacts.jsph.pl/api/v2/facts/random", Map.class);
+                if (resp != null && resp.containsKey("text")) {
+                    Map<String, Object> wonderMap = new HashMap<>();
+                    wonderMap.put("category", "🌍 Global Discovery & Wonder");
+                    wonderMap.put("icon", "fa-solid fa-earth-americas");
+                    wonderMap.put("wonder", resp.get("text").toString());
+                    wonderMap.put("id", resp.get("id") != null ? resp.get("id").toString() : "api-w-" + System.currentTimeMillis());
+                    return ResponseEntity.ok(wonderMap);
+                }
+            } catch (Exception ignored) {}
+        }
+
+        Map<String, String> picked = WORLD_WONDERS_POOL.get(java.util.concurrent.ThreadLocalRandom.current().nextInt(WORLD_WONDERS_POOL.size()));
+        Map<String, Object> fallback = new HashMap<>(picked);
+        fallback.put("id", "pool-w-" + System.currentTimeMillis() + "-" + java.util.concurrent.ThreadLocalRandom.current().nextInt(1000));
+        return ResponseEntity.ok(fallback);
     }
 
     // Projects CRUD

@@ -44,7 +44,7 @@ public class AdminController {
     private final GroqMetricsService groqMetricsService;
     private final ProfileImageRepository profileImageRepository;
 
-    @org.springframework.beans.factory.annotation.Value("${admin.security.pin:5555}")
+    @org.springframework.beans.factory.annotation.Value("${ADMIN_PIN:${admin.security.pin:5555}}")
     private String securityPin;
 
     @Autowired
@@ -693,12 +693,45 @@ public class AdminController {
         settings.put("crawlerParallelEnabled", settingsService.isCrawlerParallelEnabled());
         settings.put("crawlerParallelWorkers", settingsService.getCrawlerParallelWorkers());
         settings.put("widgetSettings", settingsService.getWidgetSettings());
+        settings.put("footerSettings", settingsService.getFooterSettings());
         return ResponseEntity.ok(settings);
     }
 
     @GetMapping("/public/widget-settings")
     public ResponseEntity<?> getPublicWidgetSettings() {
         return ResponseEntity.ok(settingsService.getWidgetSettings());
+    }
+
+    @GetMapping("/widget-settings")
+    public ResponseEntity<?> getWidgetSettings() {
+        return ResponseEntity.ok(settingsService.getWidgetSettings());
+    }
+
+    @PostMapping("/widget-settings")
+    public ResponseEntity<?> updateWidgetSettings(@RequestBody Map<String, Object> body) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("widgetSettings", body);
+        settingsService.updateSettings(map);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/widget-settings/reset-counters")
+    public ResponseEntity<?> resetWidgetApiCounters() {
+        settingsService.resetApiCallCounts();
+        return ResponseEntity.ok(settingsService.getWidgetSettings());
+    }
+
+    @GetMapping("/footer-settings")
+    public ResponseEntity<?> getFooterSettings() {
+        return ResponseEntity.ok(settingsService.getFooterSettings());
+    }
+
+    @PostMapping("/footer-settings")
+    public ResponseEntity<?> updateFooterSettings(@RequestBody Map<String, Object> body) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("footerSettings", body);
+        settingsService.updateSettings(map);
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/settings")
