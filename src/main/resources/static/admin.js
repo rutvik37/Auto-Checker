@@ -2253,7 +2253,8 @@ function getDefaultAdminFooterFallback() {
             appName: "Auto-Checker",
             tagline: "Automated Website Spelling Engine",
             description: "Verify spelling issues and QA defects on websites instantly with automated content analysis.",
-            logoIcon: "fa-solid fa-wand-magic-sparkles"
+            logoIcon: "fa-solid fa-wand-magic-sparkles",
+            logoUrl: ""
         },
         contact: {
             supportEmail: "support@example.com",
@@ -2352,6 +2353,7 @@ function renderAdminFooterControls() {
     const b = adminFooterState.brand || {};
     if (document.getElementById('admin-footer-app-name')) document.getElementById('admin-footer-app-name').value = b.appName || '';
     if (document.getElementById('admin-footer-logo-icon')) document.getElementById('admin-footer-logo-icon').value = b.logoIcon || '';
+    if (document.getElementById('admin-footer-logo-url')) document.getElementById('admin-footer-logo-url').value = b.logoUrl || '';
     if (document.getElementById('admin-footer-tagline')) document.getElementById('admin-footer-tagline').value = b.tagline || '';
     if (document.getElementById('admin-footer-description')) document.getElementById('admin-footer-description').value = b.description || '';
 
@@ -2387,6 +2389,7 @@ function collectAdminFooterFormValues() {
     adminFooterState.brand = {
         appName: document.getElementById('admin-footer-app-name') ? document.getElementById('admin-footer-app-name').value : '',
         logoIcon: document.getElementById('admin-footer-logo-icon') ? document.getElementById('admin-footer-logo-icon').value : '',
+        logoUrl: document.getElementById('admin-footer-logo-url') ? document.getElementById('admin-footer-logo-url').value : '',
         tagline: document.getElementById('admin-footer-tagline') ? document.getElementById('admin-footer-tagline').value : '',
         description: document.getElementById('admin-footer-description') ? document.getElementById('admin-footer-description').value : ''
     };
@@ -2898,7 +2901,11 @@ function renderAdminFooterPreview() {
             <div class="footer-top-grid">
                 <div class="footer-brand-col">
                     <div class="footer-brand-logo">
-                        <div class="footer-logo-icon"><i class="${escapeHtml(brand.logoIcon || 'fa-solid fa-wand-magic-sparkles')}"></i></div>
+                        <div class="footer-logo-icon">
+                            ${(brand.logoUrl && brand.logoUrl.trim()) || (brand.logoIcon && (brand.logoIcon.startsWith('http') || brand.logoIcon.startsWith('/') || brand.logoIcon.startsWith('data:'))) ?
+                                `<img src="${escapeHtml(brand.logoUrl && brand.logoUrl.trim() ? brand.logoUrl.trim() : brand.logoIcon.trim())}" alt="${escapeHtml(brand.appName || 'Logo')}" class="footer-logo-img">` :
+                                `<i class="${escapeHtml(brand.logoIcon || 'fa-solid fa-wand-magic-sparkles')}"></i>`}
+                        </div>
                         <div>
                             <div class="footer-brand-title">${escapeHtml(brand.appName || 'Auto-Checker')}</div>
                             <div class="footer-brand-tagline">${escapeHtml(brand.tagline || 'Automated Website Spelling Engine')}</div>

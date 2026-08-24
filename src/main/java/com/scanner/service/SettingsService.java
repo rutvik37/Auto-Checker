@@ -164,10 +164,11 @@ public class SettingsService {
 
         // Brand
         Map<String, Object> brand = new HashMap<>();
-        brand.put("appName", "QA Spelling Auto-Checker");
-        brand.put("tagline", "Automated Quality Assurance & Content Validation");
+        brand.put("appName", "Auto-Checker");
+        brand.put("tagline", "Automated Website Spelling Engine");
         brand.put("description", "Verify spelling issues on websites instantly with powerful automated website content analysis.");
-        brand.put("logoIcon", "fa-solid fa-spell-check");
+        brand.put("logoIcon", "fa-solid fa-wand-magic-sparkles");
+        brand.put("logoUrl", "");
         root.put("brand", brand);
 
         // Contact
@@ -230,7 +231,7 @@ public class SettingsService {
 
         // Copyright
         Map<String, Object> copyright = new HashMap<>();
-        copyright.put("companyName", "QA Spelling Auto-Checker");
+        copyright.put("companyName", "Auto-Checker");
         copyright.put("year", "2026");
         copyright.put("autoYear", true);
         copyright.put("suffixText", "All rights reserved.");

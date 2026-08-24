@@ -49,17 +49,17 @@ public class AdminController {
 
     @Autowired
     public AdminController(ProjectRepository projectRepository,
-                           ScanRepository scanRepository,
-                           ScannedPageRepository scannedPageRepository,
-                           IssueRepository issueRepository,
-                           ValidationCacheRepository validationCacheRepository,
-                           SpellingValidator spellingValidator,
-                           ProjectService projectService,
-                           SettingsService settingsService,
-                           LiveLogService liveLogService,
-                           CrawlScanService crawlScanService,
-                           GroqMetricsService groqMetricsService,
-                           ProfileImageRepository profileImageRepository) {
+            ScanRepository scanRepository,
+            ScannedPageRepository scannedPageRepository,
+            IssueRepository issueRepository,
+            ValidationCacheRepository validationCacheRepository,
+            SpellingValidator spellingValidator,
+            ProjectService projectService,
+            SettingsService settingsService,
+            LiveLogService liveLogService,
+            CrawlScanService crawlScanService,
+            GroqMetricsService groqMetricsService,
+            ProfileImageRepository profileImageRepository) {
         this.projectRepository = projectRepository;
         this.scanRepository = scanRepository;
         this.scannedPageRepository = scannedPageRepository;
@@ -76,7 +76,8 @@ public class AdminController {
 
     // 0. Security Endpoints
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Map<String, String> body, jakarta.servlet.http.HttpServletRequest request) {
+    public ResponseEntity<?> login(@RequestBody Map<String, String> body,
+            jakarta.servlet.http.HttpServletRequest request) {
         String pin = body.get("pin");
         if (securityPin.equals(pin)) {
             jakarta.servlet.http.HttpSession session = request.getSession(true);
@@ -143,7 +144,8 @@ public class AdminController {
     }
 
     @PostMapping("/profile/image")
-    public ResponseEntity<?> uploadProfileImage(@RequestParam("file") org.springframework.web.multipart.MultipartFile file) {
+    public ResponseEntity<?> uploadProfileImage(
+            @RequestParam("file") org.springframework.web.multipart.MultipartFile file) {
         if (file == null || file.isEmpty()) {
             return ResponseEntity.badRequest().body("File is empty");
         }
@@ -188,7 +190,8 @@ public class AdminController {
     }
 
     private String escapeCsv(String val) {
-        if (val == null) return "";
+        if (val == null)
+            return "";
         return val.replace("\"", "\"\"");
     }
 
@@ -241,10 +244,10 @@ public class AdminController {
             @RequestParam(required = false) String fromDate,
             @RequestParam(required = false) String toDate) {
         Pageable pageable = createPageable(page, size, sort);
-        
+
         java.time.LocalDateTime from = null;
         java.time.LocalDateTime to = null;
-        
+
         if (fromDate != null && !fromDate.trim().isEmpty()) {
             try {
                 if (fromDate.length() == 10) {
@@ -267,7 +270,7 @@ public class AdminController {
                 // Ignore parse errors
             }
         }
-        
+
         return ResponseEntity.ok(projectRepository.searchProjects(search, from, to, pageable));
     }
 
@@ -514,8 +517,7 @@ public class AdminController {
                     s.getWordsChecked(),
                     s.getTotalIssues(),
                     s.getStartedAt() != null ? s.getStartedAt().toString() : "",
-                    s.getEndedAt() != null ? s.getEndedAt().toString() : ""
-            ));
+                    s.getEndedAt() != null ? s.getEndedAt().toString() : ""));
         }
         writer.flush();
     }
@@ -526,10 +528,11 @@ public class AdminController {
         response.setHeader("Content-Disposition", "attachment; filename=\"scans_export.xlsx\"");
         List<Scan> scans = scanRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
         try (Workbook workbook = new XSSFWorkbook();
-             java.io.OutputStream out = response.getOutputStream()) {
+                java.io.OutputStream out = response.getOutputStream()) {
             Sheet sheet = workbook.createSheet("Scans");
             Row header = sheet.createRow(0);
-            String[] cols = {"Scan ID", "Project", "Name", "URL", "Status", "Pages Scanned", "Words Checked", "Total Issues", "Started At", "Ended At"};
+            String[] cols = { "Scan ID", "Project", "Name", "URL", "Status", "Pages Scanned", "Words Checked",
+                    "Total Issues", "Started At", "Ended At" };
             for (int i = 0; i < cols.length; i++) {
                 header.createCell(i).setCellValue(cols[i]);
             }
@@ -563,7 +566,8 @@ public class AdminController {
         response.setHeader("Content-Disposition", "attachment; filename=\"issues_export.csv\"");
         List<Issue> issues = issueRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
         PrintWriter writer = response.getWriter();
-        writer.println("Issue ID,Scan ID,Word,Suggested Text,Page URL,Page Title,DOM Element,HTML Tag,Detection Source,Timestamp,Removed");
+        writer.println(
+                "Issue ID,Scan ID,Word,Suggested Text,Page URL,Page Title,DOM Element,HTML Tag,Detection Source,Timestamp,Removed");
         for (Issue i : issues) {
             writer.println(String.format("%d,%d,\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",%b",
                     i.getId(),
@@ -576,8 +580,7 @@ public class AdminController {
                     escapeCsv(i.getHtmlTag()),
                     escapeCsv(i.getDetectionSource()),
                     i.getTimestamp() != null ? i.getTimestamp().toString() : "",
-                    i.isRemoved()
-            ));
+                    i.isRemoved()));
         }
         writer.flush();
     }
@@ -588,10 +591,11 @@ public class AdminController {
         response.setHeader("Content-Disposition", "attachment; filename=\"issues_export.xlsx\"");
         List<Issue> issues = issueRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
         try (Workbook workbook = new XSSFWorkbook();
-             java.io.OutputStream out = response.getOutputStream()) {
+                java.io.OutputStream out = response.getOutputStream()) {
             Sheet sheet = workbook.createSheet("Issues");
             Row header = sheet.createRow(0);
-            String[] cols = {"Issue ID", "Scan ID", "Word", "Suggested Text", "Page URL", "Page Title", "DOM Element", "HTML Tag", "Detection Source", "Timestamp", "Removed"};
+            String[] cols = { "Issue ID", "Scan ID", "Word", "Suggested Text", "Page URL", "Page Title", "DOM Element",
+                    "HTML Tag", "Detection Source", "Timestamp", "Removed" };
             for (int i = 0; i < cols.length; i++) {
                 header.createCell(i).setCellValue(cols[i]);
             }
@@ -634,8 +638,7 @@ public class AdminController {
                     escapeCsv(c.getSuggestion()),
                     c.getDecision(),
                     escapeCsv(c.getReason()),
-                    c.getCreatedAt() != null ? c.getCreatedAt().toString() : ""
-            ));
+                    c.getCreatedAt() != null ? c.getCreatedAt().toString() : ""));
         }
         writer.flush();
     }
@@ -646,10 +649,10 @@ public class AdminController {
         response.setHeader("Content-Disposition", "attachment; filename=\"cache_export.xlsx\"");
         List<ValidationCache> cache = validationCacheRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
         try (Workbook workbook = new XSSFWorkbook();
-             java.io.OutputStream out = response.getOutputStream()) {
+                java.io.OutputStream out = response.getOutputStream()) {
             Sheet sheet = workbook.createSheet("Cache Entries");
             Row header = sheet.createRow(0);
-            String[] cols = {"ID", "Word", "Suggestion", "Decision", "Reason", "Created At"};
+            String[] cols = { "ID", "Word", "Suggestion", "Decision", "Reason", "Created At" };
             for (int i = 0; i < cols.length; i++) {
                 header.createCell(i).setCellValue(cols[i]);
             }
@@ -737,7 +740,8 @@ public class AdminController {
     @PostMapping("/settings")
     public ResponseEntity<?> updateSettings(@RequestBody Map<String, Object> body) {
         String newKey = (String) body.get("groqApiKey");
-        if (newKey != null && !newKey.isEmpty() && !newKey.equals("••••••••••••••••") && !newKey.startsWith("••••••••••••••••")) {
+        if (newKey != null && !newKey.isEmpty() && !newKey.equals("••••••••••••••••")
+                && !newKey.startsWith("••••••••••••••••")) {
             String specialKey = (String) body.get("specialKey");
             if (specialKey == null || !securityPin.equals(specialKey.trim())) {
                 return ResponseEntity.status(403).body("Unauthorized: Invalid Security PIN (Special Key)");

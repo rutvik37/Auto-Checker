@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <rect width="64" height="64" rx="16" fill="url(#grad)" />
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#a855f7" />
+      <stop offset="100%" stop-color="#6366f1" />
+    </linearGradient>
+  </defs>
+  <!-- Magic Wand Body -->
+  <path d="M19 45L40 24" stroke="white" stroke-width="5" stroke-linecap="round" />
+  <path d="M35 29L40 24" stroke="#f472b6" stroke-width="5" stroke-linecap="round" />
+  
+  <!-- Main Sparkle (Top Right) -->
+  <path d="M43 12L45.5 18.5L52 21L45.5 23.5L43 30L40.5 23.5L34 21L40.5 18.5L43 12Z" fill="white" />
+  
+  <!-- Secondary Sparkle (Top Left) -->
+  <path d="M22 14L23.5 18L27.5 19.5L23.5 21L22 25L20.5 21L16.5 19.5L20.5 18L22 14Z" fill="white" opacity="0.9" />
+  
+  <!-- Small Sparkle (Bottom Right) -->
+  <path d="M44 40L45.2 43.8L49 45L45.2 46.2L44 50L42.8 46.2L39 45L42.8 43.8L44 40Z" fill="white" opacity="0.95" />
+</svg>

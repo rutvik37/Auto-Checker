@@ -1435,6 +1435,14 @@ small {
     color: #ffffff;
     font-size: 18px;
     box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+    overflow: hidden;
+}
+
+.footer-logo-img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 6px;
 }
 
 .footer-brand-title {

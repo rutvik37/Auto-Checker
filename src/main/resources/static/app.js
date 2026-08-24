@@ -1939,7 +1939,8 @@ function getDefaultFooterFallback() {
             appName: "Auto-Checker",
             tagline: "Automated Website Spelling Engine",
             description: "Verify spelling issues and QA defects on websites instantly with automated content analysis.",
-            logoIcon: "fa-solid fa-wand-magic-sparkles"
+            logoIcon: "fa-solid fa-wand-magic-sparkles",
+            logoUrl: ""
         },
         contact: {
             supportEmail: "support@example.com",
@@ -2018,7 +2019,9 @@ function renderFooterToDom(settings) {
     const copyright = settings.copyright || {};
     const newsletter = settings.newsletter || {};
 
+    const logoUrl = (brand.logoUrl && brand.logoUrl.trim()) ? brand.logoUrl.trim() : '';
     const logoIcon = brand.logoIcon || 'fa-solid fa-wand-magic-sparkles';
+    const isImageLogo = logoUrl || (logoIcon && (logoIcon.startsWith('http') || logoIcon.startsWith('/') || logoIcon.startsWith('data:')));
     const appName = brand.appName || 'Auto-Checker';
     const tagline = brand.tagline || 'Automated Website Spelling Engine';
     const desc = brand.description || '';
@@ -2041,11 +2044,15 @@ function renderFooterToDom(settings) {
     }
 
     // Build Brand Column HTML
+    let logoContent = isImageLogo ?
+        `<img src="${escapeHtml(logoUrl || logoIcon)}" alt="${escapeHtml(appName)}" class="footer-logo-img">` :
+        `<i class="${escapeHtml(logoIcon)}"></i>`;
+
     let brandHtml = `
         <div class="footer-brand-col">
             <a href="/" class="footer-brand-logo">
                 <div class="footer-logo-icon">
-                    <i class="${escapeHtml(logoIcon)}"></i>
+                    ${logoContent}
                 </div>
                 <div>
                     <div class="footer-brand-title">${escapeHtml(appName)}</div>

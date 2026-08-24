@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Auto-Checker Admin Panel</title>
+    <title>Auto-Checker | Admin Panel</title>
     <!-- Fonts & Icons -->
     <link
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap"
@@ -14,21 +14,30 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="admin.css">
     <!-- Custom Favicon -->
-    <link rel="icon" type="image/svg+xml"
-        href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23a855f7'/%3E%3Cstop offset='100%25' stop-color='%236366f1'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M12 2L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-3z' fill='url(%23g)'/%3E%3Cpath d='M12 15a3 3 0 100-6 3 3 0 000 6z' fill='white'/%3E%3Cpath d='M12 12v3' stroke='white' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 </head>
 
 <body class="dark-mode">
     <!-- Login Layout Container -->
     <div id="login-layout">
         <div class="login-card glass-panel">
+            <a href="/" class="login-brand-header" title="Go to Main Website">
+                <div class="login-logo-icon">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                </div>
+                <div class="login-logo-text">
+                    <span class="login-logo-title">Auto-Checker</span>
+                    <span class="login-logo-tagline">Automated Website Spelling Engine</span>
+                </div>
+            </a>
+
             <div class="login-header">
                 <div class="profile-avatar-container">
                     <img id="login-profile-img" src="/api/admin/profile/image" alt="Profile"
                         onerror="this.style.display='none'; document.getElementById('login-default-icon').style.display='inline-block';">
                     <i class="fa-solid fa-circle-user logo-icon" id="login-default-icon" style="display: none;"></i>
                 </div>
-                <h2>Auto-Checker Admin Panel</h2>
+                <h2>Admin Control Panel</h2>
                 <p>Enter Security PIN</p>
             </div>
             <form id="login-form">
@@ -41,8 +50,9 @@
                 <div class="login-error-msg" id="login-error" style="display: none;">Invalid PIN</div>
                 <button type="submit" class="btn btn-primary" id="btn-login">Login</button>
             </form>
+
             <!-- Version details -->
-            <div style="font-size: 11px; color: var(--text-muted); opacity: 0.6; margin-top: 10px; letter-spacing: 0.5px;">Version 1.0.0</div>
+            <div style="font-size: 11px; color: var(--text-muted); opacity: 0.6; margin-top: 5px; letter-spacing: 0.5px;">Version 1.0.0</div>
         </div>
     </div>
 
@@ -51,7 +61,7 @@
         <div class="app-container">
             <!-- Sidebar Navigation -->
             <aside class="sidebar">
-                <a href="#dashboard" class="sidebar-header" style="text-decoration: none; display: flex; align-items: center; gap: 12px;">
+                <a href="/" class="sidebar-header" title="Go to Main Website" style="text-decoration: none; display: flex; align-items: center; gap: 12px;">
                     <div style="width: 38px; height: 38px; border-radius: 10px; background: linear-gradient(135deg, #a855f7, #6366f1); display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 10px rgba(168, 85, 247, 0.3); flex-shrink: 0;">
                         <i class="fa-solid fa-wand-magic-sparkles" style="color: #fff; font-size: 18px;"></i>
                     </div>
@@ -113,6 +123,9 @@
                         <h1 id="current-page-title">Dashboard</h1>
                     </div>
                     <div class="top-bar-actions">
+                        <a href="/" target="_blank" class="btn btn-secondary btn-sm" style="display: inline-flex; align-items: center; gap: 6px; text-decoration: none;" title="Open Main Website">
+                            <i class="fa-solid fa-globe" style="color: #a5b4fc;"></i> View Website
+                        </a>
                         <div class="theme-toggle">
                             <button id="theme-switch" title="Switch to Light Theme">
                                 <i class="fa-regular fa-sun" style="color: #f59e0b;"></i> Light Theme
@@ -1194,8 +1207,12 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="admin-footer-logo-icon" style="font-weight: 600; font-size: 13px; color: #fff;">Logo Icon (FontAwesome Class)</label>
-                                    <input type="text" id="admin-footer-logo-icon" class="form-control" placeholder="fa-solid fa-wand-magic-sparkles" style="background: rgba(0,0,0,0.3); color: #fff;">
+                                    <input type="text" id="admin-footer-logo-icon" class="form-control" placeholder="fa-solid fa-spell-check" style="background: rgba(0,0,0,0.3); color: #fff;">
                                 </div>
+                            </div>
+                            <div class="form-group" style="margin-top: 15px;">
+                                <label for="admin-footer-logo-url" style="font-weight: 600; font-size: 13px; color: #fff;">Custom Logo Image URL or Path <span style="font-weight: normal; font-size: 11px; color: #94a3b8;">(Overrides Icon if set, e.g. /profile-image.png or https://...)</span></label>
+                                <input type="text" id="admin-footer-logo-url" class="form-control" placeholder="https://example.com/logo.png or /profile-image.png" style="background: rgba(0,0,0,0.3); color: #fff;">
                             </div>
                             <div class="form-group" style="margin-top: 15px;">
                                 <label for="admin-footer-tagline" style="font-weight: 600; font-size: 13px; color: #fff;">Brand Tagline / Slogan</label>

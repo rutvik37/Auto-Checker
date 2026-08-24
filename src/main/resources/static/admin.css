@@ -898,19 +898,86 @@ tr:hover td {
     width: 100%;
     max-width: 460px;
     min-height: 480px;
-    padding: 50px 40px;
+    padding: 40px 36px;
     text-align: center;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    gap: 28px;
+    gap: 22px;
     align-items: center;
 }
 
+.login-brand-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    text-decoration: none;
+    padding: 12px 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 16px;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    margin-bottom: 4px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.login-brand-header:hover {
+    background: rgba(99, 102, 241, 0.18);
+    border-color: rgba(168, 85, 247, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(99, 102, 241, 0.3);
+}
+
+.login-logo-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #a855f7, #6366f1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-size: 20px;
+    box-shadow: 0 4px 14px rgba(168, 85, 247, 0.4);
+    flex-shrink: 0;
+}
+
+.login-logo-text {
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+}
+
+.login-logo-title {
+    font-size: 19px;
+    font-weight: 800;
+    color: #ffffff;
+    line-height: 1.15;
+    letter-spacing: -0.3px;
+    background: linear-gradient(135deg, #ffffff, #c084fc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.login-logo-tagline {
+    font-size: 11px;
+    color: #a5b4fc;
+    font-weight: 600;
+    margin-top: 2px;
+    letter-spacing: 0.3px;
+}
+
+.go-to-website-link:hover {
+    color: #ffffff !important;
+    transform: translateX(-3px);
+}
+
 #login-layout .profile-avatar-container {
-    width: 110px;
-    height: 110px;
-    margin-bottom: 20px;
+    width: 90px;
+    height: 90px;
+    margin-bottom: 10px;
 }
 
 #login-layout .profile-avatar-container i {
