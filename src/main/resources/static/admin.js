@@ -1257,11 +1257,26 @@ function loadIssues() {
                     highlightedSentence = highlightedSentence.replace(new RegExp(`(${escapedWord})`, 'gi'), '<strong style="color: var(--danger);">$1</strong>');
                 }
 
+                // Format pageUrl HTML (single link or primary link + badge for multi-page occurrences)
+                let pageUrlHtml = '';
+                if (issue.pageUrl) {
+                    const urls = issue.pageUrl.split(',').map(u => u.trim()).filter(Boolean);
+                    if (urls.length === 1) {
+                        pageUrlHtml = `<a href="${urls[0]}" target="_blank" class="table-link">${urls[0]}</a>`;
+                    } else if (urls.length > 1) {
+                        const firstUrl = urls[0];
+                        const extraCount = urls.length - 1;
+                        pageUrlHtml = `<a href="${firstUrl}" target="_blank" class="table-link">${firstUrl}</a> <span class="status-badge" style="background: rgba(99, 102, 241, 0.15); color: #a5b4fc; font-size: 11px; margin-left: 4px; cursor: help;" title="Also found on:\n${urls.join('\n')}">+${extraCount} page${extraCount > 1 ? 's' : ''}</span>`;
+                    }
+                } else {
+                    pageUrlHtml = '<span class="text-secondary">N/A</span>';
+                }
+
                 tr.innerHTML = `
                     <td>${issue.id}</td>
                     <td><span class="status-badge failed">${issue.word}</span></td>
                     <td><strong>${issue.suggestedText || 'N/A'}</strong></td>
-                    <td><a href="${issue.pageUrl}" target="_blank" class="table-link">${issue.pageUrl}</a></td>
+                    <td>${pageUrlHtml}</td>
                     <td><span class="text-secondary">${issue.pageTitle || 'No Title'}</span></td>
                     <td><span class="text-secondary" style="font-style: italic;">"${highlightedSentence}"</span></td>
                     <td>${formatDate(issue.timestamp)}</td>

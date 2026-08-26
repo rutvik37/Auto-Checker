@@ -23,6 +23,8 @@ public interface IssueRepository extends JpaRepository<Issue, Long> {
     @Query("SELECT i FROM Issue i WHERE i.scan.id = :scanId AND i.word = :word")
     Optional<Issue> findByScanIdAndWord(Long scanId, String word);
 
+    Optional<Issue> findFirstByWordIgnoreCase(String word);
+
     @org.springframework.data.jpa.repository.Query("SELECT i FROM Issue i WHERE " +
            "(:scanId IS NULL OR i.scan.id = :scanId) AND " +
            "(:removed IS NULL OR i.removed = :removed) AND " +

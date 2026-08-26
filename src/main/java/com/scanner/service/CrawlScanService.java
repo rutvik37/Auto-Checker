@@ -733,10 +733,9 @@ public class CrawlScanService {
 
             long issueGenStart = System.nanoTime();
             long dbSaveTimeInGen = 0;
-            // Fetch all existing issues for the scan to perform case-insensitive in-memory
-            // lookups
+            // Fetch all existing issues across the system to perform global case-insensitive lookups
             long existingStart = System.nanoTime();
-            List<Issue> existingIssues = issueRepository.findByScanId(scan.getId());
+            List<Issue> existingIssues = issueRepository.findAll();
             long existingTime = (System.nanoTime() - existingStart) / 1_000_000;
             DbPerformanceMonitor.recordQuery(existingTime);
 
@@ -786,15 +785,29 @@ public class CrawlScanService {
                     try {
                         Issue existing = normalizedIssueMap.get(normalizedWord);
                         if (existing != null) {
+                            // Update existing issue entry with merged page URLs and latest details
                             String currentUrls = existing.getPageUrl();
                             if (currentUrls == null)
                                 currentUrls = "";
                             Set<String> urlSet = new LinkedHashSet<>(Arrays.asList(currentUrls.split(",\\s*")));
-                            if (urlSet.add(rf.pageUrl)) {
-                                existing.setPageUrl(String.join(", ", urlSet));
-                                issuesToSave.add(existing);
-                                logInfo(scanId, "Typo \"" + rf.word + "\" also found on " + rf.pageUrl, finalLogWriter);
+                            urlSet.add(rf.pageUrl);
+                            existing.setPageUrl(String.join(", ", urlSet));
+
+                            if (rf.pageTitle != null && !rf.pageTitle.trim().isEmpty()) {
+                                existing.setPageTitle(rf.pageTitle);
                             }
+                            if (rf.sentence != null && !rf.sentence.trim().isEmpty()) {
+                                existing.setFullSentence(rf.sentence);
+                            }
+                            if (rf.suggestions != null && !rf.suggestions.trim().isEmpty()) {
+                                existing.setSuggestedText(rf.suggestions);
+                            }
+                            existing.setTimestamp(java.time.LocalDateTime.now());
+                            existing.setScan(scan);
+                            existing.setRemoved(false); // Reset status to active if detected again
+
+                            issuesToSave.add(existing);
+                            logInfo(scanId, "Updated existing typo entry for \"" + rf.word + "\" (Found on " + rf.pageUrl + ")", finalLogWriter);
                         } else {
                             Issue issue = new Issue();
                             issue.setScan(scan);
@@ -807,6 +820,7 @@ public class CrawlScanService {
                             issue.setTextSnippet("");
                             issue.setHtmlTag("Unknown");
                             issue.setDetectionSource("N/A");
+                            issue.setTimestamp(java.time.LocalDateTime.now());
 
                             issuesToSave.add(issue);
                             normalizedIssueMap.put(normalizedWord, issue);

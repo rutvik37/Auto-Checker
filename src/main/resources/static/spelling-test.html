@@ -5,139 +5,67 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Spelling Auto-Checker Accuracy Test</title>
-
-    <meta name="description" content="Controlled spelling detection accuracy test page.">
+    <title>Final Spelling Detection Test Page</title>
 
     <style>
-        * {
-            box-sizing: border-box;
-        }
-
         body {
+            font-family: Arial, sans-serif;
+            line-height: 1.7;
             margin: 0;
-            font-family: Arial, Helvetica, sans-serif;
-            background: #f5f7fb;
-            color: #1f2937;
-            line-height: 1.6;
+            background: #f5f7fa;
+            color: #222;
         }
 
         header {
-            background: #111827;
-            color: #ffffff;
-            padding: 50px 20px;
-        }
-
-        .container {
-            width: min(1100px, 92%);
-            margin: 0 auto;
-        }
-
-        header h1 {
-            margin: 0 0 10px;
-            font-size: 36px;
-        }
-
-        header p {
-            margin: 0;
-            color: #d1d5db;
+            background: #1f2937;
+            color: white;
+            padding: 30px;
+            text-align: center;
         }
 
         main {
-            padding: 40px 0;
+            max-width: 1100px;
+            margin: 30px auto;
+            padding: 0 20px;
         }
 
         section {
-            background: #ffffff;
-            margin-bottom: 30px;
-            padding: 30px;
-            border-radius: 12px;
-            border: 1px solid #e5e7eb;
+            background: white;
+            padding: 25px;
+            margin-bottom: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         }
 
-        h2 {
-            margin-top: 0;
-            color: #111827;
-        }
-
+        h1,
+        h2,
         h3 {
-            color: #374151;
+            margin-top: 0;
         }
 
-        .mistake-list {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 16px;
-            padding: 0;
-            list-style: none;
+        ul,
+        ol {
+            padding-left: 25px;
         }
 
-        .mistake-item {
-            padding: 16px;
-            background: #f9fafb;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-        }
-
-        .mistake-word {
-            font-weight: 700;
-            color: #dc2626;
-        }
-
-        .normal-content {
-            color: #374151;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        th,
-        td {
-            padding: 12px;
-            border: 1px solid #d1d5db;
-            text-align: left;
-        }
-
-        th {
-            background: #f3f4f6;
-        }
-
-        button,
-        .test-button {
-            padding: 10px 18px;
-            border: 0;
-            border-radius: 6px;
-            background: #2563eb;
-            color: #ffffff;
-            cursor: pointer;
+        .highlight {
+            background: #fff3cd;
+            padding: 15px;
+            border-left: 5px solid #ffc107;
         }
 
         footer {
             background: #111827;
-            color: #d1d5db;
-            padding: 30px 20px;
+            color: white;
             text-align: center;
+            padding: 25px;
         }
 
-        @media (max-width: 700px) {
-            .mistake-list {
-                grid-template-columns: 1fr;
-            }
-
-            header h1 {
-                font-size: 28px;
-            }
-
-            section {
-                padding: 20px;
-            }
-
-            table {
-                font-size: 14px;
-            }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -145,367 +73,414 @@
 <body>
 
     <header>
-        <div class="container">
-            <h1>Spelling Auto-Checker Accuracy Test</h1>
-
-            <p>
-                Controlled test page containing exactly twenty intentional
-                spelling mistakes and otherwise correctly spelled content.
-            </p>
-        </div>
+        <h1>Final Spelling Detection Testing Page</h1>
+        <p>This page contains multiple types of content for final validation.</p>
     </header>
 
-    <main class="container">
+    <main>
 
-        <!--
-        ============================================================
-        GROUND TRUTH
-        ============================================================
-
-        Expected Unique Issues: 20
-        Expected Total Occurrences: 20
-        Expected False Positives: 0
-
-        Each intentional spelling mistake appears exactly ONCE.
-
-        1.  recieve       -> receive
-        2.  seperate      -> separate
-        3.  definately    -> definitely
-        4.  occured       -> occurred
-        5.  accomodate   -> accommodate
-        6.  enviroment   -> environment
-        7.  responsiblity -> responsibility
-        8.  maintanance  -> maintenance
-        9.  succesful    -> successful
-        10. independant  -> independent
-        11. existance    -> existence
-        12. begining     -> beginning
-        13. calender     -> calendar
-        14. adress       -> address
-        15. avaliable    -> available
-        16. necesary     -> necessary
-        17. recomend     -> recommend
-        18. privilage    -> privilege
-        19. occurence    -> occurrence
-        20. goverment    -> government
-
-        IMPORTANT:
-        Do not count this HTML comment as test content.
-    -->
-
-        <!-- ========================================================= -->
-        <!-- SECTION 1: CORRECT CONTENT                                -->
-        <!-- ========================================================= -->
-
+        <!-- SECTION 1 -->
         <section>
-            <h2>Correct Content</h2>
+            <h2>1. Introduction</h2>
 
-            <p class="normal-content">
-                Quality assurance helps software teams build reliable,
-                maintainable, and consistent applications.
+            <p>
+                Welcome to our final testing environment. This webpage is designed
+                to validate spelling detection, duplicate detection, case handling,
+                punctuation handling, and content scanning across different HTML
+                elements.
             </p>
 
-            <p class="normal-content">
-                Automated testing improves consistency, reduces repetitive
-                work, and helps identify defects early in the development cycle.
-            </p>
-
-            <p class="normal-content">
-                A well-designed testing process should include functional
-                testing, regression testing, integration testing, and usability
-                validation.
-            </p>
-
-            <p class="normal-content">
-                Good test documentation makes it easier for developers,
-                testers, and product managers to understand expected behavior.
+            <p>
+                The application should correctly identify misspelled words while
+                ignoring valid words, technical terms, numbers, URLs, and other
+                supported content according to the configured rules.
             </p>
         </section>
 
-        <!-- ========================================================= -->
-        <!-- SECTION 2: INTENTIONAL SPELLING MISTAKES                 -->
-        <!-- ========================================================= -->
 
+        <!-- SECTION 2 -->
         <section>
-            <h2>Intentional Spelling Mistakes</h2>
+            <h2>2. Normal Correct Words</h2>
 
             <p>
-                The system should <span class="mistake-word">recieve</span>
-                the request correctly.
+                Apple banana computer software testing development automation
+                application website browser database server framework programming
+                technology developer designer tester quality security performance
+                reliability functionality usability accessibility responsive
+                communication documentation management configuration deployment.
             </p>
 
             <p>
-                The application uses a <span class="mistake-word">seperate</span>
-                testing environment.
-            </p>
-
-            <p>
-                The result should <span class="mistake-word">definately</span>
-                be visible after the scan.
-            </p>
-
-            <p>
-                The error <span class="mistake-word">occured</span>
-                during the validation process.
-            </p>
-
-            <p>
-                The application must <span class="mistake-word">accomodate</span>
-                different user requirements.
-            </p>
-
-            <p>
-                The development team prepared the test
-                <span class="mistake-word">enviroment</span>.
-            </p>
-
-            <p>
-                Every tester has a clear
-                <span class="mistake-word">responsiblity</span>
-                during the release process.
-            </p>
-
-            <p>
-                Regular system <span class="mistake-word">maintanance</span>
-                helps keep the application reliable.
-            </p>
-
-            <p>
-                The automated test execution was
-                <span class="mistake-word">succesful</span>.
-            </p>
-
-            <p>
-                The application should operate as an
-                <span class="mistake-word">independant</span> service.
+                Testing should be systematic, repeatable, measurable, reliable,
+                maintainable, and easy to understand.
             </p>
         </section>
 
-        <!-- ========================================================= -->
-        <!-- SECTION 3: ADDITIONAL INTENTIONAL MISTAKES              -->
-        <!-- ========================================================= -->
 
+        <!-- SECTION 3 -->
         <section>
-            <h2>Additional Test Cases</h2>
-
-            <h3>
-                System <span class="mistake-word">existance</span>
-                Verification
-            </h3>
+            <h2>3. Intentional Spelling Mistakes</h2>
 
             <p>
-                The <span class="mistake-word">begining</span> of the
-                test process should be clearly documented.
+                This paragraph contains intentional spelling mistakes for testing.
             </p>
 
             <p>
-                The release <span class="mistake-word">calender</span>
-                contains all planned testing activities.
+                The applicaton should provide accurate results and identify
+                incorrect spellings without affecting the remainning content.
             </p>
 
             <p>
-                The user <span class="mistake-word">adress</span>
-                should be validated before submission.
+                The developr created a responsiv website with excellent performence
+                and secure authenticaton.
             </p>
 
             <p>
-                The latest test report is
-                <span class="mistake-word">avaliable</span>
-                for review.
+                Users should recieve a confirmation message after succesfully
+                completing the registration proces.
             </p>
 
             <p>
-                It is <span class="mistake-word">necesary</span>
-                to validate all required fields.
+                The administrator can manange users, configur settings, and
+                monitore system activity.
             </p>
 
             <p>
-                We <span class="mistake-word">recomend</span>
-                running regression tests before deployment.
-            </p>
-
-            <p>
-                Administrator access is an elevated
-                <span class="mistake-word">privilage</span>.
-            </p>
-
-            <p>
-                The number of each
-                <span class="mistake-word">occurence</span>
-                should be recorded correctly.
-            </p>
-
-            <p>
-                The organization follows all applicable
-                <span class="mistake-word">goverment</span>
-                guidelines.
+                This is another sentense with multiple incorret words for
+                validation purposes.
             </p>
         </section>
 
-        <!-- ========================================================= -->
-        <!-- SECTION 4: HTML ELEMENT COVERAGE                          -->
-        <!-- ========================================================= -->
 
+        <!-- SECTION 4 -->
         <section>
-            <h2>HTML Element Coverage</h2>
+            <h2>4. Repeated Words</h2>
 
             <p>
-                This section contains correctly spelled content only.
-                The intentional mistakes above are distributed across
-                different visible HTML structures.
+                testing testing testing testing testing
             </p>
+
+            <p>
+                application Application APPLICATION application
+            </p>
+
+            <p>
+                website website Website WEBSITE
+            </p>
+
+            <p>
+                automation automation automation
+            </p>
+
+            <p>
+                quality quality quality quality
+            </p>
+        </section>
+
+
+        <!-- SECTION 5 -->
+        <section>
+            <h2>5. Mixed Case Words</h2>
+
+            <p>
+                Apple APPLE apple ApPlE
+                Testing TESTING testing TeStInG
+                Browser BROWSER browser BrOwSeR
+                Database DATABASE database DaTaBaSe
+            </p>
+
+            <p>
+                automation Automation AUTOMATION
+                developer Developer DEVELOPER
+                security Security SECURITY
+            </p>
+        </section>
+
+
+        <!-- SECTION 6 -->
+        <section>
+            <h2>6. Technical Terminology</h2>
+
+            <p>
+                Playwright Selenium WebDriver TestNG Maven JavaScript Java
+                TypeScript Python API REST GraphQL JSON XML HTML CSS SQL
+                PostgreSQL MySQL SQLite MongoDB Git GitHub GitLab Jenkins
+                Docker Kubernetes CI/CD DevOps QA UI UX HTTP HTTPS OAuth JWT
+                CAPTCHA OCR API Testing Load Testing Performance Testing.
+            </p>
+
+            <p>
+                These terms should be handled according to the spelling checker's
+                whitelist and validation rules.
+            </p>
+        </section>
+
+
+        <!-- SECTION 7 -->
+        <section>
+            <h2>7. Numbers and Dates</h2>
+
+            <p>
+                Testing started in 2026 and the application contains 500 pages.
+            </p>
+
+            <p>
+                Version 1.0.0 was released on 26/08/2026.
+            </p>
+
+            <p>
+                The system processed 10, 100, 1,000 and 10,000 records.
+            </p>
+
+            <p>
+                Performance results were 95%, 98.5%, and 99.99%.
+            </p>
+
+            <p>
+                Test IDs include TC001, TC002, TC003, QA-1001 and BUG-2026-001.
+            </p>
+        </section>
+
+
+        <!-- SECTION 8 -->
+        <section>
+            <h2>8. Punctuation Testing</h2>
+
+            <p>
+                Hello, world! How are you? This is a test sentence.
+            </p>
+
+            <p>
+                Testing, validation, verification, automation, and reporting.
+            </p>
+
+            <p>
+                "This sentence contains quotation marks."
+            </p>
+
+            <p>
+                This contains: colon; semicolon; dash - underscore _ brackets
+                (parentheses) and [square brackets].
+            </p>
+
+            <p>
+                Email-like text: tester@example.com
+            </p>
+        </section>
+
+
+        <!-- SECTION 9 -->
+        <section>
+            <h2>9. Lists</h2>
+
+            <h3>Testing Activities</h3>
 
             <ul>
                 <li>Functional testing</li>
                 <li>Regression testing</li>
+                <li>Smoke testing</li>
+                <li>Sanity testing</li>
                 <li>Integration testing</li>
-                <li>Performance testing</li>
-                <li>Accessibility testing</li>
+                <li>System testing</li>
+                <li>Usability testing</li>
+                <li>Responsive testing</li>
+                <li>Automation testing</li>
             </ul>
 
-            <blockquote>
-                Reliable testing requires clear requirements,
-                repeatable test cases, and accurate reporting.
-            </blockquote>
+            <h3>Testing Process</h3>
 
-            <button type="button" class="test-button">
-                Run Accuracy Test
-            </button>
+            <ol>
+                <li>Understand the requirement.</li>
+                <li>Create test scenarios.</li>
+                <li>Execute test cases.</li>
+                <li>Identify defects.</li>
+                <li>Report defects.</li>
+                <li>Retest fixes.</li>
+                <li>Perform regression testing.</li>
+                <li>Complete final validation.</li>
+            </ol>
         </section>
 
-        <!-- ========================================================= -->
-        <!-- SECTION 5: CORRECT WORD VERIFICATION                      -->
-        <!-- ========================================================= -->
 
+        <!-- SECTION 10 -->
         <section>
-            <h2>Correct Word Verification</h2>
+            <h2>10. Long Content</h2>
 
             <p>
-                The following words are intentionally spelled correctly.
-                The scanner should not report them as spelling mistakes.
+                Software testing is an important part of the software development
+                lifecycle. A good testing process helps identify defects before
+                they reach production. Testers validate the functionality,
+                performance, usability, compatibility, security, and reliability
+                of an application. Automated testing can reduce repetitive manual
+                work and provide faster feedback during development.
             </p>
 
-            <table>
-                <thead>
-                    <tr>
-                        <th>Word</th>
-                        <th>Correct Form</th>
-                    </tr>
-                </thead>
+            <p>
+                A reliable spelling detection system should crawl webpages,
+                extract meaningful textual content, identify potential spelling
+                mistakes, remove duplicate results, validate suspicious words,
+                and provide clear reports. The system should also handle dynamic
+                pages, repeated content, technical terminology, URLs, numbers,
+                punctuation, and different HTML structures.
+            </p>
 
-                <tbody>
-                    <tr>
-                        <td>receive</td>
-                        <td>Correct</td>
-                    </tr>
-
-                    <tr>
-                        <td>separate</td>
-                        <td>Correct</td>
-                    </tr>
-
-                    <tr>
-                        <td>definitely</td>
-                        <td>Correct</td>
-                    </tr>
-
-                    <tr>
-                        <td>environment</td>
-                        <td>Correct</td>
-                    </tr>
-
-                    <tr>
-                        <td>maintenance</td>
-                        <td>Correct</td>
-                    </tr>
-
-                    <tr>
-                        <td>successful</td>
-                        <td>Correct</td>
-                    </tr>
-
-                    <tr>
-                        <td>available</td>
-                        <td>Correct</td>
-                    </tr>
-
-                    <tr>
-                        <td>necessary</td>
-                        <td>Correct</td>
-                    </tr>
-
-                    <tr>
-                        <td>recommend</td>
-                        <td>Correct</td>
-                    </tr>
-
-                    <tr>
-                        <td>government</td>
-                        <td>Correct</td>
-                    </tr>
-                </tbody>
-            </table>
+            <p>
+                During final testing, the tester should verify that every scanned
+                page produces accurate results. False positives should be minimized,
+                duplicate issues should not be reported repeatedly, and valid
+                technical terminology should not incorrectly appear as spelling
+                errors.
+            </p>
         </section>
 
-        <!-- ========================================================= -->
-        <!-- SECTION 6: TECHNICAL VOCABULARY                          -->
-        <!-- ========================================================= -->
 
+        <!-- SECTION 11 -->
         <section>
-            <h2>Technical Vocabulary</h2>
+            <h2>11. Intentional Errors in Long Content</h2>
 
-            <p>
-                The following technical terms are correctly spelled and
-                should not be reported as spelling mistakes:
-            </p>
+            <div class="highlight">
 
-            <ul>
-                <li>JavaScript</li>
-                <li>TypeScript</li>
-                <li>Playwright</li>
-                <li>Selenium</li>
-                <li>GitHub</li>
-                <li>PostgreSQL</li>
-                <li>SQLite</li>
-                <li>localhost</li>
-                <li>API</li>
-                <li>JSON</li>
-                <li>OAuth</li>
-                <li>WebSocket</li>
-            </ul>
+                <p>
+                    The system shoud identify this sentense because it contains
+                    multiple spellling errors.
+                </p>
+
+                <p>
+                    Another applicaton was developped for automatd testing and
+                    performence monitoring.
+                </p>
+
+                <p>
+                    The adminstrator can configur the applicaton and manange
+                    different user permisions.
+                </p>
+
+                <p>
+                    The report should contain accurrate information about all
+                    detected issuses and their correspondding pages.
+                </p>
+
+            </div>
         </section>
 
-        <!-- ========================================================= -->
-        <!-- SECTION 7: FINAL VALIDATION                               -->
-        <!-- ========================================================= -->
 
+        <!-- SECTION 12 -->
         <section>
-            <h2>Final Validation</h2>
+            <h2>12. Links and Attributes</h2>
 
             <p>
-                This page is designed to provide a deterministic test
-                environment for evaluating spelling detection accuracy.
+                Visit our
+                <a href="https://example.com">official website</a>
+                for more information.
             </p>
 
             <p>
-                Every intentional spelling mistake appears exactly once.
-                All other visible content is intended to be correctly spelled.
+                Documentation:
+                <a href="https://example.com/documentation">
+                    Product Documentation
+                </a>
             </p>
 
             <p>
-                The expected result is twenty unique spelling issues and
-                twenty total intentional issue occurrences.
+                Support:
+                <a href="mailto:support@example.com">
+                    support@example.com
+                </a>
+            </p>
+        </section>
+
+
+        <!-- SECTION 13 -->
+        <section>
+            <h2>13. Special Characters</h2>
+
+            <p>
+                Special characters: &amp; &lt; &gt; &quot; &apos; &copy; &reg;
+                &trade; &nbsp;
+            </p>
+
+            <p>
+                Mathematical symbols: + - × ÷ = ≠ ≤ ≥ ± %
+            </p>
+
+            <p>
+                Currency: ₹ $ € £ ¥
+            </p>
+
+            <p>
+                Symbols: @ # $ % ^ &amp; * ( ) _ + = !
+            </p>
+        </section>
+
+
+        <!-- SECTION 14 -->
+        <section>
+            <h2>14. Button and Form Content</h2>
+
+            <p>
+                Please enter your information and submit the form.
+            </p>
+
+            <form>
+                <label for="name">Full Name:</label>
+                <input type="text" id="name" placeholder="Enter your name">
+
+                <br><br>
+
+                <label for="email">Email Address:</label>
+                <input type="email" id="email" placeholder="Enter your email">
+
+                <br><br>
+
+                <button type="button">
+                    Submit Application
+                </button>
+            </form>
+        </section>
+
+
+        <!-- SECTION 15 -->
+        <section>
+            <h2>15. Final Validation Text</h2>
+
+            <p>
+                This is the final section of the spelling detection test page.
+                The purpose of this content is to verify that the complete crawler
+                and validation pipeline works correctly from beginning to end.
+            </p>
+
+            <p>
+                The applicaton must detect misspelled words such as
+                applicaton, sentense, performence, manange, succesfully,
+                authenticaton, recive, developped, automatd, accurrate, issuses,
+                and permisions.
+            </p>
+
+            <p>
+                At the same time, it should not incorrectly report valid words such
+                as application, sentence, performance, manage, successfully,
+                authentication, receive, developed, automated, accurate, issues,
+                and permissions.
+            </p>
+
+            <p>
+                Final testing should confirm crawling, extraction, spelling
+                detection, duplicate removal, validation, caching, database
+                storage, reporting, and export functionality.
             </p>
         </section>
 
     </main>
 
+
     <footer>
-        <div class="container">
-            <p>
-                Spelling Auto-Checker Accuracy Test Page
-            </p>
-        </div>
+        <p>
+            Final Spelling Detection Testing Page © 2026
+        </p>
+
+        <p>
+            This page is created specifically for QA validation.
+        </p>
     </footer>
 
 </body>
