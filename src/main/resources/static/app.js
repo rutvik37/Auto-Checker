@@ -26,9 +26,9 @@ document.addEventListener('DOMContentLoaded', () => {
 function initTheme() {
     const themeBtn = document.getElementById('theme-switch');
     if (!themeBtn) return;
-    
+
     const body = document.body;
-    
+
     // Restore preference
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme === 'light') {
@@ -111,7 +111,7 @@ function showToast(message, type = 'info', title = '') {
 
 // Override native browser alert to guarantee no "localhost says" popups
 window.nativeAlert = window.alert;
-window.alert = function(msg) {
+window.alert = function (msg) {
     showToast(msg, 'info');
 };
 
@@ -122,7 +122,7 @@ function showCustomAlert(message, title = "Notification") {
         document.getElementById('dialog-message').textContent = message;
         document.getElementById('btn-dialog-cancel').style.display = 'none';
         document.getElementById('btn-dialog-ok').textContent = 'OK';
-        
+
         document.getElementById('custom-dialog-modal').classList.add('active');
         dialogResolve = resolve;
     });
@@ -134,7 +134,7 @@ function showCustomConfirm(message, title = "Confirmation Required") {
         document.getElementById('dialog-message').textContent = message;
         document.getElementById('btn-dialog-cancel').style.display = 'inline-flex';
         document.getElementById('btn-dialog-ok').textContent = 'Yes, Proceed';
-        
+
         document.getElementById('custom-dialog-modal').classList.add('active');
         dialogResolve = resolve;
     });
@@ -154,7 +154,7 @@ function switchTab(tabId) {
     activeTab = tabId;
     document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
     document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-    
+
     document.getElementById(`tab-${tabId}`).classList.add('active');
     document.getElementById(`nav-btn-${tabId}`).classList.add('active');
 
@@ -193,7 +193,7 @@ async function createProject(event) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name })
         });
-        
+
         if (response.ok) {
             const project = await response.json();
             closeCreateProjectModal();
@@ -215,10 +215,10 @@ async function loadProjects() {
     try {
         const response = await fetch('/api/projects');
         let projects = await response.json();
-        
+
         const select = document.getElementById('global-project-select');
         if (!select) return;
-        
+
         // Save current selection
         const prevSelected = select.value;
 
@@ -330,17 +330,17 @@ async function startScan(event) {
         if (response.ok) {
             const data = await response.json();
             activeScanId = data.scanId;
-            
+
             // Show scanning container
             document.getElementById('scan-empty-state').style.display = 'none';
             document.getElementById('active-scan-container').style.display = 'block';
-            
+
             // Make sure Stop Scan button is visible
             document.getElementById('btn-cancel-scan').style.display = 'inline-flex';
 
             // Clear Terminal & Stats
             resetDashboardStats(url);
-            
+
             // Initialize SSE stream
             initSseStream(activeScanId);
         } else {
@@ -382,10 +382,10 @@ function resetDashboardStats(url) {
     document.getElementById('current-scan-url').textContent = url;
     document.getElementById('progress-percentage').textContent = '0%';
     document.getElementById('progress-bar-fill').style.width = '0%';
-    
+
     const term = document.getElementById('live-logs-terminal');
     term.innerHTML = '<p class="log-info">[System] Hooking into live scan telemetry stream...</p>';
-    
+
     const liveTbody = document.getElementById('live-issues-table-body');
     if (liveTbody) {
         liveTbody.innerHTML = '<tr><td colspan="6" class="text-center" style="color: var(--text-muted);">No typos detected yet...</td></tr>';
@@ -439,7 +439,7 @@ function initSseStream(scanId) {
             document.getElementById('progress-percentage').textContent = 'Active';
             document.getElementById('progress-bar-fill').style.width = '50%';
         }
-        
+
         // Fetch latest issues to populate live table
         loadLiveIssues(scanId);
     });
@@ -447,17 +447,17 @@ function initSseStream(scanId) {
     sseSource.onerror = (err) => {
         console.log('SSE connection closed or completed.');
         sseSource.close();
-        
+
         // Reset Launch Button
         const btn = document.getElementById('btn-start-scan');
         if (btn) {
             btn.disabled = false;
             btn.innerHTML = '<i class="fa-solid fa-magnifying-glass"></i> Start Spelling Check';
         }
-        
+
         const urlInput = document.getElementById('scan-url');
         if (urlInput) urlInput.disabled = false;
-        
+
         // Hide the Stop Scan button when scan completes / errors out
         const cancelBtn = document.getElementById('btn-cancel-scan');
         if (cancelBtn) {
@@ -474,7 +474,7 @@ function initSseStream(scanId) {
         if (statusText) {
             statusText.textContent = 'Scan Completed';
         }
-        
+
         const progressPct = document.getElementById('progress-percentage');
         const progressFill = document.getElementById('progress-bar-fill');
         if (progressPct) {
@@ -483,7 +483,7 @@ function initSseStream(scanId) {
         if (progressFill) {
             progressFill.style.width = '100%';
         }
-        
+
         // Trigger celebratory state if 0 spelling issues were found (with delay for DB transaction finish)
         if (activeScanId) {
             setTimeout(() => {
@@ -497,7 +497,7 @@ function initSseStream(scanId) {
                 });
             }, 400);
         }
-        
+
         // Refresh project list scans history in background
         if (activeProjectId) {
             loadScansHistory();
@@ -508,7 +508,7 @@ function initSseStream(scanId) {
 // REST: Cancel active scan
 async function cancelActiveScan() {
     if (!activeScanId) return;
-    
+
     // Check if scan is already completed/stopped before sending cancel signal
     try {
         const checkRes = await fetch(`/api/scans/${activeScanId}`);
@@ -532,7 +532,7 @@ async function cancelActiveScan() {
         await fetch(`/api/scans/${activeScanId}/cancel`, { method: 'POST' });
         const terminal = document.getElementById('live-logs-terminal');
         terminal.innerHTML += '<p class="log-error">[System] Cancellation signal sent. Shutting down crawler pool...</p>';
-        
+
         // Hide the stop button immediately upon sending cancel signal
         document.getElementById('btn-cancel-scan').style.display = 'none';
         activeScanId = null;
@@ -552,7 +552,7 @@ async function loadScansHistory() {
     try {
         const response = await fetch(`/api/projects/${activeProjectId}/scans`);
         const scans = await response.json();
-        
+
         if (scans.length === 0) {
             tableBody.innerHTML = '<tr><td colspan="8" class="text-center">No scan sessions recorded yet. Launch a scan on the Dashboard tab.</td></tr>';
             return;
@@ -561,9 +561,9 @@ async function loadScansHistory() {
         tableBody.innerHTML = '';
         scans.forEach(scan => {
             const tr = document.createElement('tr');
-            
+
             const dateStr = scan.startedAt ? scan.startedAt.replace('T', ' ').substring(0, 19) : 'N/A';
-            
+
             // Status badge classes
             let badgeClass = 'badge-spelling';
             if (scan.status === 'COMPLETED') badgeClass = 'badge-quality';
@@ -637,14 +637,14 @@ async function exploreIssues(scanId, scanName) {
     selectedIssueId = scanId;
     document.getElementById('issues-explorer-scan-name').textContent = scanName;
     document.getElementById('issues-explorer-card').style.display = 'block';
-    
+
     // Smooth scroll down to explorer
     document.getElementById('issues-explorer-card').scrollIntoView({ behavior: 'smooth' });
 
     try {
         const response = await fetch(`/api/scans/${scanId}/issues`);
         const issues = await response.json();
-        
+
         const tbody = document.getElementById('issues-table-body');
         if (issues.length === 0) {
             tbody.innerHTML = '<tr><td colspan="7" class="text-center" style="padding: 20px; color: var(--text-secondary);">No typos found in this scan session. Zero defects!</td></tr>';
@@ -654,9 +654,9 @@ async function exploreIssues(scanId, scanName) {
         tbody.innerHTML = '';
         issues.forEach(issue => {
             const tr = document.createElement('tr');
-            
+
             const dateStr = issue.timestamp ? issue.timestamp.replace('T', ' ').substring(0, 19) : 'N/A';
-            
+
             // Clean context highlighting for word
             let highlightedSentence = issue.fullSentence;
             if (highlightedSentence && issue.word) {
@@ -666,7 +666,7 @@ async function exploreIssues(scanId, scanName) {
             } else {
                 highlightedSentence = highlightedSentence || '';
             }
-            
+
             tr.innerHTML = `
                 <td><strong style="color: var(--color-error);">${issue.word}</strong></td>
                 <td><span class="highlight-suggestions">${getPrimarySuggestion(issue.suggestedText)}</span></td>
@@ -700,20 +700,20 @@ function confirmDeleteIssue(id, word, expected, url, title, sentence) {
     issueToDeleteId = id;
     document.getElementById('confirm-issue-word').textContent = word;
     document.getElementById('confirm-issue-suggestion').textContent = expected;
-    
+
     const urlLink = document.getElementById('confirm-issue-url');
     urlLink.href = url;
     urlLink.textContent = url;
-    
+
     document.getElementById('confirm-issue-title').textContent = title;
     document.getElementById('confirm-issue-sentence').textContent = sentence;
-    
+
     document.getElementById('delete-issue-confirm-modal').classList.add('active');
 }
 
 async function closeDeleteConfirmModal(confirmed) {
     document.getElementById('delete-issue-confirm-modal').classList.remove('active');
-    
+
     if (confirmed && issueToDeleteId) {
         try {
             const response = await fetch(`/api/issues/${issueToDeleteId}/remove`, {
@@ -740,7 +740,7 @@ async function loadLiveIssues(scanId) {
     try {
         const response = await fetch(`/api/scans/${scanId}/issues`);
         const issues = await response.json();
-        
+
         // Update live issue count
         const statSpelling = document.getElementById('stat-spelling');
         if (statSpelling) {
@@ -749,7 +749,7 @@ async function loadLiveIssues(scanId) {
 
         const tbody = document.getElementById('live-issues-table-body');
         if (!tbody) return issues;
-        
+
         if (issues.length === 0) {
             const statusText = document.getElementById('scan-status-text');
             if (statusText && statusText.textContent === 'Scan Completed') {
@@ -765,7 +765,7 @@ async function loadLiveIssues(scanId) {
         tbody.innerHTML = '';
         issues.forEach(issue => {
             const tr = document.createElement('tr');
-            
+
             // Clean context highlighting for word in sentence
             let highlightedSentence = issue.fullSentence || '';
             if (highlightedSentence && issue.word) {
@@ -886,7 +886,7 @@ async function resetFormAndOutput(skipConfirm = false) {
     // 7. Hide scan progress container and show empty state
     const activeScanContainer = document.getElementById('active-scan-container');
     if (activeScanContainer) activeScanContainer.style.display = 'none';
-    
+
     const scanEmptyState = document.getElementById('scan-empty-state');
     if (scanEmptyState) scanEmptyState.style.display = 'flex';
 
@@ -908,12 +908,12 @@ async function checkForActiveScan() {
         const response = await fetch('/api/scans/active');
         if (!response.ok) return;
         const data = await response.json();
-        
+
         if (data.active) {
             activeScanId = data.scanId;
             activeProjectId = data.projectId;
             activeProjectName = data.projectName;
-            
+
             // Disable URL input and start button
             const urlInput = document.getElementById('scan-url');
             if (urlInput) {
@@ -940,41 +940,41 @@ async function checkForActiveScan() {
                 btn.disabled = true;
                 btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Scanning...';
             }
-            
+
             // Show scanning container and hide empty state
             document.getElementById('scan-empty-state').style.display = 'none';
             document.getElementById('active-scan-container').style.display = 'block';
-            
+
             // Show Stop Scan button
             const cancelBtn = document.getElementById('btn-cancel-scan');
             if (cancelBtn) {
                 cancelBtn.style.display = 'inline-flex';
             }
-            
+
             // Update stats
             document.getElementById('stat-pages').textContent = data.pagesScanned;
             document.getElementById('stat-words').textContent = data.wordsChecked;
             document.getElementById('stat-spelling').textContent = data.totalIssues;
             document.getElementById('current-scan-url').textContent = data.url;
-            
+
             // Calculate progress percentage
             const maxPages = data.maxPages || 100;
             const percentage = Math.min(100, Math.round((data.pagesScanned / maxPages) * 100));
             document.getElementById('progress-percentage').textContent = percentage + '%';
             document.getElementById('progress-bar-fill').style.width = percentage + '%';
-            
+
             // Hook up terminal logs with a reconnecting message
             const term = document.getElementById('live-logs-terminal');
             if (term) {
                 term.innerHTML = '<p class="log-info">[System] Reconnected to active scan session #' + activeScanId + '...</p>';
             }
-            
+
             // Select project in global selector
             const select = document.getElementById('global-project-select');
             if (select) {
                 select.value = activeProjectId;
             }
-            
+
             // Load already found live issues and hook up SSE stream
             loadLiveIssues(activeScanId);
             initSseStream(activeScanId);
@@ -1203,7 +1203,7 @@ let quizAutoAdvanceTimer = null;
 function initQuizGame() {
     const card = document.getElementById('scan-mini-game-card');
     if (!card) return;
-    
+
     // Apply visibility & active mode settings controlled by Admin
     applyWidgetSettingsFromAdmin();
 
@@ -1229,18 +1229,18 @@ function initQuizGame() {
 
 function shuffleQuestionOptions(qObj) {
     if (!qObj || !qObj.options) return qObj;
-    
+
     const correctAnswerText = qObj.options[qObj.answer];
     const shuffledOptions = [...qObj.options];
-    
+
     // Fisher-Yates shuffle options array
     for (let i = shuffledOptions.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [shuffledOptions[i], shuffledOptions[j]] = [shuffledOptions[j], shuffledOptions[i]];
     }
-    
+
     const newAnswerIndex = shuffledOptions.indexOf(correctAnswerText);
-    
+
     return {
         category: qObj.category,
         question: qObj.question,
@@ -1262,9 +1262,9 @@ function getRandomQuestionForMode(mode) {
 function setQuizMode(mode) {
     if (quizState.mode === mode) return;
     quizState.mode = mode;
-    
+
     const allModes = ['math', 'india', 'ai', 'history', 'science', 'cinema', 'sports', 'geography', 'coding', 'riddles'];
-    
+
     allModes.forEach(m => {
         const btn = document.getElementById(`btn-quiz-mode-${m}`);
         if (!btn) return;
@@ -1297,10 +1297,10 @@ function setQuizMode(mode) {
 function generateMathQuestion() {
     const types = ['add', 'sub', 'mul', 'missing'];
     const type = types[Math.floor(Math.random() * types.length)];
-    
+
     let qText = '';
     let correct = 0;
-    
+
     if (type === 'add') {
         const a = Math.floor(Math.random() * 80) + 12;
         const b = Math.floor(Math.random() * 80) + 12;
@@ -1330,7 +1330,7 @@ function generateMathQuestion() {
         const wrong = correct + delta;
         if (wrong >= 0) optionsSet.add(wrong);
     }
-    
+
     const options = Array.from(optionsSet);
     // Shuffle options
     for (let i = options.length - 1; i > 0; i--) {
@@ -1369,7 +1369,7 @@ function renderActiveModeQuestion() {
     }
 
     const currentModeData = quizState.modeData[quizState.mode];
-    
+
     // Ensure question exists for mode
     if (!currentModeData || !currentModeData.q) {
         quizState.modeData[quizState.mode] = {
@@ -1402,7 +1402,7 @@ function renderActiveModeQuestion() {
     const modeObj = quizState.modeData[quizState.mode];
     const q = modeObj.q;
     const feedbackBox = document.getElementById('quiz-feedback-box');
-    
+
     // Update Tag and Question text
     const tagElem = document.getElementById('quiz-category-tag');
     if (tagElem) tagElem.textContent = q.category;
@@ -1412,7 +1412,7 @@ function renderActiveModeQuestion() {
 
     const optionsGrid = document.getElementById('quiz-options-grid');
     if (!optionsGrid) return;
-    
+
     optionsGrid.innerHTML = '';
     q.options.forEach((optText, index) => {
         const btn = document.createElement('button');
@@ -1511,7 +1511,7 @@ function renderActiveModeQuestion() {
 function selectQuizAnswer(selectedIndex, clickedBtn) {
     const currentModeData = quizState.modeData[quizState.mode];
     if (currentModeData.answered) return;
-    
+
     currentModeData.answered = true;
     currentModeData.selectedIndex = selectedIndex;
 
@@ -1546,7 +1546,7 @@ function closeQuizFeedbackInstant() {
         clearTimeout(quizAutoAdvanceTimer);
         quizAutoAdvanceTimer = null;
     }
-    
+
     // Generate a NEW question for the current mode ONLY
     quizState.modeData[quizState.mode] = {
         q: getRandomQuestionForMode(quizState.mode),
@@ -1657,7 +1657,7 @@ async function revealNextTechFact() {
                 }
             }
         }
-    } catch (e) {}
+    } catch (e) { }
 
     let unseenFacts = techFactsBank.filter(f => !sessionSeenTechFactTexts.has(f.fact));
     if (unseenFacts.length === 0) {
@@ -1756,7 +1756,7 @@ async function revealNextWorldWonder() {
                 }
             }
         }
-    } catch (e) {}
+    } catch (e) { }
 
     let unseenWonders = worldWondersBank.filter(w => !sessionSeenWorldWonderTexts.has(w.wonder));
     if (unseenWonders.length === 0) {
@@ -1813,7 +1813,7 @@ function renderWidgetSettingsFromLocal() {
         }
     };
     if (raw) {
-        try { settings = JSON.parse(raw); } catch (e) {}
+        try { settings = JSON.parse(raw); } catch (e) { }
     }
     renderWidgetSettingsToDom(settings);
 }
@@ -1938,7 +1938,7 @@ function renderFooterFromLocal() {
             const settings = JSON.parse(raw);
             renderFooterToDom(settings);
             return;
-        } catch (e) {}
+        } catch (e) { }
     }
     renderFooterToDom(getDefaultFooterFallback());
 }
@@ -2025,8 +2025,8 @@ function renderFooterToDom(settings) {
 
     const brand = settings.brand || {};
     const contact = settings.contact || {};
-    const socialLinks = (settings.socialLinks || []).filter(s => s.enabled !== false).sort((a,b) => (a.order || 0) - (b.order || 0));
-    const columns = (settings.columns || []).filter(c => c.enabled !== false).sort((a,b) => (a.order || 0) - (b.order || 0));
+    const socialLinks = (settings.socialLinks || []).filter(s => s.enabled !== false).sort((a, b) => (a.order || 0) - (b.order || 0));
+    const columns = (settings.columns || []).filter(c => c.enabled !== false).sort((a, b) => (a.order || 0) - (b.order || 0));
     const copyright = settings.copyright || {};
     const newsletter = settings.newsletter || {};
 
@@ -2077,7 +2077,7 @@ function renderFooterToDom(settings) {
 
     // Build Nav Columns HTML
     let columnsHtml = columns.map(col => {
-        const links = (col.links || []).filter(l => l.enabled !== false).sort((a,b) => (a.order || 0) - (b.order || 0));
+        const links = (col.links || []).filter(l => l.enabled !== false).sort((a, b) => (a.order || 0) - (b.order || 0));
         const linksHtml = links.map(l => {
             const target = l.targetBlank ? 'target="_blank" rel="noopener noreferrer"' : '';
             return `<li class="footer-link-item">
